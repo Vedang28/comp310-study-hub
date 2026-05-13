@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COMP310 Chapter 13 — Forming Coalitions Study Guide</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f172a;color:#e2e8f0;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;line-height:1.7;display:flex}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:#1e293b}
+::-webkit-scrollbar-thumb{background:#475569;border-radius:4px}
+nav{position:fixed;top:0;left:0;width:260px;height:100vh;background:#1e293b;border-right:2px solid #06b6d4;overflow-y:auto;padding:1rem 0;z-index:10}
+nav h2{color:#06b6d4;font-size:.85rem;text-transform:uppercase;letter-spacing:.1em;padding:0 1rem;margin-bottom:.5rem}
+nav a{display:block;padding:.45rem 1rem;color:#94a3b8;text-decoration:none;font-size:.82rem;border-left:3px solid transparent;transition:all .2s}
+nav a:hover,nav a.active{color:#e2e8f0;background:#0f172a;border-left-color:#06b6d4}
+main{margin-left:260px;max-width:900px;padding:2rem 3rem 4rem}
+.header{text-align:center;margin-bottom:3rem;padding-bottom:2rem;border-bottom:2px solid #06b6d4}
+.header h1{font-size:2rem;color:#06b6d4;margin-bottom:.3rem}
+.header .sub{color:#94a3b8;font-size:.95rem}
+section{margin-bottom:3rem;scroll-margin-top:1rem}
+h2{color:#06b6d4;font-size:1.4rem;margin-bottom:1rem;padding-bottom:.4rem;border-bottom:1px solid #334155}
+h3{color:#22d3ee;font-size:1.1rem;margin:1.2rem 0 .6rem}
+p{margin-bottom:.8rem}
+.card{background:#1e293b;border:1px solid #334155;border-radius:8px;padding:1.2rem;margin:.8rem 0}
+.card-cyan{border-left:4px solid #06b6d4}
+.card-green{border-left:4px solid #10b981}
+.card-red{border-left:4px solid #ef4444}
+.card-amber{border-left:4px solid #f59e0b}
+.card-blue{border-left:4px solid #3b82f6}
+.label{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:.4rem}
+.label-cyan{color:#06b6d4}
+.label-green{color:#10b981}
+.label-red{color:#ef4444}
+.label-amber{color:#f59e0b}
+.label-blue{color:#3b82f6}
+strong{color:#f8fafc}
+em{color:#22d3ee;font-style:normal}
+table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.88rem}
+th{background:#334155;color:#06b6d4;padding:.6rem .8rem;text-align:left;font-size:.8rem;text-transform:uppercase;letter-spacing:.05em}
+td{padding:.5rem .8rem;border-bottom:1px solid #1e293b}
+tr:nth-child(even){background:#1e293b}
+tr:nth-child(odd){background:#0f172a}
+.formula{background:#1e293b;border:1px solid #06b6d4;border-radius:6px;padding:.8rem 1.2rem;margin:.8rem 0;font-family:'Courier New',monospace;font-size:.95rem;color:#22d3ee;text-align:center}
+.example-box{background:#1a1a2e;border:1px solid #06b6d4;border-radius:8px;padding:1rem 1.2rem;margin:1rem 0}
+.example-box .title{color:#06b6d4;font-weight:700;font-size:.85rem;margin-bottom:.5rem}
+ol,ul{margin:.5rem 0 1rem 1.5rem}
+li{margin:.3rem 0}
+details{background:#1e293b;border:1px solid #334155;border-radius:6px;margin:1rem 0}
+details summary{padding:.8rem 1rem;cursor:pointer;color:#06b6d4;font-weight:600;font-size:.9rem}
+details summary:hover{background:#334155}
+details .content{padding:0 1rem 1rem}
+.vs{display:flex;gap:1rem;align-items:stretch;flex-wrap:wrap}
+.vs>div{flex:1;min-width:250px}
+.step{display:flex;gap:.8rem;margin:.5rem 0}
+.step-num{background:#06b6d4;color:#0f172a;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex-shrink:0;margin-top:.2rem}
+.step-text{flex:1}
+.tag{display:inline-block;padding:.15rem .5rem;border-radius:4px;font-size:.75rem;font-weight:600;margin:.1rem}
+.tag-pass{background:#10b98130;color:#10b981;border:1px solid #10b981}
+.tag-fail{background:#ef444430;color:#ef4444;border:1px solid #ef4444}
+.graph-box{font-family:'Courier New',monospace;background:#1e293b;padding:1rem;border-radius:8px;text-align:center;margin:1rem 0;font-size:.9rem;line-height:2}
+.highlight{background:#06b6d420;border:1px solid #06b6d4;border-radius:4px;padding:.2rem .5rem}
+</style>
+</head>
+<body>
+<nav>
+<h2>Chapter 13</h2>
+<a href="#intro">1. Coalitional Games</a>
+<a href="#three-stages">2. Three Stages</a>
+<a href="#formal">3. Formal Definition</a>
+<a href="#superadd">4. Super/Subadditive</a>
+<a href="#stability">5. Stability & Which Coalition</a>
+<a href="#core">6. The Core</a>
+<a href="#core-fair">7. Core & Fairness</a>
+<a href="#shapley-intro">8. Shapley Value Intro</a>
+<a href="#marginal">9. Marginal Contribution</a>
+<a href="#shapley-axioms">10. Three Axioms</a>
+<a href="#shapley-formula">11. Shapley Formula</a>
+<a href="#shapley-example">12. Worked Example</a>
+<a href="#representation">13. Representation Problem</a>
+<a href="#induced">14. Induced Subgraphs</a>
+<a href="#mcnets">15. Marginal Contribution Nets</a>
+<a href="#csg">16. Coalition Structure Gen.</a>
+<a href="#comparison">17. Comparison Table</a>
+<a href="#reference">18. Formula Reference</a>
+<a href="#transcript">19. Full Transcript</a>
+</nav>
+
+<main>
+<div class="header">
+<h1>Chapter 13: Forming Coalitions</h1>
+<div class="sub">COMP310 Multi-Agent Systems — Shufang Zhu, University of Liverpool</div>
+<div class="sub" style="margin-top:.3rem;color:#06b6d4">Coalitional Games, The Core, Shapley Value & Modular Representations</div>
+</div>
+
+<!-- Section 1 -->
+<section id="intro">
+<h2>1. Coalitional Games — Overview</h2>
+<div class="card card-cyan">
+<div class="label label-cyan">What Are They?</div>
+<p>Coalitional games model scenarios where agents can <em>benefit by cooperating</em>. The core question: given self-interested agents, when and how should they form teams?</p>
+<p>Unlike the competitive games of Chapter 11, here agents ask: <strong>"Which coalition should I join?"</strong></p>
+</div>
+</section>
+
+<!-- Section 2 -->
+<section id="three-stages">
+<h2>2. Three Stages of Cooperative Action</h2>
+<p>Sandholm et al. (1999) identified three stages:</p>
+
+<div class="step"><div class="step-num">1</div><div class="step-text"><strong>Coalitional Structure Generation</strong> — Deciding in principle who will work together. Asks "which coalition should I join?" The result partitions agents into disjoint coalitions (a <em>coalition structure</em>).</div></div>
+
+<div class="step"><div class="step-num">2</div><div class="step-text"><strong>Solving the Optimisation Problem</strong> — Deciding how to work together, solving the "joint problem" of the coalition. Finding how to maximise the coalition's utility (joint planning etc.).</div></div>
+
+<div class="step"><div class="step-num">3</div><div class="step-text"><strong>Dividing the Benefits</strong> — Deciding "who gets what" in the payoff. Members can't ignore each other's preferences because <em>members can defect</em>: "if you try to give me a bad payoff, I can always walk away." Must consider <em>fairness</em>.</div></div>
+</section>
+
+<!-- Section 3 -->
+<section id="formal">
+<h2>3. Formal Definition</h2>
+
+<div class="card card-cyan">
+<div class="label label-cyan">Coalitional Game (Characteristic Function Game)</div>
+<div class="formula">G = &lt; Ag, &nu; &gt;</div>
+<ul>
+<li><strong>Ag = {1, ..., n}</strong> — a set of agents</li>
+<li><strong>&nu; : 2<sup>Ag</sup> &rarr; R</strong> — the <em>characteristic function</em> of the game</li>
+</ul>
+</div>
+
+<div class="card card-blue">
+<div class="label label-blue">Key Terms</div>
+<ul>
+<li><strong>Coalition</strong>: any subset C &sube; Ag</li>
+<li><strong>Singleton Coalition</strong>: C contains a single member</li>
+<li><strong>Grand Coalition</strong>: C = Ag (all agents together)</li>
+<li><strong>&nu;(C) = k</strong> means coalition C will get payoff k if they cooperate</li>
+</ul>
+</div>
+
+<div class="example-box">
+<div class="title">Example Characteristic Function (Slide 7)</div>
+<p>Ag = {1, 2, 3}</p>
+<table>
+<tr><th>Coalition</th><th>&nu;(C)</th></tr>
+<tr><td>{1}</td><td>5</td></tr>
+<tr><td>{2}</td><td>5</td></tr>
+<tr><td>{3}</td><td>5</td></tr>
+<tr><td>{1,2}</td><td>10</td></tr>
+<tr><td>{1,3}</td><td>10</td></tr>
+<tr><td>{2,3}</td><td>10</td></tr>
+<tr><td>{1,2,3}</td><td>25</td></tr>
+</table>
+<p>Grand coalition gives 25, but singletons sum to only 15. Cooperation pays off!</p>
+</div>
+</section>
+
+<!-- Section 4 -->
+<section id="superadd">
+<h2>4. Superadditive vs Subadditive Games</h2>
+
+<div class="vs">
+<div class="card card-green">
+<div class="label label-green">Superadditive</div>
+<div class="formula">&nu;(U) + &nu;(V) &le; &nu;(U &cup; V)</div>
+<p>Merging coalitions is <strong>always at least as good</strong> as staying apart.</p>
+<p>Best coalition = <em>Grand Coalition</em></p>
+</div>
+<div class="card card-red">
+<div class="label label-red">Subadditive</div>
+<div class="formula">&nu;(U) + &nu;(V) &gt; &nu;(U &cup; V)</div>
+<p>Merging coalitions <strong>loses value</strong>.</p>
+<p>Best coalitions = <em>Singletons</em></p>
+</div>
+</div>
+
+<div class="card card-amber">
+<div class="label label-amber">Warning</div>
+Some games are <strong>neither</strong> superadditive nor subadditive. In that case, the characteristic function must be evaluated for <em>every possible coalition</em> — this is <strong>exponentially complex</strong>.
+</div>
+</section>
+
+<!-- Section 5 -->
+<section id="stability">
+<h2>5. Which Coalition Should I Join?</h2>
+
+<div class="card card-cyan">
+<div class="label label-cyan">The Logic</div>
+<ul>
+<li>Each coalition has a different characteristic function value</li>
+<li>Agents prefer coalitions that are <em>as productive as possible</em></li>
+<li>A coalition will only form if <strong>all members prefer to be in it</strong> (i.e., they don't defect to a more preferable one)</li>
+</ul>
+</div>
+
+<div class="card card-green">
+<div class="label label-green">Key Reduction</div>
+<p><strong>"Which coalition should I join?"</strong> reduces to <strong>"Which coalitions are stable?"</strong></p>
+<ul>
+<li>Is it rational for all members to stay, or could they benefit by defecting?</li>
+<li>Stability is <em>necessary</em> but <strong>not sufficient</strong> for coalitions to form</li>
+<li>Unstable coalitions will <strong>never</strong> form, but stable ones aren't guaranteed to form either</li>
+</ul>
+</div>
+</section>
+
+<!-- Section 6 -->
+<section id="core">
+<h2>6. The Core</h2>
+
+<div class="card card-cyan">
+<div class="label label-cyan">Definition</div>
+<p>The <em>core</em> of a coalitional game is the set of <strong>feasible</strong> distributions of payoff to members of a coalition that <em>no sub-coalition can reasonably object to</em>.</p>
+<p><strong>"Is the grand coalition stable?"</strong> reduces to <strong>"Is the core non-empty?"</strong></p>
+</div>
+
+<h3>Formal Details</h3>
+<div class="card card-blue">
+<div class="label label-blue">Outcomes & Objections</div>
+<p>An <em>outcome</em> <strong>x</strong> for coalition C is a distribution x = &lt;x<sub>1</sub>, ..., x<sub>k</sub>&gt; that is:</p>
+<ul>
+<li><em>Feasible</em>: C can actually obtain the payoff</li>
+<li><em>Efficient</em>: all payoff is allocated: <span class="highlight">&nu;(C) = &sum; x<sub>i</sub></span></li>
+</ul>
+<p>Coalition C <em>objects</em> to outcome x for the grand coalition if there exists some outcome x' for C such that <strong>x'<sub>i</sub> &gt; x<sub>i</sub> for ALL i &in; C</strong>.</p>
+<p><strong>The core</strong> = set of outcomes for the grand coalition to which <em>no coalition objects</em>.</p>
+</div>
+
+<div class="example-box">
+<div class="title">Example: v({1}) = 5, v({2}) = 5, v({1,2}) = 20</div>
+<p>Possible outcomes: &lt;20,0&gt;, &lt;19,1&gt;, &lt;18,2&gt;, ..., &lt;0,20&gt;</p>
+<ul>
+<li><strong>&lt;20, 0&gt; is NOT in the core</strong> — agent 2 objects (can earn 5 alone, getting 0 here)</li>
+<li><strong>&lt;14, 6&gt; IS in the core</strong> — agent 2 gets 6 &gt; 5 (more than solo), no objection</li>
+<li>Core = all &lt;x<sub>1</sub>, x<sub>2</sub>&gt; where x<sub>1</sub> &ge; 5, x<sub>2</sub> &ge; 5, and x<sub>1</sub> + x<sub>2</sub> = 20</li>
+</ul>
+</div>
+</section>
+
+<!-- Section 7 -->
+<section id="core-fair">
+<h2>7. The Core and Fairness</h2>
+
+<div class="card card-amber">
+<div class="label label-amber">The Fairness Problem</div>
+<p>The core tells us which distributions are <em>stable</em> (no one wants to leave), but it doesn't tell us which distribution is <em>fair</em>.</p>
+<p>Example: &lt;14, 6&gt; is in the core (both get more than solo), but is it <em>fair</em> that agent 1 gets 14 and agent 2 only gets 6 when both contribute equally as singletons?</p>
+<p>This motivates the <strong>Shapley Value</strong> — a mathematical definition of fair division.</p>
+</div>
+</section>
+
+<!-- Section 8 -->
+<section id="shapley-intro">
+<h2>8. The Shapley Value — Introduction</h2>
+
+<div class="card card-cyan">
+<div class="label label-cyan">What Is It?</div>
+<p>The <strong>Shapley value</strong> is the best-known method for dividing benefits of cooperation <em>fairly</em>.</p>
+<ul>
+<li>It takes into account <strong>how much an agent contributes</strong></li>
+<li>The Shapley value of agent i is the <em>average</em> amount that i is expected to contribute to a coalition</li>
+<li>Based on <em>marginal contribution</em> across all permutations</li>
+</ul>
+</div>
+
+<div class="card card-green">
+<div class="label label-green">Three Shapley Axioms</div>
+<table>
+<tr><th>Axiom</th><th>Plain English</th><th>Formal</th></tr>
+<tr><td><strong>Symmetry</strong></td><td>Same contribution = same payoff</td><td>If &delta;<sub>i</sub>(C) = &delta;<sub>j</sub>(C) for all C, then &phi;<sub>i</sub> = &phi;<sub>j</sub></td></tr>
+<tr><td><strong>Dummy Player</strong></td><td>No synergy = only earn what you'd earn solo</td><td>If &delta;<sub>i</sub>(C) = &nu;({i}) for all C, then &phi;<sub>i</sub> = &nu;({i})</td></tr>
+<tr><td><strong>Additivity</strong></td><td>Combined game value = sum of individual game values</td><td>&phi;<sub>i</sub><sup>1+2</sup> = &phi;<sub>i</sub><sup>1</sup> + &phi;<sub>i</sub><sup>2</sup></td></tr>
+</table>
+</div>
+</section>
+
+<!-- Section 9 -->
+<section id="marginal">
+<h2>9. Marginal Contribution</h2>
+
+<div class="card card-cyan">
+<div class="label label-cyan">Definition</div>
+<p>The <em>marginal contribution</em> of agent i to coalition C:</p>
+<div class="formula">&delta;<sub>i</sub>(C) = &nu;(C &cup; {i}) - &nu;(C)</div>
+<p>&delta;<sub>i</sub>(C) = the amount of value that agent i <strong>adds</strong> by joining coalition C.</p>
+<p>If &delta;<sub>i</sub>(C) = &nu;({i}), then there is <em>no added value</em> from i joining C (i adds only what it could earn alone).</p>
+</div>
+
+<div class="card card-red">
+<div class="label label-red">Why Simple Average Is Wrong (Slide 21)</div>
+<p>You might think Shapley value = average marginal contribution over all subsets:</p>
+<div class="formula" style="text-decoration:line-through;color:#ef4444">&phi;<sub>i</sub> = (1/2<sup>n-1</sup>) &sum; &delta;<sub>i</sub>(C)</div>
+<p><strong>This is WRONG!</strong> The marginal contribution depends on the <em>order</em> in which agents join. An agent may contribute more if it joins first vs last.</p>
+</div>
+</section>
+
+<!-- Section 10 -->
+<section id="shapley-axioms">
+<h2>10. The Three Axioms in Detail</h2>
+
+<div class="card card-green">
+<div class="label label-green">Symmetry (Slide 18)</div>
+<p><em>Agents that make the same contribution should get the same payoff.</em></p>
+<p>Agents i and j are <em>interchangeable</em> if &delta;<sub>i</sub>(C) = &delta;<sub>j</sub>(C) for every C &sube; Ag \ {i,j}.</p>
+<p>If i and j are interchangeable, then <strong>&phi;<sub>i</sub> = &phi;<sub>j</sub></strong>.</p>
+</div>
+
+<div class="card card-blue">
+<div class="label label-blue">Dummy Player (Slide 19)</div>
+<p><em>Agents with no synergy should only get what they earn solo.</em></p>
+<p>Agent i is a <em>dummy player</em> if &delta;<sub>i</sub>(C) = &nu;({i}) for every C &sube; Ag \ {i}.</p>
+<p>If i is a dummy player, then <strong>&phi;<sub>i</sub> = &nu;({i})</strong>.</p>
+</div>
+
+<div class="card card-amber">
+<div class="label label-amber">Additivity (Slide 20)</div>
+<p><em>If two games are combined, the value an agent gets should be the sum of the values in the individual games.</em></p>
+<p>Let G<sup>1</sup> = &lt;Ag, &nu;<sup>1</sup>&gt; and G<sup>2</sup> = &lt;Ag, &nu;<sup>2</sup>&gt;. Let G<sup>1+2</sup> have &nu;<sup>1+2</sup>(C) = &nu;<sup>1</sup>(C) + &nu;<sup>2</sup>(C).</p>
+<p>Then: <strong>&phi;<sub>i</sub><sup>1+2</sup> = &phi;<sub>i</sub><sup>1</sup> + &phi;<sub>i</sub><sup>2</sup></strong></p>
+</div>
+</section>
+
+<!-- Section 11 -->
+<section id="shapley-formula">
+<h2>11. The Shapley Value Formula</h2>
+
+<div class="card card-cyan" style="border:2px solid #06b6d4">
+<div class="label label-cyan">The Correct Formula (Slide 23)</div>
+<p>Let C<sub>i</sub>(o) = the set of agents that appear <strong>before</strong> agent i in ordering o.</p>
+<div class="formula" style="font-size:1.1rem">&phi;<sub>i</sub> = (1 / |Ag|!) &sum;<sub>o &in; &Pi;(Ag)</sub> &delta;<sub>i</sub>(C<sub>i</sub>(o))</div>
+<p>We consider the average marginal contribution an agent adds <strong>over all possible positions it could enter the coalition</strong>.</p>
+</div>
+
+<div class="example-box">
+<div class="title">Example: o = (3, 1, 2)</div>
+<p>C<sub>3</sub>(o) = &empty; (3 is first, nobody before it)</p>
+<p>C<sub>1</sub>(o) = {3} (3 appears before 1)</p>
+<p>C<sub>2</sub>(o) = {1, 3} (both 1 and 3 appear before 2)</p>
+</div>
+</section>
+
+<!-- Section 12 -->
+<section id="shapley-example">
+<h2>12. Shapley Value — Worked Example</h2>
+
+<div class="example-box">
+<div class="title">Full Calculation (Slide 24)</div>
+<p>Ag = {1, 2}, with: &nu;({1}) = 5, &nu;({2}) = 10, &nu;({1,2}) = 20</p>
+
+<h3 style="color:#06b6d4;margin:.8rem 0 .4rem">Step 1: Calculate all marginal contributions</h3>
+<table>
+<tr><th>Expression</th><th>Calculation</th><th>Result</th></tr>
+<tr><td>&delta;<sub>1</sub>(&empty;)</td><td>&nu;(&empty; &cup; {1}) - &nu;(&empty;) = 5 - 0</td><td><strong>5</strong></td></tr>
+<tr><td>&delta;<sub>1</sub>({2})</td><td>&nu;({2} &cup; {1}) - &nu;({2}) = 20 - 10</td><td><strong>10</strong></td></tr>
+<tr><td>&delta;<sub>2</sub>(&empty;)</td><td>&nu;(&empty; &cup; {2}) - &nu;(&empty;) = 10 - 0</td><td><strong>10</strong></td></tr>
+<tr><td>&delta;<sub>2</sub>({1})</td><td>&nu;({1} &cup; {2}) - &nu;({1}) = 20 - 5</td><td><strong>15</strong></td></tr>
+</table>
+
+<h3 style="color:#06b6d4;margin:.8rem 0 .4rem">Step 2: Calculate Shapley values</h3>
+<div class="formula">
+&phi;<sub>1</sub> = (&delta;<sub>1</sub>(&empty;) + &delta;<sub>1</sub>({2})) / |Ag|! = (5 + 10) / 2 = <strong>7.5</strong>
+</div>
+<div class="formula">
+&phi;<sub>2</sub> = (&delta;<sub>2</sub>(&empty;) + &delta;<sub>2</sub>({1})) / |Ag|! = (10 + 15) / 2 = <strong>12.5</strong>
+</div>
+
+<p style="margin-top:.5rem">Agent 2 gets more (12.5 vs 7.5) because it contributes more on average. Total: 7.5 + 12.5 = 20 = &nu;({1,2}). The full payoff is distributed.</p>
+</div>
+
+<div class="card card-amber">
+<div class="label label-amber">Exam Tip</div>
+For the exam, follow this exact procedure: (1) list all orderings, (2) for each ordering find what each agent adds when they join, (3) average across all orderings. For 3 agents there are 3! = 6 orderings.
+</div>
+</section>
+
+<!-- Section 13 -->
+<section id="representation">
+<h2>13. The Representation Problem</h2>
+
+<div class="card card-red">
+<div class="label label-red">Exponential Blow-Up</div>
+<p>A naive representation of a coalitional game is <strong>exponential</strong> in the number of agents.</p>
+<ul>
+<li>An n-player game has <strong>2<sup>n</sup> - 1</strong> coalitions</li>
+<li>100 players &rarr; 1.2 &times; 10<sup>30</sup> lines in the characteristic function!</li>
+<li>This is utterly infeasible in practice</li>
+</ul>
+</div>
+
+<div class="card card-cyan">
+<div class="label label-cyan">Two Approaches</div>
+<ul>
+<li><strong>Complete but sometimes succinct:</strong> find a representation that captures everything, but is compact in most cases</li>
+<li><strong>Always succinct but not complete:</strong> always compact, but can't represent every possible game</li>
+</ul>
+<p>Two modular representations: <em>Induced Subgraphs</em> and <em>Marginal Contribution Nets</em></p>
+</div>
+</section>
+
+<!-- Section 14 -->
+<section id="induced">
+<h2>14. Induced Subgraphs</h2>
+
+<div class="card card-cyan">
+<div class="label label-cyan">How It Works</div>
+<p>Represent &nu; as an <strong>undirected weighted graph</strong> on Ag:</p>
+<ul>
+<li>Each pair of agents (i, j) has a weight w<sub>i,j</sub></li>
+<li>Value of coalition C = sum of weights of edges <em>within</em> C:</li>
+</ul>
+<div class="formula">&nu;(C) = &sum;<sub>{i,j} &sube; C</sub> w<sub>i,j</sub></div>
+</div>
+
+<div class="example-box">
+<div class="title">Graph Example (Slide 27)</div>
+<p>Agents: A, B, C, D with edges: A-B=3, A-C=2, B-D=1, C-D=4, D-D(self)=5</p>
+<ul>
+<li>&nu;({A,B,C}) = 3 + 2 = 5</li>
+<li>&nu;({B,D}) = 1 + 5 = 6</li>
+<li>&nu;({D}) = 5</li>
+</ul>
+</div>
+
+<h3>Shapley Value for Induced Subgraphs</h3>
+<div class="card card-green" style="border:2px solid #10b981">
+<div class="label label-green">Elegant Shortcut (Slide 28-29)</div>
+<p>Shapley value for an agent = <strong>half the income from the edges it's attached to</strong>:</p>
+<div class="formula">&phi;<sub>i</sub> = (1/2) &sum;<sub>j &ne; i</sub> w<sub>i,j</sub></div>
+<p>This works because:</p>
+<ul>
+<li>Each edge is a 2-player component game</li>
+<li><strong>Symmetry axiom</strong>: both agents in an edge are interchangeable &rarr; equal share</li>
+<li><strong>Additivity axiom</strong>: sum Shapley values across all edge-games</li>
+</ul>
+<p>Computable in <strong>polynomial time</strong>!</p>
+</div>
+
+<div class="example-box">
+<div class="title">Worked Example (Slide 29): A-B=3, A-C=2</div>
+<p>&nu;({A,B,C}) = 3 + 2 = 5</p>
+<table>
+<tr><th>Agent</th><th>Calculation</th><th>&phi;</th></tr>
+<tr><td>A</td><td>(3 + 2) / 2</td><td><strong>2.5</strong></td></tr>
+<tr><td>B</td><td>3 / 2</td><td><strong>1.5</strong></td></tr>
+<tr><td>C</td><td>2 / 2</td><td><strong>1.0</strong></td></tr>
+</table>
+<p>Total: 2.5 + 1.5 + 1.0 = 5.0 = &nu;({A,B,C})</p>
+</div>
+
+<div class="card card-red">
+<div class="label label-red">Limitations (Slide 30)</div>
+<ul>
+<li>Representation is <em>succinct</em> but <strong>not complete</strong> — some characteristic functions can't be captured</li>
+<li>Determining emptiness of the core is <strong>NP-complete</strong></li>
+<li>Checking if a specific distribution is in the core is <strong>co-NP-complete</strong></li>
+</ul>
+</div>
+</section>
+
+<!-- Section 15 -->
+<section id="mcnets">
+<h2>15. Marginal Contribution Nets</h2>
+
+<div class="card card-cyan">
+<div class="label label-cyan">How It Works</div>
+<p>Represent &nu; as a <strong>set of rules</strong>: <span class="highlight">pattern &rarr; value</span></p>
+<ul>
+<li>Pattern = conjunction of agents (with optional negations)</li>
+<li>A rule applies to coalition C if C is a <em>superset</em> of the agents in the pattern</li>
+<li>Value of C = <strong>sum of values of all rules that apply</strong></li>
+</ul>
+</div>
+
+<div class="example-box">
+<div class="title">Example: Rule Set 1 (Slide 31)</div>
+<div class="formula">a &and; b &rarr; 5<br>b &rarr; 2</div>
+<table>
+<tr><th>Coalition</th><th>Rules Applied</th><th>&nu;</th></tr>
+<tr><td>{a}</td><td>none</td><td>0</td></tr>
+<tr><td>{b}</td><td>b &rarr; 2</td><td>2</td></tr>
+<tr><td>{a, b}</td><td>a&and;b &rarr; 5, b &rarr; 2</td><td>7</td></tr>
+</table>
+</div>
+
+<div class="example-box">
+<div class="title">Example with Negation: Rule Set 2 (Slide 32)</div>
+<div class="formula">a &and; b &rarr; 5 &nbsp;&nbsp; b &rarr; 2 &nbsp;&nbsp; c &rarr; 4 &nbsp;&nbsp; b &and; &not;c &rarr; -2</div>
+<table>
+<tr><th>Coalition</th><th>Rules</th><th>&nu;</th></tr>
+<tr><td>{a}</td><td>none</td><td>0</td></tr>
+<tr><td>{b}</td><td>b&rarr;2, b&and;&not;c&rarr;-2</td><td>0</td></tr>
+<tr><td>{c}</td><td>c&rarr;4</td><td>4</td></tr>
+<tr><td>{a,b}</td><td>a&and;b&rarr;5, b&rarr;2, b&and;&not;c&rarr;-2</td><td>5</td></tr>
+<tr><td>{a,c}</td><td>c&rarr;4</td><td>4</td></tr>
+<tr><td>{b,c}</td><td>b&rarr;2, c&rarr;4</td><td>6</td></tr>
+<tr><td>{a,b,c}</td><td>a&and;b&rarr;5, b&rarr;2, c&rarr;4</td><td>11</td></tr>
+</table>
+</div>
+
+<h3>Shapley Value for MC-Nets (Slide 33)</h3>
+<div class="card card-green">
+<div class="label label-green">Calculation Method</div>
+<p>For a rule with l agents on the LHS and value x:</p>
+<div class="formula">&phi;<sub>i</sub><sup>rule</sup> = x / l</div>
+<p>(Each agent in the rule gets an equal share — <em>symmetry axiom</em>)</p>
+<p>Then sum across all rules where agent i appears (<em>additivity axiom</em>):</p>
+<div class="formula">&phi;<sub>i</sub> = &sum;<sub>r: i occurs in LHS of r</sub> &phi;<sub>i</sub><sup>r</sup></div>
+</div>
+
+<div class="example-box">
+<div class="title">Worked Example (Slide 33): a&and;b&rarr;5, b&rarr;2, c&rarr;4</div>
+<table>
+<tr><th>Agent</th><th>Contributions from Rules</th><th>&phi;</th></tr>
+<tr><td>A</td><td>5/2 (from a&and;b&rarr;5)</td><td><strong>2.5</strong></td></tr>
+<tr><td>B</td><td>5/2 + 2 (from a&and;b&rarr;5 and b&rarr;2)</td><td><strong>4.5</strong></td></tr>
+<tr><td>C</td><td>4 (from c&rarr;4)</td><td><strong>4.0</strong></td></tr>
+</table>
+<p>Total: 2.5 + 4.5 + 4.0 = 11 = &nu;({a,b,c})</p>
+</div>
+
+<div class="vs">
+<div class="card card-green">
+<div class="label label-green">Advantage</div>
+MC-Nets are a <strong>complete</strong> representation — any characteristic function can be captured.
+</div>
+<div class="card card-red">
+<div class="label label-red">Disadvantage</div>
+In the worst case, may need <strong>exponentially many</strong> rules. Handling negative values requires a different method.
+</div>
+</div>
+</section>
+
+<!-- Section 16 -->
+<section id="csg">
+<h2>16. Coalition Structure Generation</h2>
+
+<div class="card card-cyan">
+<div class="label label-cyan">The Problem</div>
+<p>Sometimes we want to <em>maximise social welfare</em> — find the partition of agents into coalitions that maximises the sum of coalition values.</p>
+<div class="formula">V(CS) = &sum;<sub>C &in; CS</sub> &nu;(C)</div>
+<div class="formula">CS* = arg max<sub>CS</sub> V(CS)</div>
+</div>
+
+<div class="example-box">
+<div class="title">Example: Ag = {1, 2, 3}</div>
+<p>7 possible coalitions, 5 possible coalition structures:</p>
+<p>{{1},{2},{3}}, {{1},{2,3}}, {{2},{1,3}}, {{3},{1,2}}, {{1,2,3}}</p>
+</div>
+
+<div class="card card-red">
+<div class="label label-red">Complexity</div>
+<p>Exponentially many coalition structures in the number of agents.</p>
+<p>Sandholm et al. [1999] developed a technique to find a coalition structure within some <strong>provable bound</strong> from the optimal one.</p>
+</div>
+</section>
+
+<!-- Section 17 -->
+<section id="comparison">
+<h2>17. Representation Comparison</h2>
+
+<table>
+<tr><th>Property</th><th>Naive (List all)</th><th>Induced Subgraph</th><th>MC-Nets</th></tr>
+<tr><td>Size</td><td>2<sup>n</sup> - 1 entries</td><td>O(n<sup>2</sup>) edges</td><td>Variable (worst: exponential)</td></tr>
+<tr><td>Complete?</td><td><span class="tag tag-pass">Yes</span></td><td><span class="tag tag-fail">No</span></td><td><span class="tag tag-pass">Yes</span></td></tr>
+<tr><td>Succinct?</td><td><span class="tag tag-fail">No</span></td><td><span class="tag tag-pass">Yes</span></td><td><span class="tag tag-pass">Usually</span></td></tr>
+<tr><td>Shapley value</td><td>Exponential</td><td><strong>Polynomial</strong>: &phi;<sub>i</sub> = &frac12;&sum;w<sub>i,j</sub></td><td><strong>Polynomial</strong>: &phi;<sub>i</sub> = &sum;(x/l)</td></tr>
+<tr><td>Core emptiness</td><td>—</td><td>NP-complete</td><td>—</td></tr>
+</table>
+</section>
+
+<!-- Section 18 -->
+<section id="reference">
+<h2>18. Formula & Concept Reference</h2>
+
+<table>
+<tr><th>Symbol / Term</th><th>Meaning</th></tr>
+<tr><td>G = &lt;Ag, &nu;&gt;</td><td>Coalitional game: agents + characteristic function</td></tr>
+<tr><td>&nu; : 2<sup>Ag</sup> &rarr; R</td><td>Characteristic function: maps each coalition to a payoff value</td></tr>
+<tr><td>C &sube; Ag</td><td>A coalition (subset of agents)</td></tr>
+<tr><td>Grand Coalition</td><td>C = Ag (everyone cooperates)</td></tr>
+<tr><td>Superadditive</td><td>&nu;(U) + &nu;(V) &le; &nu;(U&cup;V) &rarr; grand coalition is optimal</td></tr>
+<tr><td>Subadditive</td><td>&nu;(U) + &nu;(V) &gt; &nu;(U&cup;V) &rarr; singletons are optimal</td></tr>
+<tr><td>Core</td><td>Set of payoff distributions no sub-coalition can object to</td></tr>
+<tr><td>Core non-empty</td><td>Grand coalition is stable</td></tr>
+<tr><td>&delta;<sub>i</sub>(C)</td><td>Marginal contribution: &nu;(C &cup; {i}) - &nu;(C)</td></tr>
+<tr><td>&phi;<sub>i</sub></td><td>Shapley value of agent i</td></tr>
+<tr><td>&phi;<sub>i</sub> = (1/|Ag|!) &sum; &delta;<sub>i</sub>(C<sub>i</sub>(o))</td><td>Average marginal contribution over all orderings</td></tr>
+<tr><td>Symmetry axiom</td><td>Same contribution &rarr; same payoff</td></tr>
+<tr><td>Dummy player axiom</td><td>No synergy &rarr; get only solo value</td></tr>
+<tr><td>Additivity axiom</td><td>Combined game value = sum of individual values</td></tr>
+<tr><td>Induced subgraph: &phi;<sub>i</sub></td><td>&frac12; &sum;<sub>j&ne;i</sub> w<sub>i,j</sub> (half of attached edges)</td></tr>
+<tr><td>MC-Net rule: &phi;<sub>i</sub><sup>r</sup></td><td>x/l where l = agents in LHS, x = rule value</td></tr>
+<tr><td>CS*</td><td>Socially optimal coalition structure: arg max V(CS)</td></tr>
+</table>
+</section>
+
+<!-- Section 19: Transcript -->
+<section id="transcript">
+<h2>19. Full Video Transcript</h2>
+
+<details>
+<summary>[0:00] Intro — how self-interested agents learn fair cooperation</summary>
+<div class="content"><p>Welcome to This Explainer. Today we're going to demystify exactly how self-interested AI agents learn the mathematical logic behind fair cooperation. It's honestly a fascinating journey. We're going to go from the calculated, solitary decisions of a single piece of software, all the way to these incredibly complex, multi-agent networks where fairness is rigorously defined by pure math. So if you've ever wondered how autonomous systems can genuinely work together without instantly backstabbing each other, well, you're in exactly the right place. Let's get into it. So let's kick things off with a really human question that actually applies perfectly to AI. How do these agents decide to cooperate instead of just competing? Because at the end of the day, there is absolutely no point in joining a coalition if you can just do better on your own, right? An AI agent is literally programmed to maximize its own rewards. So to get them to team up, the math actually has to prove that cooperation is the most selfishly beneficial thing they can possibly do.</p></div>
+</details>
+
+<details>
+<summary>[1:15] Section 1 — Agent decisions and expected utility</summary>
+<div class="content"><p>Okay, section one, agent decisions and utility. Self-interest first. Let's zoom right into the micro level. Before an agent even considers the idea of teamwork, it uses a control loop. This is often called a belief desire intention loop to filter through its options. And it does this by calculating expected utility. Essentially, that's the utility of an outcome multiplied by the probability of a specific run actually happening. The agent simply filters its options to find the path of highest expected utility. It is acting completely, 100% in its own self-interest. And seeing this mapped out really puts it into perspective. When an agent looks at its possible runs from an initial state, it sees branching paths based on different potential actions. To make the optimal choice, the agent calculates the expected utility across all of these branches, basically multiplying the value of the final states by the probabilities of getting there. It is a pure solitary numbers game.</p></div>
+</details>
+
+<details>
+<summary>[2:15] Section 2 — The grand coalition and characteristic function games</summary>
+<div class="content"><p>Moving on to section two, the grand coalition, working together. But what happens when an agent realizes, hey, tackling this task with others might actually give me a much higher expected utility than going solo? Well, this brings us to what's called a coalitional game, or a characteristic function game. It represents cooperation mathematically using a simple tuple. You've got your set of all possible agents, and then you have a characteristic function. This function's whole job is to assign a real number, a payoff value, to any specific group or coalition of agents that decides to team up. The holy grail in these scenarios is forming what we call the grand coalition. That's a coalition where absolutely all possible agents in the environment work together for the maximum possible overall payoff. But here is the massive tension in multi-agent systems. How do you make sure nobody is tempted to defect? Because if a smaller subgroup figures out they can break off and earn more for themselves outside of this grand coalition, the whole thing falls apart instantly.</p></div>
+</details>
+
+<details>
+<summary>[3:20] Section 3 — The core and stability</summary>
+<div class="content"><p>Which brings us nicely to section three, the core and stability, preventing defectors. So how on earth do we guarantee that an agent won't just take a better deal and backstab the group? Well, as our source material perfectly states, stability is a necessary but not sufficient condition for coalitions to form. What does that mean? It means unstable coalitions will never, ever form. The self-interested math simply refuses to allow it. But even if a coalition is mathematically stable, it's still not guaranteed to form unless there's careful coordination and strict agreement on exactly how to divide the spoils. So the absolutely crucial point here is defining that stability, which introduces a concept known as the core. The core of a coalitional game is basically the set of feasible payoff distributions to members that no sub-coalition can reasonably object to. In plain terms, if you can find a way to pay everyone so that absolutely no subgroup can break off and do better for themselves, your core is non-empty. And if the core is non-empty, congratulations, the grand coalition is officially stable.</p></div>
+</details>
+
+<details>
+<summary>[4:25] Section 4 — Sharing rewards with the Shapley Value</summary>
+<div class="content"><p>Alright, section 4, Sharing Rewards, Dividing the Payoff. Now, we're at the real heart of this explainer. How do we slice up that massive payoff fairly so the core stays intact and everyone stays happy? Enter our hero framework, the Shapley Value. This is arguably the best-known mathematical method for dividing the benefits of cooperation. The Shapley Value evaluates an agent by looking at its marginal contribution to a coalition. But it doesn't just do this once. It calculates the average value the agent adds over every single possible position it could enter the group. It rigorously, mathematically evaluates your true worth to the team across every conceivable scenario.</p></div>
+</details>
+
+<details>
+<summary>[5:05] Section 5 — The three Shapley axioms</summary>
+<div class="content"><p>Next up, section 5, The Three Shapley Axioms, Rules of Fairness. To guarantee that this Shapley Value is universally mathematically fair, it leans on three unshakable axioms. First up is the Symmetry Axiom. Just like a perfectly balanced scale, it dictates that agents making the exact same contribution must receive the exact same payoff. If two agents are completely interchangeable in terms of what they bring to every possible coalition, their Shapley Values have to be equal. Payoff depends purely on contribution, no favorites, no arbitrary labels. Second is the Dummy Player Axiom. We've all had that one group project, right? The person who just does their own separate thing and adds zero synergy to the team's combined effort? Well, the math actually accounts for this. If an agent never adds any synergy to any coalition, they are mathematically a dummy player. The axiom bluntly states they should only receive exactly what they could earn on their own. No more, no less. And here are all three axioms together. We've got symmetry, we've got dummy player, but that third one, Additivity, that's the real secret sauce here. Additivity means that if you combine two different games, the Shapley Value of an agent in the combined game is simply the sum of their values in the individual games. This is huge because it allows us to take incredibly complex cooperative scenarios, break them down into smaller, manageable rules, calculate the value for each, and just sum them all up.</p></div>
+</details>
+
+<details>
+<summary>[6:35] Section 6 — Induced subgraphs and computational shortcuts</summary>
+<div class="content"><p>Finally, Section 6, Subgraphs and Contribution Nets, Computing Fairness. Let's look at how AI systems actually crunch these Shapley Values in practice across massive networks. One way to represent these games is through an induced subgraph, where agents are connected by weighted edges. In this setup, calculating fairness is lightning fast. An agent's Shapley Value is simply half the income from the graph edges it's attached to. So if an agent is attached to an edge worth 3 and another worth 2, the math is incredibly straightforward. In computer science terms, this happens in polynomial time, which is really just a fancy way of saying it's exceptionally fast and computationally easy for an AI to solve. But there's a catch. While induced subgraphs are quick and succinct, they are also incomplete. There are certain characteristic functions, certain highly complex games, that simply cannot be captured by this graph representation.</p></div>
+</details>
+
+<details>
+<summary>[7:25] Marginal Contribution Nets — complete representation</summary>
+<div class="content"><p>And that is exactly why AI systems also rely on Marginal Contribution Nets. Unlike subgraphs, Marginal Contribution Nets provide a totally complete representation of any characteristic function. Calculating within these Marginal Contribution Nets basically means putting those axioms we just talked about to work. First, you apply the Symmetry Axiom to make sure agents contributing equally within a specific rule are treated equally. Then, you use that incredibly powerful Additivity Axiom. You calculate the Shapley Value for each distinct rule in the net entirely independently. And then, you just sum over all the rules to get the overall, perfectly fair Shapley Value for every single agent.</p></div>
+</details>
+
+<details>
+<summary>[8:05] Conclusion — NP-completeness and the limits of fair cooperation</summary>
+<div class="content"><p>Now I have to be real with you, even with all these elegant frameworks, AI faces a brutal computational reality here. Determining if a stable grand coalition is even possible, checking if the core is empty, is what computer scientists call NP-complete. And checking the payoff distribution, that's co-NP-complete. In plain English, as the number of agents grows, the math becomes astronomically hard and incredibly slow to compute. Which leaves us with a really fascinating, provocative thought to wrap up this explainer. We've just seen how AI uses concepts like Expected Utility, the Core, and Shapley Values to literally force self-interested software to cooperate perfectly. But as these autonomous agents master the rigorous math of fair cooperation, does their cold, calculating logic actually reflect our own human ideals of teamwork and fairness? Or is true fairness something math can only ever approximate? Definitely something to think about. Thanks for joining me on this explainer, and keep questioning the logic behind the systems around us.</p></div>
+</details>
+</section>
+
+</main>
+
+<script>
+const sections = document.querySelectorAll('section');
+const navLinks = document.querySelectorAll('nav a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 60) current = s.id; });
+  navLinks.forEach(a => {
+    a.classList.remove('active');
+    if (a.getAttribute('href') === '#' + current) a.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COMP310 Chapter 11 — Multi-Agent Interactions Study Guide</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f172a;color:#e2e8f0;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;line-height:1.7;display:flex}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:#1e293b}
+::-webkit-scrollbar-thumb{background:#e11d48;border-radius:4px}
+
+nav{position:fixed;top:0;left:0;width:260px;height:100vh;background:#1e293b;border-right:1px solid #334155;padding:20px 0;overflow-y:auto;z-index:100}
+nav h2{color:#e11d48;font-size:14px;text-transform:uppercase;letter-spacing:2px;padding:0 20px 16px;border-bottom:1px solid #334155}
+nav a{display:block;padding:10px 20px;color:#94a3b8;text-decoration:none;font-size:13px;border-left:3px solid transparent;transition:all .2s}
+nav a:hover{color:#e11d48;background:#0f172a}
+nav a.active{color:#e11d48;border-left-color:#e11d48;background:rgba(225,29,72,.08)}
+
+main{margin-left:260px;max-width:920px;padding:40px 48px 80px}
+h1{font-size:32px;color:#e11d48;margin-bottom:8px}
+.subtitle{color:#94a3b8;font-size:15px;margin-bottom:32px}
+
+.section{margin-bottom:48px;scroll-margin-top:24px}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.section-num{background:#e11d48;color:#fff;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;flex-shrink:0}
+.section-title{font-size:22px;color:#f8fafc}
+.slide-ref{color:#94a3b8;font-size:12px;margin-left:auto;white-space:nowrap}
+
+.card{background:#1e293b;border-radius:12px;padding:24px;margin-bottom:16px;border:1px solid #334155}
+.card h3{color:#e11d48;font-size:16px;margin-bottom:12px}
+.card p,.card li{font-size:14px;color:#cbd5e1}
+.card ul,.card ol{padding-left:20px}
+.card li{margin-bottom:6px}
+
+.concept{border-left:4px solid #e11d48;padding:16px 20px;background:rgba(225,29,72,.06);border-radius:0 8px 8px 0;margin-bottom:16px}
+.concept h4{color:#e11d48;margin-bottom:6px;font-size:15px}
+.concept p{font-size:14px;color:#cbd5e1}
+
+.exam-tip{background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.25);border-radius:10px;padding:16px 20px;margin-bottom:16px}
+.exam-tip::before{content:'EXAM TIP';display:block;font-size:11px;font-weight:700;color:#a855f7;letter-spacing:1.5px;margin-bottom:6px}
+.exam-tip p{font-size:14px;color:#d8b4fe}
+
+.warning{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:10px;padding:16px 20px;margin-bottom:16px}
+.warning::before{content:'WATCH OUT';display:block;font-size:11px;font-weight:700;color:#ef4444;letter-spacing:1.5px;margin-bottom:6px}
+.warning p{font-size:14px;color:#fca5a5}
+
+.success{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:10px;padding:16px 20px;margin-bottom:16px}
+.success::before{content:'KEY RESULT';display:block;font-size:11px;font-weight:700;color:#22c55e;letter-spacing:1.5px;margin-bottom:6px}
+.success p{font-size:14px;color:#86efac}
+
+pre{background:#0f172a;border:1px solid #334155;border-radius:8px;padding:16px;margin:12px 0;overflow-x:auto;font-family:'Fira Code','Cascadia Code',monospace;font-size:13px;color:#e2e8f0;line-height:1.6}
+.keyword{color:#e11d48}
+.comment{color:#64748b}
+.string{color:#22c55e}
+.number{color:#a855f7}
+
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}
+th{background:#e11d48;color:#fff;padding:10px 14px;text-align:left;font-weight:700}
+td{padding:10px 14px;border-bottom:1px solid #334155;color:#cbd5e1}
+tr:hover td{background:rgba(225,29,72,.04)}
+
+.def-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+.def-item{background:#0f172a;border:1px solid #334155;border-radius:8px;padding:14px}
+.def-item .label{color:#e11d48;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.def-item .value{color:#e2e8f0;font-size:14px}
+
+.diagram{background:#0f172a;border:1px solid #334155;border-radius:8px;padding:20px;margin:12px 0;text-align:center;font-family:monospace;font-size:13px;line-height:1.8;color:#cbd5e1;overflow-x:auto;white-space:pre}
+
+.payoff-matrix{margin:16px auto;border-collapse:collapse;width:auto;min-width:280px}
+.payoff-matrix th{background:#1e293b;color:#e11d48;padding:10px 20px;border:1px solid #475569;font-weight:700;text-align:center}
+.payoff-matrix td{padding:10px 20px;border:1px solid #475569;text-align:center;color:#e2e8f0;background:#1e293b}
+.payoff-matrix .header-cell{background:#0f172a;color:#94a3b8;font-weight:600}
+.payoff-matrix .highlight{background:rgba(225,29,72,.15);font-weight:700}
+.payoff-i{color:#38bdf8;font-weight:700}
+.payoff-j{color:#fb923c;font-weight:700}
+
+.formula-box{background:rgba(225,29,72,.06);border:1px solid rgba(225,29,72,.25);border-radius:10px;padding:16px 20px;margin:12px 0;text-align:center}
+.formula-box .formula{font-family:'Fira Code',monospace;font-size:16px;color:#e11d48;margin:8px 0}
+.formula-box .desc{font-size:13px;color:#94a3b8}
+
+details{margin:12px 0}
+summary{cursor:pointer;color:#e11d48;font-weight:600;font-size:14px;padding:8px 0}
+summary:hover{color:#fb7185}
+details[open] summary{margin-bottom:8px}
+
+@media(max-width:768px){
+  nav{display:none}
+  main{margin-left:0;padding:24px 16px}
+  .def-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<nav id="sidebar">
+  <h2>Ch11 — Game Theory</h2>
+  <a href="#s1">1. Multi-Agent Environment</a>
+  <a href="#s2">2. Utilities &amp; Preferences</a>
+  <a href="#s3">3. Payoff Matrices</a>
+  <a href="#s4">4. Dominant Strategies</a>
+  <a href="#s5">5. Nash Equilibrium</a>
+  <a href="#s6">6. Mixed Strategies</a>
+  <a href="#s7">7. Pareto Optimality</a>
+  <a href="#s8">8. Social Welfare</a>
+  <a href="#s9">9. Prisoner's Dilemma</a>
+  <a href="#s10">10. Iterated PD &amp; Axelrod</a>
+  <a href="#s11">11. Other Games</a>
+  <a href="#s12">12. Worked Examples</a>
+  <a href="#s13">13. Formula Reference</a>
+  <a href="#transcript">Full Transcript</a>
+</nav>
+
+<main>
+<h1>Chapter 11: Multi-Agent Interactions</h1>
+<p class="subtitle">COMP310 Multi-Agent Systems — University of Liverpool — Dr Shufang Zhu<br>Slides 1–55 &bull; Video: Multi-Agent Systems (~8:05)</p>
+
+<!-- ===== SECTION 1 ===== -->
+<div class="section" id="s1">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <div class="section-title">The Multi-Agent Environment</div>
+    <span class="slide-ref">Slides 2–3 &bull; 🎬 1:02</span>
+  </div>
+
+  <div class="card">
+    <h3>What is a Multi-Agent System?</h3>
+    <p>A multi-agent system contains a number of agents that:</p>
+    <ul>
+      <li><strong>Interact</strong> through communication</li>
+      <li>Are able to <strong>act</strong> in an environment</li>
+      <li>Have different <strong>"spheres of influence"</strong> (which may overlap)</li>
+      <li>Will be linked by other <strong>organisational relationships</strong></li>
+    </ul>
+  </div>
+
+  <div class="concept">
+    <h4>Key Assumption: Self-Interest</h4>
+    <p>For this chapter, agents are assumed to be <strong>entirely self-interested</strong> — they have their own preferences over how the environment should be, and they want to maximise their own utility. This is the foundation of the game-theoretic analysis that follows.</p>
+  </div>
+
+  <div class="card">
+    <h3>The Core Challenge</h3>
+    <p>In a multi-agent system, the <strong>outcome depends on the combination of actions</strong> chosen by all agents. No single agent fully controls the result. This chapter looks at how agents decide to interact in <strong>competitive</strong> situations — using game theory as the analytical framework.</p>
+  </div>
+</div>
+
+<!-- ===== SECTION 2 ===== -->
+<div class="section" id="s2">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <div class="section-title">Utilities &amp; Preferences</div>
+    <span class="slide-ref">Slides 4–5 &bull; 🎬 1:02</span>
+  </div>
+
+  <div class="card">
+    <h3>Setting Up the Framework</h3>
+    <ul>
+      <li>Two agents: <strong>A<sub>g</sub> = {i, j}</strong></li>
+      <li>Set of possible outcomes: <strong>&Omega; = {&omega;<sub>1</sub>, &omega;<sub>2</sub>, ...}</strong></li>
+      <li>Each agent has a <strong>utility function</strong> mapping outcomes to real numbers</li>
+    </ul>
+  </div>
+
+  <div class="formula-box">
+    <div class="formula">u<sub>i</sub> : &Omega; &rarr; &#x211D; &nbsp;&nbsp;&nbsp; u<sub>j</sub> : &Omega; &rarr; &#x211D;</div>
+    <div class="desc">Each agent assigns a real-valued utility to every possible outcome</div>
+  </div>
+
+  <div class="card">
+    <h3>Preference Orderings</h3>
+    <p>Utility functions create <strong>preference orderings</strong> over outcomes:</p>
+    <ul>
+      <li><strong>&omega; &ge;<sub>i</sub> &omega;'</strong> means u<sub>i</sub>(&omega;) &ge; u<sub>i</sub>(&omega;') — agent i <em>weakly prefers</em> &omega;</li>
+      <li><strong>&omega; &gt;<sub>i</sub> &omega;'</strong> means u<sub>i</sub>(&omega;) &gt; u<sub>i</sub>(&omega;') — agent i <em>strictly prefers</em> &omega;</li>
+    </ul>
+  </div>
+
+  <div class="warning">
+    <p><strong>Utility is NOT money.</strong> It's just a way to encode preferences numerically. The utility curve is typically S-shaped (sigmoid) — diminishing returns at extremes.</p>
+  </div>
+</div>
+
+<!-- ===== SECTION 3 ===== -->
+<div class="section" id="s3">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <div class="section-title">Payoff Matrices &amp; State Transformers</div>
+    <span class="slide-ref">Slides 6–10 &bull; 🎬 1:44</span>
+  </div>
+
+  <div class="card">
+    <h3>Multi-Agent Encounters</h3>
+    <ul>
+      <li>Agents <strong>simultaneously</strong> choose an action; the combination produces an outcome in &Omega;</li>
+      <li>Each agent has two possible actions: <strong>Ac = {C, D}</strong> — Cooperate or Defect</li>
+      <li>Agents <strong>cannot see</strong> the other agent's action before choosing</li>
+    </ul>
+  </div>
+
+  <div class="formula-box">
+    <div class="formula">&tau; : Ac &times; Ac &rarr; &Omega;</div>
+    <div class="desc">State transformer function: maps the pair of actions to an outcome</div>
+  </div>
+
+  <div class="card">
+    <h3>Reading a Payoff Matrix</h3>
+    <p>The payoff matrix compactly represents the state transformer + both utility functions:</p>
+    <table class="payoff-matrix">
+      <tr>
+        <td class="header-cell"></td>
+        <td class="header-cell"></td>
+        <th colspan="2">Agent i</th>
+      </tr>
+      <tr>
+        <td class="header-cell"></td>
+        <td class="header-cell"></td>
+        <th>defect</th>
+        <th>coop</th>
+      </tr>
+      <tr>
+        <th rowspan="2">Agent j</th>
+        <th>defect</th>
+        <td><span class="payoff-i">1</span><br><span class="payoff-j">1</span></td>
+        <td><span class="payoff-i">4</span><br><span class="payoff-j">1</span></td>
+      </tr>
+      <tr>
+        <th>coop</th>
+        <td><span class="payoff-i">1</span><br><span class="payoff-j">4</span></td>
+        <td><span class="payoff-i">4</span><br><span class="payoff-j">4</span></td>
+      </tr>
+    </table>
+    <p style="margin-top:8px;font-size:13px;color:#94a3b8">Convention: <span class="payoff-i">Agent i's payoff (upper/blue)</span> &bull; <span class="payoff-j">Agent j's payoff (lower/orange)</span>. Agent i = column player, Agent j = row player.</p>
+  </div>
+
+  <div class="card">
+    <h3>Types of State Transformer Functions</h3>
+    <table>
+      <tr><th>Type</th><th>Example</th><th>Meaning</th></tr>
+      <tr><td><strong>Both agents influence</strong></td><td>&tau;(D,D)=&omega;<sub>1</sub>, &tau;(D,C)=&omega;<sub>2</sub>, &tau;(C,D)=&omega;<sub>3</sub>, &tau;(C,C)=&omega;<sub>4</sub></td><td>All four outcomes are different — both agents matter</td></tr>
+      <tr><td><strong>Neither influences</strong></td><td>All map to &omega;<sub>1</sub></td><td>Outcome is fixed regardless of actions</td></tr>
+      <tr><td><strong>One agent controls</strong></td><td>Outcome depends only on j's action</td><td>Agent i is irrelevant</td></tr>
+    </table>
+  </div>
+
+  <div class="exam-tip">
+    <p>Know how to read the payoff matrix: agent i = column player (upper number), agent j = row player (lower number). Actually, there are two matrices: A (payoff to i) and B (payoff to j). The game is written as (A, B).</p>
+  </div>
+</div>
+
+<!-- ===== SECTION 4 ===== -->
+<div class="section" id="s4">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <div class="section-title">Dominant Strategies</div>
+    <span class="slide-ref">Slides 11–13 &bull; 🎬 2:30</span>
+  </div>
+
+  <div class="concept">
+    <h4>Dominant Strategy Definition</h4>
+    <p>A strategy s<sub>i</sub> is <strong>dominant</strong> for agent i if, <strong>no matter what</strong> strategy agent j chooses, agent i will do <strong>at least as well</strong> playing s<sub>i</sub> as it would doing anything else.</p>
+  </div>
+
+  <div class="card">
+    <h3>How to Find Dominant Strategies</h3>
+    <ol>
+      <li>For agent i: compare payoffs column-by-column. If one action gives a higher (or equal) payoff in <strong>every</strong> column, it dominates.</li>
+      <li>For agent j: compare payoffs row-by-row. If one action gives a higher (or equal) payoff in <strong>every</strong> row, it dominates.</li>
+      <li>A <strong>dominated strategy</strong> is one that is inferior — a rational agent will <strong>never</strong> play it.</li>
+    </ol>
+  </div>
+
+  <div class="warning">
+    <p>There isn't always a unique un-dominated strategy! Some games have no dominant strategy for either player. Dominant strategy elimination is a first pass — if it works, great. If not, move to Nash equilibrium analysis.</p>
+  </div>
+</div>
+
+<!-- ===== SECTION 5 ===== -->
+<div class="section" id="s5">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <div class="section-title">Nash Equilibrium</div>
+    <span class="slide-ref">Slides 14–18 &bull; 🎬 2:30</span>
+  </div>
+
+  <div class="concept">
+    <h4>Nash Equilibrium (NE) Definition</h4>
+    <p>Two strategies s<sub>1</sub> and s<sub>2</sub> are in <strong>Nash Equilibrium</strong> if:</p>
+    <ul style="margin-top:8px">
+      <li>Under the assumption that i plays s<sub>1</sub>, agent j can do no better than play s<sub>2</sub></li>
+      <li>Under the assumption that j plays s<sub>2</sub>, agent i can do no better than play s<sub>1</sub></li>
+    </ul>
+    <p style="margin-top:8px"><strong>Neither agent has any incentive to unilaterally deviate</strong> from a Nash Equilibrium.</p>
+  </div>
+
+  <div class="card">
+    <h3>The "Cycle and Test" Method</h3>
+    <p>To find all pure strategy NE in a 2&times;2 game:</p>
+    <ol>
+      <li><strong>Cycle</strong> through every outcome (D,D), (D,C), (C,D), (C,C)</li>
+      <li>For each outcome, <strong>test</strong>: can either agent improve their payoff by <em>unilaterally</em> switching?</li>
+      <li>If <strong>neither can improve</strong> &rarr; it's a Nash Equilibrium</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h3>Worked Example</h3>
+    <table class="payoff-matrix">
+      <tr><td class="header-cell"></td><td class="header-cell"></td><th>defect</th><th>coop</th></tr>
+      <tr><th rowspan="2">j</th><th>defect</th><td><span class="payoff-i">5</span><br><span class="payoff-j">3</span></td><td><span class="payoff-i">1</span><br><span class="payoff-j">2</span></td></tr>
+      <tr><th>coop</th><td><span class="payoff-i">0</span><br><span class="payoff-j">2</span></td><td><span class="payoff-i">0</span><br><span class="payoff-j">1</span></td></tr>
+    </table>
+    <ul>
+      <li><strong>(D,D):</strong> i gets 5 — switch to C? Gets 1. No. j gets 3 — switch to C? Gets 2. No. &rarr; <strong>NE!</strong></li>
+      <li><strong>(C,D):</strong> i gets 1 — switch to D? Gets 5. Yes! &rarr; Not NE</li>
+      <li><strong>(D,C):</strong> j gets 2 — switch to D? Gets 3. Yes! &rarr; Not NE</li>
+      <li><strong>(C,C):</strong> i gets 0 — switch to D? Gets 0. No change. j gets 1 — switch to D? Gets 2. Yes! &rarr; Not NE</li>
+    </ul>
+    <p style="margin-top:8px"><strong>Result: (D,D) is the only Nash Equilibrium.</strong></p>
+  </div>
+
+  <div class="exam-tip">
+    <p>The cycle-and-test method is the standard exam approach. For each cell, check <strong>both</strong> agents independently. Practice on past paper matrices (slide 18, 33) until it's automatic. Remember: NE checks <strong>individual</strong> deviations, not group deviations.</p>
+  </div>
+</div>
+
+<!-- ===== SECTION 6 ===== -->
+<div class="section" id="s6">
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <div class="section-title">Mixed Strategy Nash Equilibrium</div>
+    <span class="slide-ref">Slides 21–24 &bull; 🎬 3:18</span>
+  </div>
+
+  <div class="card">
+    <h3>When Pure Strategies Fail: Matching Pennies</h3>
+    <table class="payoff-matrix">
+      <tr><td class="header-cell"></td><td class="header-cell"></td><th>heads</th><th>tails</th></tr>
+      <tr><th rowspan="2">j</th><th>heads</th><td><span class="payoff-i">1</span><br><span class="payoff-j">-1</span></td><td><span class="payoff-i">-1</span><br><span class="payoff-j">1</span></td></tr>
+      <tr><th>tails</th><td><span class="payoff-i">-1</span><br><span class="payoff-j">1</span></td><td><span class="payoff-i">1</span><br><span class="payoff-j">-1</span></td></tr>
+    </table>
+    <p>No pure strategy NE exists — every outcome has at least one agent wanting to switch. The agents are locked in an endless cycle of hunting for advantage.</p>
+  </div>
+
+  <div class="concept">
+    <h4>Mixed Strategy</h4>
+    <p>A <strong>mixed strategy</strong> introduces randomness: play action &alpha;<sub>k</sub> with probability p<sub>k</sub>, where p<sub>1</sub> + p<sub>2</sub> + ... + p<sub>k</sub> = 1. In matching pennies, playing heads and tails each with probability 0.5 is a mixed strategy NE — neither agent can do better by changing.</p>
+  </div>
+
+  <div class="success">
+    <p><strong>Nash's Theorem:</strong> Every finite game has a Nash equilibrium in mixed strategies. (Unlike pure strategies, which may not exist.) However, there may still be <em>more than one</em> NE.</p>
+  </div>
+
+  <div class="card">
+    <h3>Rock/Paper/Scissors</h3>
+    <p>No pure strategy NE. The mixed strategy NE is to choose rock, paper, and scissors each with probability 1/3.</p>
+  </div>
+</div>
+
+<!-- ===== SECTION 7 ===== -->
+<div class="section" id="s7">
+  <div class="section-header">
+    <div class="section-num">7</div>
+    <div class="section-title">Pareto Optimality</div>
+    <span class="slide-ref">Slide 25 &bull; 🎬 4:02</span>
+  </div>
+
+  <div class="concept">
+    <h4>Pareto Optimal (Pareto Efficient)</h4>
+    <p>An outcome is <strong>Pareto optimal</strong> if there is <strong>no other outcome</strong> that makes one agent better off <strong>without making another agent worse off</strong>.</p>
+  </div>
+
+  <div class="card">
+    <h3>Key Properties</h3>
+    <ul>
+      <li>If an outcome <strong>is</strong> Pareto optimal: at least one agent would be <strong>reluctant</strong> to move away (they'd be worse off)</li>
+      <li>If an outcome <strong>is not</strong> Pareto optimal: there exists another outcome &omega;' that makes everyone <strong>at least as happy, if not happier</strong> — "reasonable" agents would agree to move</li>
+      <li>Think of it as: <strong>"no improvement without harm"</strong></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>How to Find Pareto Optimal Outcomes</h3>
+    <p>For each outcome &omega;, check: is there <strong>any other outcome</strong> &omega;' where <em>every</em> agent gets at least as much utility AND at least one agent gets strictly more? If yes &rarr; &omega; is <strong>NOT</strong> Pareto optimal. If no such &omega;' exists &rarr; &omega; <strong>IS</strong> Pareto optimal.</p>
+  </div>
+
+  <div class="exam-tip">
+    <p>Pareto optimality is about <strong>all agents together</strong>, not individual rationality. An outcome can be both a Nash equilibrium and NOT Pareto optimal (this is the tragedy of the Prisoner's Dilemma). Compare every pair of outcomes systematically.</p>
+  </div>
+</div>
+
+<!-- ===== SECTION 8 ===== -->
+<div class="section" id="s8">
+  <div class="section-header">
+    <div class="section-num">8</div>
+    <div class="section-title">Social Welfare</div>
+    <span class="slide-ref">Slides 26–27 &bull; 🎬 5:22</span>
+  </div>
+
+  <div class="formula-box">
+    <div class="formula">SW(&omega;) = &sum;<sub>i &isin; Ag</sub> u<sub>i</sub>(&omega;)</div>
+    <div class="desc">Social welfare = sum of all agents' utilities for outcome &omega;</div>
+  </div>
+
+  <div class="card">
+    <h3>Properties of Social Welfare</h3>
+    <ul>
+      <li>Think of it as the <strong>"total amount of money in the system"</strong></li>
+      <li>Appropriate when the system has a <strong>single owner</strong> who cares about overall output</li>
+      <li>Does <strong>NOT</strong> consider distribution — a very skewed outcome (100, 0) can maximise social welfare</li>
+      <li>The SW-maximising outcome may differ from both the NE and the Pareto optimal outcomes</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Competitive &amp; Zero-Sum Interactions</h3>
+    <table>
+      <tr><th>Type</th><th>Definition</th><th>Implication</th></tr>
+      <tr><td><strong>Strictly competitive</strong></td><td>Preferences are diametrically opposed</td><td>My gain is your loss</td></tr>
+      <tr><td><strong>Zero-sum</strong></td><td>u<sub>i</sub>(&omega;) + u<sub>j</sub>(&omega;) = 0 for all &omega;</td><td>For me to get positive utility, you must get negative</td></tr>
+    </table>
+    <p style="margin-top:8px">Zero-sum encounters are very rare in real life, but people often <em>act</em> as if situations are zero-sum. Most games have room for mutually beneficial outcomes.</p>
+  </div>
+</div>
+
+<!-- ===== SECTION 9 ===== -->
+<div class="section" id="s9">
+  <div class="section-header">
+    <div class="section-num">9</div>
+    <div class="section-title">The Prisoner's Dilemma</div>
+    <span class="slide-ref">Slides 28–34 &bull; 🎬 6:06</span>
+  </div>
+
+  <div class="card">
+    <h3>The Setup</h3>
+    <p>Two prisoners, separate cells, no communication. <strong>Cooperate = stay silent</strong> (don't confess). <strong>Defect = confess</strong> (betray partner).</p>
+    <ul>
+      <li>Both cooperate (C,C): 1 year each &rarr; payoff <strong>3, 3</strong></li>
+      <li>One defects, other cooperates: defector goes free (payoff <strong>4</strong>), cooperator gets 3 years (payoff <strong>1</strong>)</li>
+      <li>Both defect (D,D): 2 years each &rarr; payoff <strong>2, 2</strong></li>
+    </ul>
+  </div>
+
+  <table class="payoff-matrix" style="margin:16px auto">
+    <tr><td class="header-cell"></td><td class="header-cell"></td><th>defect</th><th>coop</th></tr>
+    <tr><th rowspan="2">j</th><th>defect</th><td><span class="payoff-i">2</span><br><span class="payoff-j">2</span></td><td><span class="payoff-i">1</span><br><span class="payoff-j">4</span></td></tr>
+    <tr><th>coop</th><td><span class="payoff-i">4</span><br><span class="payoff-j">1</span></td><td class="highlight"><span class="payoff-i">3</span><br><span class="payoff-j">3</span></td></tr>
+  </table>
+
+  <div class="card">
+    <h3>Complete Analysis Using All Four Solution Concepts</h3>
+    <table>
+      <tr><th>Concept</th><th>Result</th><th>Explanation</th></tr>
+      <tr><td><strong>Dominant strategy</strong></td><td>Defect</td><td>Defecting gives higher payoff regardless of opponent's choice (2&gt;1 if they defect, 4&gt;3 if they coop)</td></tr>
+      <tr><td><strong>Nash equilibrium</strong></td><td>(D, D) only</td><td>Neither agent can improve by unilaterally switching from (D,D)</td></tr>
+      <tr><td><strong>Pareto optimal</strong></td><td>(C,C), (C,D), (D,C)</td><td>All outcomes <strong>except (D,D)</strong> are Pareto optimal</td></tr>
+      <tr><td><strong>Social welfare max</strong></td><td>(C, C) &rarr; SW=6</td><td>3+3=6 beats 2+2=4, 4+1=5, 1+4=5</td></tr>
+    </table>
+  </div>
+
+  <div class="success">
+    <p><strong>The Paradox:</strong> Individual rationality (defect) leads to mutual punishment (2,2) — which is the <em>only non-Pareto-optimal</em> outcome! Both would be better off cooperating (3,3), but self-interest prevents it. This is the fundamental problem of multi-agent interactions.</p>
+  </div>
+
+  <div class="card">
+    <h3>Preference Ordering for Prisoner's Dilemma</h3>
+    <pre>DC &gt;<sub>i</sub> CC &gt;<sub>i</sub> DD &gt;<sub>i</sub> CD
+
+Temptation &gt; Reward &gt; Punishment &gt; Sucker's payoff</pre>
+  </div>
+
+  <div class="exam-tip">
+    <p>The PD is the most commonly examined game. Be able to: (a) identify all NE, (b) identify all Pareto optimal outcomes, (c) identify the social welfare maximising outcome, (d) explain the paradox. <strong>Past paper Q5 on slide 33 tests exactly this</strong> across three different games.</p>
+  </div>
+</div>
+
+<!-- ===== SECTION 10 ===== -->
+<div class="section" id="s10">
+  <div class="section-header">
+    <div class="section-num">10</div>
+    <div class="section-title">Iterated PD &amp; Axelrod's Tournament</div>
+    <span class="slide-ref">Slides 35–48 &bull; 🎬 7:48</span>
+  </div>
+
+  <div class="card">
+    <h3>Arguments for Recovering Cooperation</h3>
+    <table>
+      <tr><th>Argument</th><th>Idea</th><th>Problem</th></tr>
+      <tr><td><strong>"We're not all Machiavelli"</strong></td><td>Altruism exists — people act unselfishly</td><td>Altruism may just be delayed reciprocity or fear of punishment</td></tr>
+      <tr><td><strong>"The other prisoner is my twin"</strong></td><td>Both will think alike and choose to cooperate</td><td>Even knowing the other will cooperate, you're <em>still</em> better off defecting</td></tr>
+      <tr><td><strong>Program equilibria</strong></td><td>Submit conditional programs to a mediator: "cooperate if he will"</td><td>Requires a trusted mediator mechanism</td></tr>
+      <tr><td><strong>Shadow of the future</strong></td><td>Repeat the game — future punishment deters defection</td><td>Only works if future interactions are expected</td></tr>
+    </table>
+  </div>
+
+  <div class="concept">
+    <h4>The Iterated Prisoner's Dilemma (IPD)</h4>
+    <p>Play the game <strong>more than once</strong>. If you expect to meet your opponent again, the incentive to defect evaporates because:</p>
+    <ul style="margin-top:6px">
+      <li>If you defect, you can be <strong>punished</strong> in future rounds</li>
+      <li>If you get suckered, the loss is <strong>amortised</strong> over remaining iterations</li>
+    </ul>
+    <p style="margin-top:8px"><strong>Cooperation is provably rational in the infinitely repeated PD.</strong></p>
+  </div>
+
+  <div class="warning">
+    <p><strong>Backwards Induction Problem:</strong> If both players know the game lasts exactly n rounds, round n-1 becomes the "last real round" → incentive to defect. This cascades backwards: in a finite, known-length PD, <strong>defection is always rational</strong>. But in practice, as long as there's <em>some probability</em> of repeating, cooperation can be better.</p>
+  </div>
+
+  <div class="card">
+    <h3>Axelrod's Tournament (1984)</h3>
+    <p>Robert Axelrod invited researchers to submit programs for the iterated PD. Each program played every other program for 5 games of 200 rounds. The winner was the program with the best <strong>overall</strong> score.</p>
+  </div>
+
+  <div class="card">
+    <h3>Strategies in the Tournament</h3>
+    <table>
+      <tr><th>Strategy</th><th>Rule</th></tr>
+      <tr><td><strong>ALL-D</strong></td><td>Always defect — "the hawk strategy"</td></tr>
+      <tr><td><strong>Tit-For-Tat (TFT)</strong></td><td>Round 0: cooperate. Round u&gt;0: do what opponent did on round u-1</td></tr>
+      <tr><td><strong>JOSS</strong></td><td>Like TFT, except periodically defect</td></tr>
+      <tr><td><strong>Tester</strong></td><td>Round 1: defect. If opponent retaliates → play TFT. Otherwise intersperse cooperation &amp; defection</td></tr>
+    </table>
+  </div>
+
+  <div class="success">
+    <p><strong>TIT-FOR-TAT won the tournament</strong> — the simplest strategy entered! It succeeded because there were enough cooperative players to cooperate with. But note: the best approach depends on the full set of opponents.</p>
+  </div>
+
+  <div class="card">
+    <h3>Axelrod's Recipes for Success</h3>
+    <ol>
+      <li><strong>Don't be envious</strong> — don't treat it as zero-sum</li>
+      <li><strong>Don't be the first to defect</strong> — be nice, start by cooperating</li>
+      <li><strong>Retaliate appropriately</strong> — punish defection immediately, but use measured force</li>
+      <li><strong>Don't hold grudges</strong> — always reciprocate cooperation immediately</li>
+      <li><strong>Don't be too clever</strong> — TFT was the simplest program in the competition</li>
+    </ol>
+  </div>
+
+  <div class="exam-tip">
+    <p>Know the TFT strategy definition precisely (it's two lines). Know Axelrod's recipes. A common exam question asks you to simulate rounds of TFT vs ALL-D or TFT vs Tester.</p>
+  </div>
+</div>
+
+<!-- ===== SECTION 11 ===== -->
+<div class="section" id="s11">
+  <div class="section-header">
+    <div class="section-num">11</div>
+    <div class="section-title">Other Canonical Games</div>
+    <span class="slide-ref">Slides 49–54</span>
+  </div>
+
+  <div class="card">
+    <h3>Stag Hunt</h3>
+    <table class="payoff-matrix">
+      <tr><td class="header-cell"></td><td class="header-cell"></td><th>defect</th><th>coop</th></tr>
+      <tr><th rowspan="2">j</th><th>defect</th><td><span class="payoff-i">2</span><br><span class="payoff-j">2</span></td><td><span class="payoff-i">1</span><br><span class="payoff-j">3</span></td></tr>
+      <tr><th>coop</th><td><span class="payoff-i">3</span><br><span class="payoff-j">1</span></td><td class="highlight"><span class="payoff-i">4</span><br><span class="payoff-j">4</span></td></tr>
+    </table>
+    <ul>
+      <li><strong>Two NE:</strong> (C,C) and (D,D)</li>
+      <li>Social welfare maximised by (C,C)</li>
+      <li>Only Pareto efficient outcome: (C,C)</li>
+      <li><strong>Key difference from PD:</strong> mutual cooperation is better than defecting while the other cooperates (4 &gt; 3), so cooperation IS a NE — but it requires <strong>trust</strong></li>
+      <li>Preference ordering: CC &gt;<sub>i</sub> DC &gt;<sub>i</sub> DD &gt;<sub>i</sub> CD</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Game of Chicken</h3>
+    <table class="payoff-matrix">
+      <tr><td class="header-cell"></td><td class="header-cell"></td><th>defect (stay)</th><th>coop (jump)</th></tr>
+      <tr><th rowspan="2">j</th><th>defect (stay)</th><td><span class="payoff-i">1</span><br><span class="payoff-j">1</span></td><td><span class="payoff-i">2</span><br><span class="payoff-j">4</span></td></tr>
+      <tr><th>coop (jump)</th><td><span class="payoff-i">4</span><br><span class="payoff-j">2</span></td><td><span class="payoff-i">3</span><br><span class="payoff-j">3</span></td></tr>
+    </table>
+    <ul>
+      <li><strong>No dominant strategy</strong></li>
+      <li><strong>Two NE:</strong> (C,D) and (D,C) — one jumps, one stays</li>
+      <li>All outcomes <strong>except</strong> (D,D) are Pareto optimal</li>
+      <li>All outcomes <strong>except</strong> (D,D) maximise social welfare</li>
+      <li><strong>Key difference from PD:</strong> mutual defection is the <em>most feared</em> outcome (both crash), not mutual cooperation</li>
+      <li>Preference ordering: DC &gt;<sub>i</sub> CC &gt;<sub>i</sub> CD &gt;<sub>i</sub> DD</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Comparing the Three Classic Games</h3>
+    <table>
+      <tr><th>Feature</th><th>Prisoner's Dilemma</th><th>Stag Hunt</th><th>Chicken</th></tr>
+      <tr><td><strong>Preference order</strong></td><td>DC &gt; CC &gt; DD &gt; CD</td><td>CC &gt; DC &gt; DD &gt; CD</td><td>DC &gt; CC &gt; CD &gt; DD</td></tr>
+      <tr><td><strong>Dominant strategy</strong></td><td>Defect</td><td>None</td><td>None</td></tr>
+      <tr><td><strong>Pure NE</strong></td><td>(D,D)</td><td>(C,C) and (D,D)</td><td>(C,D) and (D,C)</td></tr>
+      <tr><td><strong>Pareto optimal</strong></td><td>All except (D,D)</td><td>(C,C) only</td><td>All except (D,D)</td></tr>
+      <tr><td><strong>Max social welfare</strong></td><td>(C,C)</td><td>(C,C)</td><td>(C,C)</td></tr>
+      <tr><td><strong>Core tension</strong></td><td>Rationality &ne; efficiency</td><td>Cooperation needs trust</td><td>Who blinks first?</td></tr>
+    </table>
+  </div>
+
+  <div class="exam-tip">
+    <p>Be able to identify which game a given payoff matrix represents from its preference ordering. Slide 54 gives the orderings for all symmetric 2&times;2 games including deadlock (defection always dominates: DC &gt; DD &gt; CC &gt; CD or DC &gt; DD &gt; CD &gt; DC).</p>
+  </div>
+</div>
+
+<!-- ===== SECTION 12 ===== -->
+<div class="section" id="s12">
+  <div class="section-header">
+    <div class="section-num">12</div>
+    <div class="section-title">Worked Past Paper Examples</div>
+    <span class="slide-ref">Slides 18, 33</span>
+  </div>
+
+  <div class="card">
+    <h3>Past Paper Q5 — Three Games (Slide 33)</h3>
+    <p>For each payoff matrix, identify: (a) all pure strategy NE, (b) all Pareto optimal outcomes, (c) all outcomes that maximise social welfare.</p>
+  </div>
+
+  <details>
+    <summary>Game A: Prisoner's Dilemma — Click to see solution</summary>
+    <div class="card">
+      <table class="payoff-matrix">
+        <tr><td class="header-cell"></td><td class="header-cell"></td><th>defect</th><th>coop</th></tr>
+        <tr><th rowspan="2">j</th><th>defect</th><td><span class="payoff-i">2</span><br><span class="payoff-j">2</span></td><td><span class="payoff-i">1</span><br><span class="payoff-j">4</span></td></tr>
+        <tr><th>coop</th><td><span class="payoff-i">4</span><br><span class="payoff-j">1</span></td><td><span class="payoff-i">3</span><br><span class="payoff-j">3</span></td></tr>
+      </table>
+      <p><strong>(a) NE:</strong> (D,D). Check: i gets 2, switch to C → 1 (worse). j gets 2, switch to C → 1 (worse). Neither benefits from switching.</p>
+      <p><strong>(b) Pareto optimal:</strong> (C,C), (D,C), (C,D). (D,D) is NOT Pareto optimal because moving to (C,C) makes both better off (3,3 vs 2,2).</p>
+      <p><strong>(c) Max social welfare:</strong> (C,C) → 3+3=6. Others: (D,D)=4, (D,C)=5, (C,D)=5.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Game B: Stag Hunt — Click to see solution</summary>
+    <div class="card">
+      <table class="payoff-matrix">
+        <tr><td class="header-cell"></td><td class="header-cell"></td><th>defect</th><th>coop</th></tr>
+        <tr><th rowspan="2">j</th><th>defect</th><td><span class="payoff-i">2</span><br><span class="payoff-j">2</span></td><td><span class="payoff-i">1</span><br><span class="payoff-j">3</span></td></tr>
+        <tr><th>coop</th><td><span class="payoff-i">3</span><br><span class="payoff-j">1</span></td><td><span class="payoff-i">4</span><br><span class="payoff-j">4</span></td></tr>
+      </table>
+      <p><strong>(a) NE:</strong> (D,D) and (C,C).</p>
+      <p>(D,D): i gets 2, switch? Gets 1. No. j gets 2, switch? Gets 1. No. → NE.</p>
+      <p>(C,C): i gets 4, switch? Gets 3. No. j gets 4, switch? Gets 3. No. → NE.</p>
+      <p>(D,C): i gets 1, switch to D? Gets 2. Yes → Not NE.</p>
+      <p>(C,D): j gets 1, switch to D? Gets 2. Yes → Not NE.</p>
+      <p><strong>(b) Pareto optimal:</strong> (C,C) only. All other outcomes are dominated: (C,C) gives both agents their highest payoff (4,4).</p>
+      <p><strong>(c) Max social welfare:</strong> (C,C) → 4+4=8.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Game C: Unnamed game — Click to see solution</summary>
+    <div class="card">
+      <table class="payoff-matrix">
+        <tr><td class="header-cell"></td><td class="header-cell"></td><th>defect</th><th>coop</th></tr>
+        <tr><th rowspan="2">j</th><th>defect</th><td><span class="payoff-i">5</span><br><span class="payoff-j">3</span></td><td><span class="payoff-i">1</span><br><span class="payoff-j">2</span></td></tr>
+        <tr><th>coop</th><td><span class="payoff-i">0</span><br><span class="payoff-j">2</span></td><td><span class="payoff-i">0</span><br><span class="payoff-j">1</span></td></tr>
+      </table>
+      <p><strong>(a) NE:</strong> (D,D). i gets 5, switch to C? Gets 1. No. j gets 3, switch to C? Gets 2. No. → NE. No other cell is NE.</p>
+      <p><strong>(b) Pareto optimal:</strong> (D,D). There is no outcome where either does better without the other doing worse. i's max is 5 (at D,D), and j's max is 3 (also at D,D).</p>
+      <p><strong>(c) Max social welfare:</strong> (D,D) → 5+3=8. Others: (C,D)=3, (D,C)=2, (C,C)=1.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Discussion Q (Slide 18) — Click to see solutions</summary>
+    <div class="card">
+      <h3>Left Matrix</h3>
+      <table class="payoff-matrix">
+        <tr><td class="header-cell"></td><td class="header-cell"></td><th>defect</th><th>coop</th></tr>
+        <tr><th rowspan="2">j</th><th>defect</th><td><span class="payoff-i">5</span><br><span class="payoff-j">3</span></td><td><span class="payoff-i">1</span><br><span class="payoff-j">2</span></td></tr>
+        <tr><th>coop</th><td><span class="payoff-i">0</span><br><span class="payoff-j">2</span></td><td><span class="payoff-i">3</span><br><span class="payoff-j">3</span></td></tr>
+      </table>
+      <p><strong>NE:</strong> (D,D) — i:5→switch to C:1? No. j:3→switch to C:2? No. Also check (C,C): i:3→switch to D:0? No. j:3→switch to D:2? No. → (C,C) is also NE! <strong>Two NE: (D,D) and (C,C).</strong></p>
+
+      <h3 style="margin-top:16px">Right Matrix</h3>
+      <table class="payoff-matrix">
+        <tr><td class="header-cell"></td><td class="header-cell"></td><th>defect</th><th>coop</th></tr>
+        <tr><th rowspan="2">j</th><th>defect</th><td><span class="payoff-i">2</span><br><span class="payoff-j">1</span></td><td><span class="payoff-i">1</span><br><span class="payoff-j">2</span></td></tr>
+        <tr><th>coop</th><td><span class="payoff-i">0</span><br><span class="payoff-j">2</span></td><td><span class="payoff-i">1</span><br><span class="payoff-j">1</span></td></tr>
+      </table>
+      <p><strong>NE:</strong> (D,D) — i:2→switch to C:1? No. j:1→switch to C:2? Yes! → Not NE. Check all: (C,D): i:1→D:2? Yes → Not NE. (D,C): j:2→D:1? No. i:0→D:2? Yes → Not NE. (C,C): i:1→D:0? No. j:1→D:2? Yes → Not NE. <strong>No pure strategy NE.</strong></p>
+    </div>
+  </details>
+</div>
+
+<!-- ===== SECTION 13 ===== -->
+<div class="section" id="s13">
+  <div class="section-header">
+    <div class="section-num">13</div>
+    <div class="section-title">Formula &amp; Concept Reference</div>
+    <span class="slide-ref">All slides</span>
+  </div>
+
+  <table>
+    <tr><th>Concept</th><th>Definition / Formula</th></tr>
+    <tr><td><strong>Utility function</strong></td><td>u<sub>i</sub> : &Omega; &rarr; &#x211D; — maps outcomes to real numbers</td></tr>
+    <tr><td><strong>State transformer</strong></td><td>&tau; : Ac &times; Ac &rarr; &Omega; — maps action pairs to outcomes</td></tr>
+    <tr><td><strong>Dominant strategy</strong></td><td>s<sub>i</sub> is dominant if it yields &ge; payoff vs ALL opponent strategies</td></tr>
+    <tr><td><strong>Nash equilibrium</strong></td><td>No agent can improve by unilaterally deviating</td></tr>
+    <tr><td><strong>Nash's Theorem</strong></td><td>Every finite game has a NE in mixed strategies</td></tr>
+    <tr><td><strong>Mixed strategy</strong></td><td>Play &alpha;<sub>k</sub> with probability p<sub>k</sub>, where &sum;p<sub>k</sub> = 1</td></tr>
+    <tr><td><strong>Pareto optimal</strong></td><td>No outcome makes one agent better off without making another worse off</td></tr>
+    <tr><td><strong>Social welfare</strong></td><td>SW(&omega;) = &sum; u<sub>i</sub>(&omega;) — sum of all utilities</td></tr>
+    <tr><td><strong>Zero-sum</strong></td><td>u<sub>i</sub>(&omega;) + u<sub>j</sub>(&omega;) = 0 for all &omega;</td></tr>
+    <tr><td><strong>Tit-For-Tat</strong></td><td>Round 0: C. Round u&gt;0: copy opponent's round u-1</td></tr>
+    <tr><td><strong>Backwards induction</strong></td><td>In finite known-length PD, defect is always rational (cascading from last round)</td></tr>
+    <tr><td><strong>PD preference order</strong></td><td>DC &gt; CC &gt; DD &gt; CD</td></tr>
+    <tr><td><strong>Stag Hunt order</strong></td><td>CC &gt; DC &gt; DD &gt; CD</td></tr>
+    <tr><td><strong>Chicken order</strong></td><td>DC &gt; CC &gt; CD &gt; DD</td></tr>
+  </table>
+
+  <div class="card" style="margin-top:16px">
+    <h3>Quick Decision Flowchart</h3>
+    <pre>
+1. Read the payoff matrix
+   ↓
+2. Check for dominant strategies
+   → If found: that's the rational choice
+   → If not: proceed to NE analysis
+   ↓
+3. Find all pure strategy NE (cycle &amp; test)
+   → If none exist: consider mixed strategies
+   ↓
+4. Check Pareto optimality for each outcome
+   → Compare every pair: can we make someone
+      better off without hurting anyone?
+   ↓
+5. Calculate social welfare for each outcome
+   → Sum both agents' utilities
+   → Highest sum = max social welfare
+   ↓
+6. Compare results — note any paradoxes!
+   (NE ≠ Pareto optimal? That's the PD paradox)
+    </pre>
+  </div>
+</div>
+
+<!-- ===== TRANSCRIPT ===== -->
+<div class="section" id="transcript">
+  <div class="section-header">
+    <div class="section-num">T</div>
+    <div class="section-title">Full Video Transcript</div>
+  </div>
+
+  <details>
+    <summary>Click to expand full timestamped transcript (~8:05)</summary>
+    <div class="card">
+      <p><strong>[0:00]</strong> Picture this. You're a strategic analyst. Your job? Predicting behavior in a highly competitive environment where everyone is completely out for themselves. But here's the catch. Everyone's ultimate success depends heavily on the actions of others. So, how do you map that out? How do you predict the unpredictable? Well, you don't just guess. You use math.</p>
+
+      <p><strong>[0:22]</strong> Alright, let's dive right in. Welcome to today's explainer, where we're going to build your analytical toolkit from the ground up. We're looking directly at the mechanics of multi-agent interactions and the absolute basics of game theory. Our goal today is to demystify these complex multi-agent decisions using some incredibly powerful structured tools. So, here is our roadmap for today. Number one, the multi-agent environment. Number two, reading a payoff matrix. Three, dominant strategies and Nash equilibria. Four, Pareto optimality and social welfare. And finally, number five, solving the prisoner's dilemma. Let's get started.</p>
+
+      <p><strong>[1:02]</strong> Okay, kicking things off with section one, the multi-agent environment. Now, a multi-agent system isn't just a random collection of individuals bumping into each other. It's a very specific environment where multiple agents interact, usually through communication, and act within that space. The really crucial point here is that these agents have different, sometimes overlapping, spheres of influence. And, critically for our entire analysis today, we assume these agents are entirely self-interested. They have their own preferences over how the environment should be, which we capture using utility functions represented as real numbers. Bottom line, they want to maximize their own utility, plain and simple.</p>
+
+      <p><strong>[1:44]</strong> Moving right along to section two, reading a payoff matrix. So, if we have these self-interested agents with overlapping spheres of influence, how do we actually track who gets what? Well, we use a scorecard. This is a payoff matrix. And what's really amazing is how elegantly it condenses a massive amount of data. It models what happens when agents simultaneously choose an action. We typically have two agents. Agent I is the row player, and Agent J is the column player. When you read the cells, Agent I gets that lower bottom left reward, while Agent J gets the other number. Actually, scratch that. A better way to think about it is that you're looking at two overlapping outcome matrices smashed into one grid. It's literally the ultimate cheat sheet for rational behavior.</p>
+
+      <p><strong>[2:30]</strong> Which brings us to section three, dominant strategies and Nash equilibria. Now that we can actually read the matrix, we need the mathematical lenses to solve it. How will a rational agent behave in a given scenario? Well, they hunt for an equilibrium. A pure strategy Nash equilibrium is a state where neither agent has an incentive to deviate from their chosen strategy, assuming the other agent's strategy stays the same.</p>
+
+      <p><strong>[2:54]</strong> To kind of gamify the math here, we use what we call the cycle and test method. Step one, you cycle through every single outcome in the matrix. Step two, for each outcome, you just ask, can either agent improve their payoff by unilaterally switching their strategy? And step three, if the answer is no, if literally neither person can do better by changing their mind, boom, congratulations, you've found a Nash equilibrium.</p>
+
+      <p><strong>[3:18]</strong> Let's do a quick practice run with a classic coin flip matrix, often called matching pennies. Look at this scenario where both play heads. Player i gets one, player j gets negative one. Let's apply our cycle and test. Can either improve by switching? Well, player j is stuck with negative one. If j switches to tails, j gets a one. So yeah, absolutely j will switch. But wait, now that j switched, player i gets negative one. So player i is going to switch to tails. And so it goes. The cycle literally never ends. This brilliantly illustrates a game with no pure strategy Nash equilibrium. The agents are just locked in a constant endless state of hunting for an advantage.</p>
+
+      <p><strong>[4:02]</strong> All right, section four, Pareto optimality and social welfare. Let's step back from individual ruthless strategy for a second and look at how we evaluate outcomes based on systemic harm and total value. Take a look at an outcome where both players choose to defect, yielding payoffs of five for player i and three for player j. Is it a Nash equilibrium? We'd have to test it. But more importantly for this specific tool, it is Pareto efficient. Look at the other options on the board. Could player j do better than three? No way. Three is their highest possible payoff. Could player i do better than five? Nope. Five is their absolute maximum too. Neither agent can move to a better outcome without dragging the other agent's score down.</p>
+
+      <p><strong>[4:46]</strong> So the mathematical definition of Pareto optimality is an outcome where no agent can be made better off without making another agent worse off. But let's just frame this in human terms. Think of it as no regrets without harm. If an outcome is not Pareto optimal, there's another outcome out there that makes everyone at least as happy, if not happier. Reasonable agents would agree to move to that better outcome because as the source notes, even if I don't directly benefit, you can benefit without me suffering. But once you hit Pareto optimality, someone has to get hurt for someone else to gain.</p>
+
+      <p><strong>[5:22]</strong> Now let's shift gears completely to social welfare. Here we basically stop caring about the individual entirely. Notice the outcome of mutual cooperation. Why is this specific outcome so special? Because social welfare is strictly the sum of the utilities that each agent gets. Think of it as maximizing the total amount of money or value in the entire system regardless of whose pocket it actually ends up in. This is a really great concept when the whole system has a single owner who just wants maximum output. But beware, as our source warrants, social welfare doesn't consider the benefits to individuals. You could have a very skewed outcome where one agent gets a hundred and the other gets absolutely zero and that might maximize social welfare even though it's terribly unfair to one of the players.</p>
+
+      <p><strong>[6:06]</strong> And that brings us to section five, solving the prisoner's dilemma. Okay, you have your four tools. You understand the environment, the matrix, Nash equilibria, Pareto optimality, and social welfare. It's time to bring them all together for the boss level. We are going to analyze one of the most famous scenarios in game theory, the prisoner's dilemma. Two people are collectively charged with a crime and held in completely separate cells. There is absolutely no way to meet, no way to communicate, and they are given a brutal choice. They can either confess to the crime, which game theorists call defecting, or they can stay silent, which we call cooperating with each other.</p>
+
+      <p><strong>[6:46]</strong> Let's map their dilemma right onto our matrix. Mutual cooperation, where both stay silent, gives them a decent reward, a payoff of three each. But look at the temptation here. If you defect and confess while the other stays silent, you go free. You get the maximum payoff of four. Meanwhile, your partner gets the sucker's payoff of just one. But if you both confess, you both get punished with a low payoff of two.</p>
+
+      <p><strong>[7:12]</strong> So what should you do? Let's use our tools. The social welfare maximizing outcome is clearly mutual cooperation. Three plus three equals six. That's the most total value in the system, and it's also Pareto optimal. But what is the individually rational action? Let's use our cycle and test. If your partner cooperates, you get three by cooperating, but four by defecting. You should defect. If your partner defects, you get one by cooperating, but two by defecting. You should still defect. Defection is the best response to literally all possible strategies. Therefore, both agents defecting is the pure Nash equilibrium.</p>
+
+      <p><strong>[7:48]</strong> And this is the brilliant, frustrating tragedy of The Prisoner's Dilemma. Perfect mathematical rationality leads both agents to defect for a low payoff, locking them into mutual punishment. But game theory isn't always so pessimistic, you know? Take another classic scenario. In a stag hunt, mutual cooperation actually is a rational Nash equilibrium, but it requires absolute trust that the other person will hunt the stag with you rather than chase a rabbit alone. It leaves us with a really profound question. If perfect rationality can sometimes lead to mutual punishment, and at other times requires blind trust to succeed, is it time to rethink what it actually means to be rational? Keep that in mind next time you find yourself playing a game.</p>
+    </div>
+  </details>
+</div>
+
+<p style="text-align:center;color:#64748b;font-size:12px;margin-top:40px">COMP310 Chapter 11 Study Guide &bull; Generated from lecture slides + NotebookLM transcript &bull; Good luck on the exam!</p>
+
+</main>
+
+<script>
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('nav a');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const id = entry.target.id;
+      const link = document.querySelector(`nav a[href="#${id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>

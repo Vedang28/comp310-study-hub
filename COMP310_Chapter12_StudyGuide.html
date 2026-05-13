@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COMP310 Chapter 12 — Making Group Decisions Study Guide</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f172a;color:#e2e8f0;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;line-height:1.7;display:flex}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:#1e293b}
+::-webkit-scrollbar-thumb{background:#475569;border-radius:4px}
+nav{position:fixed;top:0;left:0;width:260px;height:100vh;background:#1e293b;border-right:2px solid #a855f7;overflow-y:auto;padding:1rem 0;z-index:10}
+nav h2{color:#a855f7;font-size:.85rem;text-transform:uppercase;letter-spacing:.1em;padding:0 1rem;margin-bottom:.5rem}
+nav a{display:block;padding:.45rem 1rem;color:#94a3b8;text-decoration:none;font-size:.82rem;border-left:3px solid transparent;transition:all .2s}
+nav a:hover,nav a.active{color:#e2e8f0;background:#0f172a;border-left-color:#a855f7}
+main{margin-left:260px;max-width:900px;padding:2rem 3rem 4rem}
+.header{text-align:center;margin-bottom:3rem;padding-bottom:2rem;border-bottom:2px solid #a855f7}
+.header h1{font-size:2rem;color:#a855f7;margin-bottom:.3rem}
+.header .sub{color:#94a3b8;font-size:.95rem}
+section{margin-bottom:3rem;scroll-margin-top:1rem}
+h2{color:#a855f7;font-size:1.4rem;margin-bottom:1rem;padding-bottom:.4rem;border-bottom:1px solid #334155}
+h3{color:#c084fc;font-size:1.1rem;margin:1.2rem 0 .6rem}
+p{margin-bottom:.8rem}
+.card{background:#1e293b;border:1px solid #334155;border-radius:8px;padding:1.2rem;margin:.8rem 0}
+.card-purple{border-left:4px solid #a855f7}
+.card-green{border-left:4px solid #10b981}
+.card-red{border-left:4px solid #ef4444}
+.card-amber{border-left:4px solid #f59e0b}
+.card-blue{border-left:4px solid #3b82f6}
+.label{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:.4rem}
+.label-purple{color:#a855f7}
+.label-green{color:#10b981}
+.label-red{color:#ef4444}
+.label-amber{color:#f59e0b}
+.label-blue{color:#3b82f6}
+strong{color:#f8fafc}
+em{color:#c084fc;font-style:normal}
+table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.88rem}
+th{background:#334155;color:#a855f7;padding:.6rem .8rem;text-align:left;font-size:.8rem;text-transform:uppercase;letter-spacing:.05em}
+td{padding:.5rem .8rem;border-bottom:1px solid #1e293b}
+tr:nth-child(even){background:#1e293b}
+tr:nth-child(odd){background:#0f172a}
+.formula{background:#1e293b;border:1px solid #a855f7;border-radius:6px;padding:.8rem 1.2rem;margin:.8rem 0;font-family:'Courier New',monospace;font-size:.95rem;color:#c084fc;text-align:center}
+.grid-box{display:inline-block;width:36px;height:36px;border:1px solid #475569;text-align:center;line-height:36px;font-size:.8rem;margin:1px}
+.example-box{background:#1a1a2e;border:1px solid #a855f7;border-radius:8px;padding:1rem 1.2rem;margin:1rem 0}
+.example-box .title{color:#a855f7;font-weight:700;font-size:.85rem;margin-bottom:.5rem}
+.arrow{color:#a855f7;font-size:1.2rem}
+ol,ul{margin:.5rem 0 1rem 1.5rem}
+li{margin:.3rem 0}
+details{background:#1e293b;border:1px solid #334155;border-radius:6px;margin:1rem 0}
+details summary{padding:.8rem 1rem;cursor:pointer;color:#a855f7;font-weight:600;font-size:.9rem}
+details summary:hover{background:#334155}
+details .content{padding:0 1rem 1rem}
+.highlight{background:#a855f720;border:1px solid #a855f7;border-radius:4px;padding:.2rem .5rem}
+.vs{display:flex;gap:1rem;align-items:stretch;flex-wrap:wrap}
+.vs>div{flex:1;min-width:250px}
+.step{display:flex;gap:.8rem;margin:.5rem 0}
+.step-num{background:#a855f7;color:#0f172a;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex-shrink:0;margin-top:.2rem}
+.step-text{flex:1}
+.tag{display:inline-block;padding:.15rem .5rem;border-radius:4px;font-size:.75rem;font-weight:600;margin:.1rem}
+.tag-pass{background:#10b98130;color:#10b981;border:1px solid #10b981}
+.tag-fail{background:#ef444430;color:#ef4444;border:1px solid #ef4444}
+.majority-graph{font-family:'Courier New',monospace;background:#1e293b;padding:1rem;border-radius:8px;text-align:center;margin:1rem 0;font-size:.9rem;line-height:1.8}
+.round-table{margin:1rem 0}
+.eliminated{text-decoration:line-through;color:#ef4444;opacity:.6}
+.winner{color:#10b981;font-weight:700}
+</style>
+</head>
+<body>
+<nav>
+<h2>Chapter 12</h2>
+<a href="#intro">1. Social Choice Intro</a>
+<a href="#components">2. Model Components</a>
+<a href="#swf-scf">3. SWF vs SCF</a>
+<a href="#plurality">4. Plurality Voting</a>
+<a href="#tactical">5. Tactical Voting</a>
+<a href="#condorcet">6. Condorcet's Paradox</a>
+<a href="#sequential">7. Sequential Majority</a>
+<a href="#majority-graphs">8. Majority Graphs</a>
+<a href="#slater">9. Slater Ranking</a>
+<a href="#borda">10. Borda Count</a>
+<a href="#alternative">11. Alternative Vote</a>
+<a href="#properties">12. Desirable Properties</a>
+<a href="#arrow">13. Arrow's Theorem</a>
+<a href="#gs">14. Gibbard-Satterthwaite</a>
+<a href="#comparison">15. Comparison Table</a>
+<a href="#reference">16. Formula Reference</a>
+<a href="#transcript">17. Full Transcript</a>
+</nav>
+
+<main>
+<div class="header">
+<h1>Chapter 12: Making Group Decisions</h1>
+<div class="sub">COMP310 Multi-Agent Systems — Shufang Zhu, University of Liverpool</div>
+<div class="sub" style="margin-top:.3rem;color:#a855f7">Social Choice Theory, Voting Procedures & Impossibility Theorems</div>
+</div>
+
+<!-- Section 1: Social Choice Intro -->
+<section id="intro">
+<h2>1. Social Choice Theory</h2>
+<p>We continue in the same multi-agent framework as Chapter 11: agents interact in game-like encounters and act <em>strategically</em>.</p>
+
+<div class="card card-purple">
+<div class="label label-purple">Core Idea</div>
+<strong>Social choice theory</strong> is concerned with <em>group decision making</em>. Agents make decisions based on their own preferences, but they are aware of other agents' preferences too. The classic example is <strong>voting</strong> — formally, the issue is combining preferences to derive a <em>social outcome</em>.
+</div>
+
+<div class="card card-amber">
+<div class="label label-amber">Exam Insight</div>
+The key tension: different voters have different preference orders. How do we combine them into one group decision that reflects everyone's views "as closely as possible"? As we'll see, <strong>no perfect method exists</strong>.
+</div>
+</section>
+
+<!-- Section 2: Components -->
+<section id="components">
+<h2>2. Components of a Social Choice Model</h2>
+
+<div class="card card-purple">
+<div class="label label-purple">Formal Setup</div>
+<ul>
+<li><strong>Ag = {1, ..., n}</strong> — a set of <em>voters</em> (agents who express preferences)</li>
+<li><strong>&Omega; = {&omega;<sub>1</sub>, &omega;<sub>2</sub>, ...}</strong> — a set of <em>outcomes</em> (think of these as candidates)</li>
+<li>If |&Omega;| = 2, we have a <em>pairwise election</em></li>
+<li>Each voter has a <em>preference ordering</em> over &Omega;</li>
+</ul>
+</div>
+
+<div class="example-box">
+<div class="title">Preference Order Example</div>
+Suppose &Omega; = {pear, plum, banana, orange}<br>
+Agent i's preference order: (banana, plum, pear, orange)<br>
+Meaning: <strong>banana &succ;<sub>i</sub> plum &succ;<sub>i</sub> pear &succ;<sub>i</sub> orange</strong><br>
+<span style="color:#94a3b8">The &succ;<sub>i</sub> symbol means "agent i strictly prefers"</span>
+</div>
+
+<div class="card card-green">
+<div class="label label-green">Key Question</div>
+Given a <em>collection</em> of preference orders (one per voter), how do we combine them to derive a group decision that reflects everyone's preferences as closely as possible?
+</div>
+</section>
+
+<!-- Section 3: SWF vs SCF -->
+<section id="swf-scf">
+<h2>3. Social Welfare Function vs Social Choice Function</h2>
+
+<div class="vs">
+<div class="card card-purple">
+<div class="label label-purple">Social Welfare Function (SWF)</div>
+<div class="formula">f : &Pi;(&Omega;) &times; ... &times; &Pi;(&Omega;) &rarr; &Pi;(&Omega;)</div>
+<p>Takes n preference orders as input and produces a <strong>social preference order</strong> (a complete ranking).</p>
+<p>&omega; &succ;* &omega;' means &omega; is ranked above &omega;' in the social ordering.</p>
+<p><strong>Example:</strong> combining search engine results, collaborative filtering</p>
+</div>
+<div class="card card-blue">
+<div class="label label-blue">Social Choice Function (SCF)</div>
+<div class="formula">f : &Pi;(&Omega;) &times; ... &times; &Pi;(&Omega;) &rarr; &Omega;</div>
+<p>Takes n preference orders as input and produces a <strong>single winner</strong> (just one outcome, not a ranking).</p>
+<p>If you have an SWF, you automatically have an SCF (just take the top-ranked outcome).</p>
+<p><strong>Example:</strong> agents choosing a joint plan</p>
+</div>
+</div>
+
+<div class="card card-amber">
+<div class="label label-amber">Terminology</div>
+For the rest of this chapter, both SWFs and SCFs are referred to as <strong>voting procedures</strong>.
+</div>
+</section>
+
+<!-- Section 4: Plurality -->
+<section id="plurality">
+<h2>4. Plurality Voting</h2>
+
+<div class="card card-purple">
+<div class="label label-purple">How It Works</div>
+<ul>
+<li>This is a <strong>social choice function</strong> (selects one winner)</li>
+<li>Each voter submits their preference order</li>
+<li>Each candidate gets <strong>one point</strong> for every preference order that ranks them <em>first</em></li>
+<li>Winner = candidate with the most first-place votes</li>
+<li>Also known as <em>first past the post</em> or <em>relative majority</em></li>
+<li>With only 2 candidates, plurality = simple majority election</li>
+</ul>
+</div>
+
+<div class="example-box">
+<div class="title">Anomaly with Plurality</div>
+<p>|Ag| = 100 voters, &Omega; = {&omega;<sub>1</sub>, &omega;<sub>2</sub>, &omega;<sub>3</sub>}</p>
+<table>
+<tr><th>Candidate</th><th>First-Place Votes</th></tr>
+<tr><td>&omega;<sub>1</sub></td><td>40%</td></tr>
+<tr><td>&omega;<sub>2</sub></td><td>30%</td></tr>
+<tr><td>&omega;<sub>3</sub></td><td>30%</td></tr>
+</table>
+<p style="margin-top:.5rem"><strong>&omega;<sub>1</sub> wins</strong> even though a <span class="highlight">clear majority (60%) prefer another candidate!</span></p>
+<p style="color:#94a3b8">Plurality completely ignores 2nd, 3rd, 4th choices — it only counts who's ranked first.</p>
+</div>
+</section>
+
+<!-- Section 5: Tactical Voting -->
+<section id="tactical">
+<h2>5. Strategic Manipulation by Tactical Voting</h2>
+
+<div class="card card-red">
+<div class="label label-red">The Problem</div>
+<p>Suppose agent i has preferences: <strong>&omega;<sub>1</sub> &succ;<sub>i</sub> &omega;<sub>2</sub> &succ;<sub>i</sub> &omega;<sub>3</sub></strong></p>
+<p>But agent i believes:</p>
+<ul>
+<li>49% of voters prefer: &omega;<sub>2</sub> &succ; &omega;<sub>1</sub> &succ; &omega;<sub>3</sub></li>
+<li>49% of voters prefer: &omega;<sub>3</sub> &succ; &omega;<sub>2</sub> &succ; &omega;<sub>1</sub></li>
+</ul>
+<p>Agent i may do better voting for <strong>&omega;<sub>2</sub></strong> (their second choice) instead of &omega;<sub>1</sub>, to prevent &omega;<sub>3</sub> from winning.</p>
+<p>This is <em>tactical voting</em> — an example of <strong>strategic manipulation</strong>.</p>
+</div>
+
+<div class="card card-amber">
+<div class="label label-amber">Why It Matters</div>
+Voters can benefit by <strong>lying</strong> about their true preferences. This undermines the entire point of voting — getting an honest reflection of group opinion.
+</div>
+</section>
+
+<!-- Section 6: Condorcet -->
+<section id="condorcet">
+<h2>6. Condorcet's Paradox</h2>
+
+<div class="card card-purple">
+<div class="label label-purple">The Paradox (Slide 12-13)</div>
+<p>In collective decision-making, it seems like majority voting should produce a satisfactory outcome. But...</p>
+
+<p>Suppose Ag = {1, 2, 3} and &Omega; = {&omega;<sub>1</sub>, &omega;<sub>2</sub>, &omega;<sub>3</sub>} with:</p>
+<div class="formula">
+&omega;<sub>1</sub> &succ;<sub>1</sub> &omega;<sub>2</sub> &succ;<sub>1</sub> &omega;<sub>3</sub><br>
+&omega;<sub>3</sub> &succ;<sub>2</sub> &omega;<sub>1</sub> &succ;<sub>2</sub> &omega;<sub>2</sub><br>
+&omega;<sub>2</sub> &succ;<sub>3</sub> &omega;<sub>3</sub> &succ;<sub>3</sub> &omega;<sub>1</sub>
+</div>
+</div>
+
+<div class="card card-red">
+<div class="label label-red">The Cycle</div>
+<ul>
+<li>If we pick &omega;<sub>1</sub>, <strong>2/3 voters prefer &omega;<sub>3</sub></strong> to &omega;<sub>1</sub></li>
+<li>If we pick &omega;<sub>2</sub>, <strong>2/3 voters prefer &omega;<sub>1</sub></strong> to &omega;<sub>2</sub></li>
+<li>If we pick &omega;<sub>3</sub>, <strong>2/3 voters prefer &omega;<sub>2</sub></strong> to &omega;<sub>3</sub></li>
+</ul>
+<p><strong>No matter which outcome we choose, a majority of voters will be unhappy.</strong></p>
+<p>Preferences form a cycle: &omega;<sub>1</sub> beats &omega;<sub>2</sub>, &omega;<sub>2</sub> beats &omega;<sub>3</sub>, &omega;<sub>3</sub> beats &omega;<sub>1</sub>.</p>
+</div>
+</section>
+
+<!-- Section 7: Sequential Majority -->
+<section id="sequential">
+<h2>7. Sequential Majority Elections</h2>
+
+<p>One way to improve on plurality: reduce a general voting scenario to a series of <em>pairwise</em> elections.</p>
+
+<h3>Linear Sequential Pairwise Elections</h3>
+<div class="card card-purple">
+<div class="label label-purple">How It Works</div>
+<p>Pick an ordering of outcomes called <em>the agenda</em> (e.g., &omega;<sub>2</sub>, &omega;<sub>3</sub>, &omega;<sub>4</sub>, &omega;<sub>1</sub>)</p>
+<div class="step"><div class="step-num">1</div><div class="step-text">First election: &omega;<sub>2</sub> vs &omega;<sub>3</sub></div></div>
+<div class="step"><div class="step-num">2</div><div class="step-text">Winner faces &omega;<sub>4</sub></div></div>
+<div class="step"><div class="step-num">3</div><div class="step-text">Winner of that faces &omega;<sub>1</sub></div></div>
+<p style="margin-top:.5rem">Can also organise as a <strong>balanced binary tree</strong> (like a tournament bracket / Final Four).</p>
+</div>
+
+<div class="card card-red">
+<div class="label label-red">Critical Flaw — Agenda Dependence</div>
+<p>The final outcome may depend <strong>not just on voter preferences, but also on the election agenda</strong>!</p>
+<p>With 33-33-33 voter split and cyclic preferences, <em>every candidate can be made to win</em> by choosing the right agenda:</p>
+<table>
+<tr><th>Agenda</th><th>Winner</th></tr>
+<tr><td>(&omega;<sub>3</sub>, &omega;<sub>2</sub>, &omega;<sub>1</sub>)</td><td>&omega;<sub>1</sub></td></tr>
+<tr><td>(&omega;<sub>1</sub>, &omega;<sub>3</sub>, &omega;<sub>2</sub>)</td><td>&omega;<sub>2</sub></td></tr>
+<tr><td>(&omega;<sub>1</sub>, &omega;<sub>2</sub>, &omega;<sub>3</sub>)</td><td>&omega;<sub>3</sub></td></tr>
+</table>
+<p style="color:#94a3b8;margin-top:.3rem">Whoever controls the agenda controls the outcome!</p>
+</div>
+</section>
+
+<!-- Section 8: Majority Graphs -->
+<section id="majority-graphs">
+<h2>8. Majority Graphs & Tournaments</h2>
+
+<div class="card card-purple">
+<div class="label label-purple">Definition</div>
+<p>A <em>majority graph</em> is a directed graph built from voter preferences:</p>
+<ul>
+<li><strong>Vertices</strong> = candidates</li>
+<li><strong>Edge (i, j)</strong> exists if candidate i would beat j in a simple majority election</li>
+</ul>
+<p>With an <strong>odd number of voters</strong> (no ties), the graph is:</p>
+<ul>
+<li><em>Complete</em> — every pair of candidates has an edge</li>
+<li><em>Asymmetric</em> — if (i,j) exists, (j,i) does not</li>
+<li><em>Irreflexive</em> — no self-edges</li>
+</ul>
+<p>Such a graph is called a <strong>tournament</strong>.</p>
+</div>
+
+<div class="majority-graph">
+<strong>Example: 3-candidate cycle</strong><br>
+&omega;<sub>1</sub> &rarr; &omega;<sub>2</sub><br>
+&omega;<sub>2</sub> &rarr; &omega;<sub>3</sub><br>
+&omega;<sub>3</sub> &rarr; &omega;<sub>1</sub><br>
+<span style="color:#ef4444">(cycle &rArr; every candidate is a possible winner)</span>
+</div>
+
+<h3>Possible Winners vs Condorcet Winners</h3>
+<div class="vs">
+<div class="card card-blue">
+<div class="label label-blue">Possible Winner</div>
+<p>&omega;<sub>i</sub> is a <em>possible winner</em> if there exists <strong>some agenda</strong> that makes it win.</p>
+<p><strong>Test:</strong> Check if there is a <em>path</em> from &omega;<sub>i</sub> to every other &omega;<sub>j</sub> in the majority graph.</p>
+<p>Computationally easy.</p>
+</div>
+<div class="card card-green">
+<div class="label label-green">Condorcet Winner</div>
+<p>&omega;<sub>i</sub> is a <em>Condorcet winner</em> if it wins for <strong>every possible agenda</strong>.</p>
+<p><strong>Test:</strong> Check if there is a direct <em>edge</em> from &omega;<sub>i</sub> to every other &omega;<sub>j</sub>.</p>
+<p>Computationally easy. May not exist!</p>
+</div>
+</div>
+
+<div class="card card-amber">
+<div class="label label-amber">Exam Tip — Discussion Slide (23)</div>
+<p>Given a majority graph, you may be asked to identify:</p>
+<ul>
+<li><strong>Possible winners:</strong> check reachability (path exists to all others)</li>
+<li><strong>Condorcet winners:</strong> check if one node has edges to ALL others (if the graph has a cycle, there is no Condorcet winner)</li>
+</ul>
+</div>
+</section>
+
+<!-- Section 9: Slater Ranking -->
+<section id="slater">
+<h2>9. The Slater Ranking</h2>
+
+<div class="card card-purple">
+<div class="label label-purple">Core Idea</div>
+<p>The question "which social ranking should be selected?" becomes: find a ranking that is <strong>as consistent as possible</strong> with the majority graph.</p>
+<p>Minimize the number of <em>disagreements</em> between the majority graph and the social choice.</p>
+</div>
+
+<h3>Inconsistency Measure (Cost)</h3>
+<div class="card card-blue">
+<div class="label label-blue">How to Calculate Cost</div>
+<p>Given a ranking and a majority graph, count how many edges you'd need to <strong>flip</strong> (reverse) to make the graph consistent with the ranking.</p>
+
+<div class="example-box">
+<div class="title">Example (Slides 25-26)</div>
+<p><strong>Ranking:</strong> &omega;<sub>1</sub> &succ;* &omega;<sub>2</sub> &succ;* &omega;<sub>3</sub> &succ;* &omega;<sub>4</sub></p>
+<p>If the majority graph has edge (&omega;<sub>4</sub>, &omega;<sub>1</sub>) — i.e., &omega;<sub>4</sub> beats &omega;<sub>1</sub> — but our ranking puts &omega;<sub>1</sub> above &omega;<sub>4</sub>, that's one inconsistency.</p>
+<p>Flip that single edge &rarr; <strong>cost = 1</strong></p>
+<br>
+<p><strong>Alternate ranking:</strong> &omega;<sub>1</sub> &succ;* &omega;<sub>2</sub> &succ;* &omega;<sub>4</sub> &succ;* &omega;<sub>3</sub></p>
+<p>Need to flip (&omega;<sub>4</sub>, &omega;<sub>1</sub>) AND (&omega;<sub>3</sub>, &omega;<sub>4</sub>) &rarr; <strong>cost = 2</strong></p>
+</div>
+</div>
+
+<div class="card card-green">
+<div class="label label-green">The Slater Ranking</div>
+<p>The Slater ranking is the ordering with <strong>minimal cost</strong> (fewest edge flips needed).</p>
+</div>
+
+<div class="card card-red">
+<div class="label label-red">Bad News</div>
+Computing the Slater ranking is <strong>NP-hard</strong>. Some methods reduce the search space by identifying similar candidates.
+</div>
+</section>
+
+<!-- Section 10: Borda Count -->
+<section id="borda">
+<h2>10. The Borda Count</h2>
+
+<div class="card card-purple">
+<div class="label label-purple">Why Borda?</div>
+Plurality ignores most of a voter's preference order — it only looks at the top-ranked candidate. The Borda count takes the <strong>whole preference order</strong> into account.
+</div>
+
+<h3>How It Works</h3>
+<div class="card card-blue">
+<div class="label label-blue">Point System</div>
+<p>With <strong>k candidates</strong>:</p>
+<ul>
+<li>1st place gets <strong>k - 1</strong> points</li>
+<li>2nd place gets <strong>k - 2</strong> points</li>
+<li>3rd place gets <strong>k - 3</strong> points</li>
+<li>... and so on until last place gets <strong>0</strong> points</li>
+</ul>
+<p>Sum up points across all voters. The candidate with the highest total wins.</p>
+</div>
+
+<div class="example-box">
+<div class="title">Worked Example (Slide 29)</div>
+<p>3 voters, 3 candidates (so k=3: 1st=2pts, 2nd=1pt, 3rd=0pts)</p>
+<div class="formula">
+Voter 1: &omega;<sub>2</sub> &succ; &omega;<sub>1</sub> &succ; &omega;<sub>3</sub><br>
+Voter 2: &omega;<sub>3</sub> &succ; &omega;<sub>2</sub> &succ; &omega;<sub>1</sub><br>
+Voter 3: &omega;<sub>1</sub> &succ; &omega;<sub>2</sub> &succ; &omega;<sub>3</sub>
+</div>
+<table>
+<tr><th>Candidate</th><th>Voter 1</th><th>Voter 2</th><th>Voter 3</th><th>Total</th></tr>
+<tr><td>&omega;<sub>1</sub></td><td>1</td><td>0</td><td>2</td><td><strong>3</strong></td></tr>
+<tr><td>&omega;<sub>2</sub></td><td>2</td><td>1</td><td>1</td><td><strong>4</strong></td></tr>
+<tr><td>&omega;<sub>3</sub></td><td>0</td><td>2</td><td>0</td><td><strong>2</strong></td></tr>
+</table>
+<p><strong>&omega;<sub>2</sub> wins</strong> with Borda count of 4 (2 from 1st place + 1 + 1 from two 2nd places)</p>
+</div>
+</section>
+
+<!-- Section 11: Alternative Vote -->
+<section id="alternative">
+<h2>11. Alternative Vote (Instant Runoff Voting)</h2>
+
+<div class="card card-purple">
+<div class="label label-purple">Key Features</div>
+<ul>
+<li>Also known as <strong>Instant Runoff Voting (IRV)</strong></li>
+<li>Invented by William Robert Ware (1832-1915)</li>
+<li>Social <em>choice</em> function — results in a single winner</li>
+<li>Voters <strong>rank all candidates</strong> in order of preference</li>
+<li>Counting happens <strong>in rounds</strong> — last place is eliminated each round</li>
+<li>Eliminated candidate's votes are reallocated to their next choice</li>
+<li>Continues until someone gets a <strong>majority (&gt;50%)</strong></li>
+<li>Offers a solution to Condorcet's paradox</li>
+</ul>
+</div>
+
+<h3>Movie Genre Example (23 Voters, Majority = 12)</h3>
+
+<div class="card card-blue">
+<div class="label label-blue">Preference Schedule</div>
+<table>
+<tr><th>Votes</th><th>1st</th><th>2nd</th><th>3rd</th><th>4th</th></tr>
+<tr><td>7</td><td>action</td><td>horror</td><td>comedy</td><td>drama</td></tr>
+<tr><td>5</td><td>comedy</td><td>action</td><td>horror</td><td>drama</td></tr>
+<tr><td>2</td><td>drama</td><td>horror</td><td>comedy</td><td>action</td></tr>
+<tr><td>5</td><td>comedy</td><td>drama</td><td>action</td><td>horror</td></tr>
+<tr><td>4</td><td>horror</td><td>action</td><td>drama</td><td>comedy</td></tr>
+</table>
+</div>
+
+<div class="step"><div class="step-num">R1</div><div class="step-text"><strong>Count 1st choices:</strong> action=7, comedy=10, drama=2, horror=4. Nobody has 12. <span class="eliminated">drama eliminated</span> (fewest votes)</div></div>
+<div class="step"><div class="step-num">R2</div><div class="step-text"><strong>Reallocate drama's 2 votes</strong> &rarr; their 2nd choice is horror &rarr; horror goes to 6. Now: action=7, comedy=10, horror=6. Nobody has 12. <span class="eliminated">horror eliminated</span></div></div>
+<div class="step"><div class="step-num">R3</div><div class="step-text"><strong>Reallocate horror's 6 votes:</strong> 2 go to comedy, 4 go to action. Final: action=11, <span class="winner">comedy=12</span>. <strong>Comedy wins with majority!</strong></div></div>
+
+<table>
+<tr><th>Candidate</th><th>Round 1</th><th>Round 2</th><th>Round 3</th></tr>
+<tr><td>action</td><td>7</td><td>7</td><td>7+4 = 11</td></tr>
+<tr><td>comedy</td><td>5+5 = 10</td><td>10</td><td class="winner">5+2+5 = 12</td></tr>
+<tr><td class="eliminated">drama</td><td>2</td><td>---</td><td>---</td></tr>
+<tr><td class="eliminated">horror</td><td>4</td><td>4+2 = 6</td><td>---</td></tr>
+</table>
+</section>
+
+<!-- Section 12: Desirable Properties -->
+<section id="properties">
+<h2>12. Desirable Properties of Voting Procedures</h2>
+
+<p>Can we classify what makes a "good" voting procedure? Three key properties + one anti-property:</p>
+
+<div class="card card-green">
+<div class="label label-green">1. The Pareto Property</div>
+<p>If <strong>every voter</strong> prefers &omega;<sub>i</sub> over &omega;<sub>j</sub>, then &omega;<sub>i</sub> <strong>must</strong> be ranked over &omega;<sub>j</sub> in the social outcome.</p>
+<p style="color:#94a3b8">Satisfied by: plurality, Borda. NOT by: sequential majority.</p>
+</div>
+
+<div class="card card-blue">
+<div class="label label-blue">2. The Condorcet Winner Condition</div>
+<p>If a <em>Condorcet winner</em> exists (beats every other candidate head-to-head), it <strong>must</strong> be ranked first.</p>
+<p style="color:#94a3b8">Satisfied by: sequential majority. NOT by: plurality, Borda.</p>
+</div>
+
+<div class="card card-purple">
+<div class="label label-purple">3. Independence of Irrelevant Alternatives (IIA)</div>
+<p>Whether &omega;<sub>i</sub> is ranked above &omega;<sub>j</sub> in the social outcome should depend <strong>only</strong> on the relative orderings of &omega;<sub>i</sub> and &omega;<sub>j</sub> in voters' profiles — not on how other candidates are ranked.</p>
+<p style="color:#94a3b8">NOT satisfied by: plurality, Borda, or sequential majority.</p>
+</div>
+
+<div class="example-box">
+<div class="title">IIA Violation Example (Slides 37-38)</div>
+<p>With plurality voting:</p>
+<table>
+<tr><th></th><th>Before</th><th>After</th></tr>
+<tr><td>Group A</td><td>8 voters: &omega;<sub>1</sub> &succ; &omega;<sub>2</sub> &succ; &omega;<sub>3</sub></td><td>8 voters: &omega;<sub>1</sub> &succ; &omega;<sub>2</sub> &succ; &omega;<sub>3</sub></td></tr>
+<tr><td>Group B</td><td>6 voters: &omega;<sub>2</sub> &succ; &omega;<sub>3</sub> &succ; &omega;<sub>1</sub></td><td>9 voters: &omega;<sub>2</sub> &succ; &omega;<sub>3</sub> &succ; &omega;<sub>1</sub></td></tr>
+<tr><td>Group C</td><td>5 voters: &omega;<sub>3</sub> &succ; &omega;<sub>2</sub> &succ; &omega;<sub>1</sub></td><td>2 voters: &omega;<sub>3</sub> &succ; &omega;<sub>2</sub> &succ; &omega;<sub>1</sub></td></tr>
+</table>
+<p>Before: &omega;<sub>1</sub> wins (8 &gt; 6 &gt; 5). After: &omega;<sub>2</sub> wins (9 &gt; 8 &gt; 2).</p>
+<p>But the relative ordering of &omega;<sub>1</sub> vs &omega;<sub>2</sub> didn't change for any voter! Only &omega;<sub>3</sub>'s support shifted. IIA violated.</p>
+</div>
+
+<div class="card card-red">
+<div class="label label-red">4. No Dictatorship</div>
+<p>A social welfare function f is a <em>dictatorship</em> if for some agent i:</p>
+<div class="formula">f(&omega;&#773;<sub>1</sub>, &omega;&#773;<sub>2</sub>, ... &omega;&#773;<sub>n</sub>) = &omega;&#773;<sub>i</sub></div>
+<p>The output is <strong>exactly</strong> the preference order of a single "dictator" agent. Plurality and Borda are NOT dictatorships — but dictatorships do satisfy Pareto and IIA!</p>
+</div>
+</section>
+
+<!-- Section 13: Arrow's Theorem -->
+<section id="arrow">
+<h2>13. Arrow's Impossibility Theorem</h2>
+
+<div class="card card-red" style="border:2px solid #ef4444">
+<div class="label label-red">Arrow's Theorem</div>
+<p style="font-size:1.05rem">For preference aggregation problems with <strong>more than 2 candidates</strong>, the <em>only</em> social welfare function satisfying both the <strong>Pareto condition</strong> and <strong>IIA</strong> is a <strong>dictatorship</strong>.</p>
+<p style="margin-top:.5rem">This is a <em>negative result</em>: there are <strong>fundamental limits</strong> to designing perfectly fair aggregation mechanisms. No voting system can simultaneously be non-dictatorial, satisfy Pareto, and satisfy IIA.</p>
+</div>
+
+<div class="card card-amber">
+<div class="label label-amber">Exam Key Point</div>
+Arrow's theorem applies to <strong>social welfare functions</strong> (rankings). It says mathematical perfection in voting is literally impossible when you have &gt;2 candidates.
+</div>
+</section>
+
+<!-- Section 14: Gibbard-Satterthwaite -->
+<section id="gs">
+<h2>14. Gibbard-Satterthwaite Theorem</h2>
+
+<div class="card card-purple">
+<div class="label label-purple">The Question</div>
+Voters can benefit by <strong>strategically misrepresenting</strong> their preferences (tactical voting / lying). Is there a social choice function where agents can <em>never</em> benefit from lying?
+</div>
+
+<div class="card card-red" style="border:2px solid #ef4444">
+<div class="label label-red">Gibbard-Satterthwaite Theorem</div>
+<p style="font-size:1.05rem">The <em>only</em> non-manipulable social choice function satisfying the Pareto property for elections with <strong>more than 2 candidates</strong> is a <strong>dictatorship</strong>.</p>
+<p>Strategic manipulation is <strong>unavoidable</strong> for any non-dictatorial social choice function.</p>
+</div>
+
+<div class="card card-green">
+<div class="label label-green">Silver Lining — Computational Complexity</div>
+<p>Gibbard-Satterthwaite only says manipulation is possible <em>in principle</em>. It doesn't say HOW to misrepresent preferences.</p>
+<p><strong>Bartholdi, Tovey, and Trick</strong> showed: there are elections that are prone to manipulation in principle, but where manipulation is <strong>computationally complex</strong>.</p>
+<p><strong>"Single Transferable Vote" is NP-hard to manipulate!</strong></p>
+<p style="color:#94a3b8">So we can make it practically impossible to game the system, even though it's theoretically possible.</p>
+</div>
+</section>
+
+<!-- Section 15: Comparison Table -->
+<section id="comparison">
+<h2>15. Voting Procedures Comparison</h2>
+
+<table>
+<tr><th>Property</th><th>Plurality</th><th>Borda Count</th><th>Sequential Majority</th><th>Slater</th><th>Alternative Vote</th></tr>
+<tr><td>Type</td><td>SCF</td><td>SWF</td><td>SCF</td><td>SWF</td><td>SCF</td></tr>
+<tr><td>Uses full ranking?</td><td><span class="tag tag-fail">No</span></td><td><span class="tag tag-pass">Yes</span></td><td><span class="tag tag-pass">Yes</span></td><td><span class="tag tag-pass">Yes</span></td><td><span class="tag tag-pass">Yes</span></td></tr>
+<tr><td>Pareto</td><td><span class="tag tag-pass">Yes</span></td><td><span class="tag tag-pass">Yes</span></td><td><span class="tag tag-fail">No</span></td><td>—</td><td>—</td></tr>
+<tr><td>Condorcet Winner</td><td><span class="tag tag-fail">No</span></td><td><span class="tag tag-fail">No</span></td><td><span class="tag tag-pass">Yes</span></td><td>—</td><td>—</td></tr>
+<tr><td>IIA</td><td><span class="tag tag-fail">No</span></td><td><span class="tag tag-fail">No</span></td><td><span class="tag tag-fail">No</span></td><td>—</td><td>—</td></tr>
+<tr><td>Non-dictatorial</td><td><span class="tag tag-pass">Yes</span></td><td><span class="tag tag-pass">Yes</span></td><td><span class="tag tag-pass">Yes</span></td><td><span class="tag tag-pass">Yes</span></td><td><span class="tag tag-pass">Yes</span></td></tr>
+<tr><td>Key weakness</td><td>Ignores lower prefs</td><td>Misses Condorcet</td><td>Agenda-dependent</td><td>NP-hard</td><td>Non-monotonic</td></tr>
+</table>
+
+<div class="card card-amber">
+<div class="label label-amber">The Takeaway</div>
+<strong>No voting procedure satisfies all desirable properties simultaneously.</strong> This is the essence of Arrow's Theorem. Every system is a compromise — the question is which flaws are most acceptable for the situation.
+</div>
+</section>
+
+<!-- Section 16: Formula Reference -->
+<section id="reference">
+<h2>16. Formula & Concept Reference</h2>
+
+<table>
+<tr><th>Symbol / Term</th><th>Meaning</th></tr>
+<tr><td>Ag = {1, ..., n}</td><td>Set of voters (agents)</td></tr>
+<tr><td>&Omega; = {&omega;<sub>1</sub>, &omega;<sub>2</sub>, ...}</td><td>Set of outcomes (candidates)</td></tr>
+<tr><td>&Pi;(&Omega;)</td><td>Set of all preference orderings over &Omega;</td></tr>
+<tr><td>&omega; &succ;<sub>i</sub> &omega;'</td><td>Agent i strictly prefers &omega; over &omega;'</td></tr>
+<tr><td>&omega; &succ;* &omega;'</td><td>&omega; is ranked above &omega;' in the social ordering</td></tr>
+<tr><td>SWF</td><td>Social Welfare Function: inputs n orderings &rarr; outputs 1 ordering</td></tr>
+<tr><td>SCF</td><td>Social Choice Function: inputs n orderings &rarr; outputs 1 winner</td></tr>
+<tr><td>Plurality</td><td>1 point per first-place vote; highest wins</td></tr>
+<tr><td>Borda Count</td><td>k candidates: 1st gets k-1 pts, 2nd gets k-2, ... last gets 0</td></tr>
+<tr><td>IRV / Alternative Vote</td><td>Eliminate last place each round; reallocate votes; until majority</td></tr>
+<tr><td>Majority Graph</td><td>Directed graph: edge (i,j) if i beats j in pairwise majority</td></tr>
+<tr><td>Tournament</td><td>Complete, asymmetric, irreflexive majority graph</td></tr>
+<tr><td>Possible Winner</td><td>Exists a path to all others in majority graph</td></tr>
+<tr><td>Condorcet Winner</td><td>Direct edge to all others (beats everyone head-to-head)</td></tr>
+<tr><td>Condorcet's Paradox</td><td>Cyclic preferences &rarr; no matter who wins, majority is unhappy</td></tr>
+<tr><td>Slater Ranking</td><td>Ranking with minimum edge flips (minimum inconsistency cost)</td></tr>
+<tr><td>Pareto Property</td><td>If all prefer A over B, social outcome must rank A above B</td></tr>
+<tr><td>Condorcet Winner Condition</td><td>If Condorcet winner exists, it must be ranked first</td></tr>
+<tr><td>IIA</td><td>Social ranking of A vs B depends only on voters' A-vs-B orderings</td></tr>
+<tr><td>Dictatorship</td><td>f(&omega;&#773;<sub>1</sub>,...,&omega;&#773;<sub>n</sub>) = &omega;&#773;<sub>i</sub> for some fixed agent i</td></tr>
+<tr><td>Arrow's Theorem</td><td>Only SWF with Pareto + IIA (for &gt;2 candidates) is a dictatorship</td></tr>
+<tr><td>Gibbard-Satterthwaite</td><td>Only non-manipulable SCF with Pareto (for &gt;2 candidates) is dictatorship</td></tr>
+<tr><td>NP-hard manipulation</td><td>STV is NP-hard to manipulate (Bartholdi, Tovey, Trick 1989)</td></tr>
+</table>
+</section>
+
+<!-- Section 17: Transcript -->
+<section id="transcript">
+<h2>17. Full Video Transcript</h2>
+
+<details>
+<summary>[0:00] Introduction — The flawed world of group decisions</summary>
+<div class="content">
+<p>Welcome to The Explainer. Today, we're diving into the fascinating, highly mathematical, and honestly surprisingly flawed world of group decision making. We're going to look at the nuts and bolts of how we choose, and why the math behind our choices might just completely shatter your confidence in literally every group decision you've ever been a part of. Think about it. We usually just assume that counting votes is this perfectly straightforward, totally objective process. You count the preferences, a winner emerges, right? Well, as we'll see today, the actual method we use to count those votes totally dictates the final outcome. It's like the system itself is a heavy thumb on the scale. To demystify the math behind all this, here is our agenda. 1. The flaws of plurality. 2. The Borda count. 3. Alternative vote and runoffs. 4. What makes a good vote? And 5. The dictator theorem. Alright, let's jump right in.</p>
+</div>
+</details>
+
+<details>
+<summary>[1:02] The Flaws of Plurality — shallow counting</summary>
+<div class="content">
+<p>Question 1. The flaws of plurality. Let's start with the most common, yet maybe the most mathematically flawed voting method we use. Ok, so here's our baseline scenario. A group of friends is just trying to pick a movie to watch together. Simple enough, right? They've got four genres to choose from. Action, romance, comedy, and drama. Take a look at their preference schedule here. It maps out not just their absolute top pick, but exactly how they rank their second, third, and fourth choices too. Now, the easiest way to resolve this is a plurality vote. Essentially, we're running a social choice function, which is just a fancy mathematical term for a process that takes everyone's individual preferences and spits out a single group decision. Under plurality, each candidate gets exactly one point for every preference order that ranks them first. We completely, 100% ignore the rest of their carefully ranked choices. So looking back at our table, comedy is the clear winner under plurality. It snags five first place votes, beating actions 3, dramas 3, and romances 2. But, mathematically speaking, this result is incredibly shallow. Because it completely ignores the bottom three rows of our schedule, it totally wipes out all the rich nuance of how everyone actually feels about those other options.</p>
+</div>
+</details>
+
+<details>
+<summary>[2:30] The Borda Count — using the whole ranking</summary>
+<div class="content">
+<p>This brings us to a system designed specifically to fix exactly that shallow outcome. The Borda count solves these plurality anomalies by doing exactly what plurality refuses to do. It actually looks at the whole preference order. Here's how it works. For each candidate, we create a numeric variable that basically counts the strength of opinion in its favor. We increment the top choice by a set number of points, and then we just decrease that value for subsequent choices down the ranks all the way until the final, last place outcome gets zero points. Let's see this point increment math in action. Take candidate omega 2 here as an example. Voter 1 ranks them first, granting two points. But then, voters 2 and 3 rank them second, giving one point each. So, the Borda count for omega 2 becomes 4. Suddenly, those second and third place votes are heavily impacting the final total. It gives us a way better reflection of the group's overall satisfaction, you know?</p>
+</div>
+</details>
+
+<details>
+<summary>[3:33] Alternative Vote & IRV — majority through elimination</summary>
+<div class="content">
+<p>Section 3. Alternative vote and runoffs. What if we want to guarantee our winner actually has a genuine majority, like over 50%, rather than just a high aggregate point score? Enter the alternative vote, also known as instant runoff voting, or IRV. Just like the Borda count, voters rank the candidates. But the counting procedure? Totally different. We count in rounds. Every round, the last place candidate gets eliminated, and we keep going until someone captures a true majority. It's a really elegant solution to weird anomalies like Condorcet's paradox. You know, that frustrating scenario where group preferences loop in a cycle? Like A beats B, B beats C, but C beats A? IRV just breaks that cycle by systematically tossing out the least popular options.</p>
+</div>
+</details>
+
+<details>
+<summary>[4:15] IRV Worked Example — 23 voters, 3 rounds</summary>
+<div class="content">
+<p>Let's run this through a slightly larger movie voting scenario, this time with 23 voters. So a majority here means hitting 12 or more votes. In round one, we only look at first choice votes. Action has 7, comedy has 10, drama 2, and horror 4. Nobody has 12. Since drama got the fewest votes, it gets completely eliminated, and its votes are going to be reallocated. Moving into round two, we take those two votes that originally went to drama, and we look at those voters' second choices. Their second choice was horror, so we hand those two votes right over to horror. But even with that little bump, horror now falls into last place with only 6 combined votes. Since nobody has hit that magic number of 12 yet, horror is the next one knocked out. Finally, we hit round three, and we redistribute horror's 6 votes. Looking at the schedules, two of those votes slide over to comedy, and four slide over to action. And boom, this pushes comedy to a total of 12 votes. Comedy hits the exact 50 plus percent mark to secure the win. Through instant runoffs, we actually found a winner that the majority of the room can at least tolerate.</p>
+</div>
+</details>
+
+<details>
+<summary>[5:30] Desirable Properties — Pareto, Condorcet, IIA</summary>
+<div class="content">
+<p>Question 4. What makes a good vote? Seeing all these wildly different mechanics, we really have to ask, mathematically speaking, what are the properties of a genuinely good voting procedure? Well, when computer scientists classify an ideal voting system, they're generally looking for three key conditions to be met. The Pareto property, the Condorcet winner condition, and the independence of irrelevant alternatives, or IIA for short. These right here are actually the foundation for the famous Arrow's impossibility theorem. Let's break these down really quick. The Pareto property says that if everybody prefers candidate A over candidate B, then A absolutely must be ranked over B in the final outcome. Makes sense, right? Then, the Condorcet winner condition means if a candidate would win every single head-to-head matchup against all the others, they must be ranked first. IIA dictates that the ranking between A and B shouldn't mysteriously flip just because candidate C enters or leaves the race. And obviously, no single agent's preferences should ever strictly dictate the outcome. Basically, no dictators allowed.</p>
+</div>
+</details>
+
+<details>
+<summary>[6:34] Arrow's Theorem — mathematical perfection is impossible</summary>
+<div class="content">
+<p>But here is the brutal reality of Arrow's theorem for your exams. It mathematically proves that no rank order voting system can ever meet all these fairness criteria at the same time. Mathematical perfection is literally impossible.</p>
+</div>
+</details>
+
+<details>
+<summary>[6:48] Gibbard-Satterthwaite — tactical voting & NP-hard manipulation</summary>
+<div class="content">
+<p>Section 5. The Dictator Theorem. Let's see what happens to the math when we introduce a little thing called human nature. Because of human nature, we always have to worry about tactical voting. You know, where someone strategically lies on their ballot just to get a better overall result for themselves. So this leads to the ultimate theoretical question. Can we design a social choice function that is completely immune to manipulation? Like, can we build a system where lying never pays off? According to game theory and the deep math of multi-agent systems, the answer is a resounding, unavoidable no. It literally does not exist. This right here is the harsh reality of the Gibbard-Satterthwaite theorem. It mathematically proves that for elections with more than two candidates, the only perfectly non-manipulable system is a literal dictatorship. Every other system can be gamed. But there is a silver lining that you'll definitely need to know for your exams. Computer scientists fight back using computational complexity. Basically, by making the voting algorithm so incredibly complex that it is NP-hard to calculate how to effectively lie, we can make manipulation practically impossible in the real world, even if it's theoretically possible on paper.</p>
+</div>
+</details>
+
+<details>
+<summary>[7:48] Conclusion — every voting system is a compromise</summary>
+<div class="content">
+<p>Knowing that every single voting system has these fatal theoretical flaws, whether it's plurality ignoring nuance, or ranked systems being vulnerable to tactical lies, we just have to accept that group decisions are always a mathematical compromise. So as you prepare to tackle these concepts, I want to leave you with this final thought. If every single democratic system is vulnerable to mathematical manipulation, how do we choose the right illusion? Thanks for joining me on this explainer, and I'll catch you in the next one.</p>
+</div>
+</details>
+</section>
+
+</main>
+
+<script>
+const sections = document.querySelectorAll('section');
+const navLinks = document.querySelectorAll('nav a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 60) current = s.id; });
+  navLinks.forEach(a => {
+    a.classList.remove('active');
+    if (a.getAttribute('href') === '#' + current) a.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

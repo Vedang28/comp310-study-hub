@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COMP310 Chapter 15 — Bargaining / Negotiation</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0f172a; color: #e2e8f0; line-height: 1.7; }
+
+  .sidebar { position: fixed; top: 0; left: 0; width: 260px; height: 100vh; background: #1e293b; border-right: 1px solid #334155; overflow-y: auto; padding: 20px 0; z-index: 100; }
+  .sidebar h2 { color: #f43f5e; font-size: 14px; padding: 0 20px 15px; border-bottom: 1px solid #334155; margin-bottom: 10px; letter-spacing: 1px; text-transform: uppercase; }
+  .sidebar a { display: block; padding: 8px 20px; color: #94a3b8; text-decoration: none; font-size: 13px; border-left: 3px solid transparent; transition: all 0.2s; }
+  .sidebar a:hover { color: #e2e8f0; background: #1a2332; }
+  .sidebar a.active { color: #f43f5e; border-left-color: #f43f5e; background: rgba(244,63,94,0.08); }
+
+  .main { margin-left: 260px; max-width: 900px; padding: 40px 50px 80px; }
+  .chapter-label { color: #f43f5e; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+  .main-title { font-size: 36px; font-weight: 700; margin-bottom: 8px; color: #f1f5f9; }
+  .subtitle { color: #94a3b8; font-size: 16px; margin-bottom: 40px; }
+
+  section { margin-bottom: 50px; scroll-margin-top: 30px; }
+  section h2 { font-size: 24px; color: #f43f5e; margin-bottom: 18px; padding-bottom: 8px; border-bottom: 2px solid #f43f5e; }
+  section h3 { font-size: 18px; color: #fb7185; margin: 20px 0 10px; }
+  p { margin-bottom: 14px; color: #cbd5e1; }
+  ul, ol { margin: 10px 0 16px 24px; color: #cbd5e1; }
+  li { margin-bottom: 6px; }
+  strong { color: #f1f5f9; }
+
+  .card { background: #1e293b; border-radius: 10px; padding: 22px 26px; margin: 18px 0; border-left: 4px solid #334155; }
+  .card-rose { border-left-color: #f43f5e; }
+  .card-amber { border-left-color: #f59e0b; }
+  .card-red { border-left-color: #ef4444; }
+  .card-blue { border-left-color: #3b82f6; }
+  .card-green { border-left-color: #22c55e; }
+  .card-purple { border-left-color: #a855f7; }
+  .card-cyan { border-left-color: #06b6d4; }
+  .card h4 { color: #f43f5e; margin-bottom: 10px; font-size: 16px; }
+  .card-amber h4 { color: #f59e0b; }
+  .card-red h4 { color: #ef4444; }
+  .card-blue h4 { color: #3b82f6; }
+  .card-green h4 { color: #22c55e; }
+  .card-purple h4 { color: #a855f7; }
+  .card-cyan h4 { color: #06b6d4; }
+
+  .formula { background: #0f172a; border: 1px solid #f43f5e; border-radius: 8px; padding: 18px 24px; margin: 16px 0; text-align: center; font-family: 'Courier New', monospace; font-size: 16px; color: #fb7185; }
+  .formula-label { font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+
+  .example { background: #0c1526; border-radius: 10px; padding: 22px 26px; margin: 18px 0; border: 1px solid #1e293b; }
+  .example h4 { color: #f59e0b; margin-bottom: 12px; font-size: 15px; }
+  .example-title { display: inline-block; background: #f59e0b; color: #0f172a; padding: 2px 10px; border-radius: 4px; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  th { background: #f43f5e; color: #0f172a; padding: 10px 14px; text-align: left; font-weight: 700; font-size: 13px; }
+  td { padding: 10px 14px; border-bottom: 1px solid #1e293b; font-size: 14px; }
+  tr:nth-child(even) { background: rgba(30,41,59,0.5); }
+  .tag-pass { background: #22c55e; color: #0f172a; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; }
+  .tag-fail { background: #ef4444; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; }
+  .tag-warn { background: #f59e0b; color: #0f172a; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; }
+
+  .step { display: flex; align-items: flex-start; gap: 16px; margin: 14px 0; }
+  .step-num { min-width: 32px; height: 32px; background: #f43f5e; color: #0f172a; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0; }
+  .step-text { padding-top: 4px; }
+
+  .insight { background: linear-gradient(135deg, rgba(244,63,94,0.1), rgba(244,63,94,0.05)); border: 1px solid rgba(244,63,94,0.3); border-radius: 10px; padding: 20px 24px; margin: 18px 0; }
+  .insight h4 { color: #f43f5e; margin-bottom: 8px; }
+
+  .vs-container { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 18px 0; }
+  .vs-box { background: #1e293b; border-radius: 10px; padding: 20px; }
+  .vs-box h4 { margin-bottom: 10px; font-size: 15px; }
+  .vs-box.left { border-left: 4px solid #3b82f6; }
+  .vs-box.left h4 { color: #3b82f6; }
+  .vs-box.right { border-left: 4px solid #f59e0b; }
+  .vs-box.right h4 { color: #f59e0b; }
+
+  details { margin: 18px 0; }
+  summary { cursor: pointer; color: #f43f5e; font-weight: 600; padding: 10px 0; }
+  details .transcript-content { background: #1e293b; padding: 20px; border-radius: 8px; margin-top: 8px; font-size: 14px; color: #94a3b8; line-height: 1.8; max-height: 300px; overflow-y: auto; }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #0f172a; }
+  ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #475569; }
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <h2>Ch 15 — Negotiation</h2>
+  <a href="#overview">Overview</a>
+  <a href="#auction-vs-negotiation">Auction vs. Negotiation</a>
+  <a href="#rubinstein">Rubinstein's Alternating Offers</a>
+  <a href="#pie-division">Dividing the Pie</a>
+  <a href="#patient-players">Patient Players</a>
+  <a href="#impatient-players">Impatient Players</a>
+  <a href="#discount-formulas">Discount Factor Formulas</a>
+  <a href="#decision-functions">Negotiation Decision Functions</a>
+  <a href="#boulware-conceder">Boulware vs. Conceder</a>
+  <a href="#tod">Task-Oriented Domains</a>
+  <a href="#deals-tod">Deals in TODs</a>
+  <a href="#dominance">Dominance & Negotiation Set</a>
+  <a href="#monotonic">Monotonic Concession Protocol</a>
+  <a href="#strategies">Negotiation Strategies</a>
+  <a href="#zeuthen">The Zeuthen Strategy</a>
+  <a href="#zeuthen-formula">Zeuthen Risk Formula</a>
+  <a href="#zeuthen-properties">Zeuthen Properties</a>
+  <a href="#deception">Deception in TODs</a>
+  <a href="#summary">Summary & Exam Tips</a>
+</nav>
+
+<div class="main">
+  <div class="chapter-label">COMP310 — Multi-Agent Systems</div>
+  <h1 class="main-title">Chapter 15: Bargaining / Negotiation</h1>
+  <p class="subtitle">Rubinstein's Protocol, Discount Factors, Monotonic Concession & the Zeuthen Strategy</p>
+
+  <!-- 1. Overview -->
+  <section id="overview">
+    <h2>1. Overview</h2>
+    <p>How do agents <strong>reach agreements</strong> when they are self-interested? In an extreme case (zero-sum encounter) no agreement is possible — but in most scenarios, there is potential for <strong>mutually beneficial agreement on matters of common interest</strong>.</p>
+    <div class="card card-rose">
+      <h4>Two Key Capabilities</h4>
+      <ul>
+        <li><strong>Negotiation</strong> — agents make concessions and explore tradeoffs (this chapter)</li>
+        <li><strong>Argumentation</strong> — agents provide reasons and justifications (next chapter)</li>
+      </ul>
+    </div>
+    <div class="card card-blue">
+      <h4>Mechanisms, Protocols & Strategies</h4>
+      <ul>
+        <li>Negotiation is governed by a <strong>mechanism</strong> (or <strong>protocol</strong>) — the "rules of encounter"</li>
+        <li><strong>Mechanism design</strong> = designing mechanisms with desirable properties (e.g., Pareto efficiency)</li>
+        <li>Given a protocol, how can a particular <strong>strategy</strong> be designed for individual agents?</li>
+      </ul>
+    </div>
+    <details>
+      <summary>Show Transcript — Introduction</summary>
+      <div class="transcript-content">
+        Welcome to This Explainer. Today, we're diving deep into the mathematical protocols of multi-agent bargaining and negotiation. We're going to explore exactly how autonomous agents — and by extension, us humans — can logically, mathematically reach an agreement when what we want completely collides. Let's anchor these abstract concepts in a super-relatable, everyday conflict — the battle for the living room TV. That back and forth — the offer, counteroffer, compromise — that is the absolute essence of negotiation.
+      </div>
+    </details>
+  </section>
+
+  <!-- 2. Auction vs. Negotiation -->
+  <section id="auction-vs-negotiation">
+    <h2>2. Auction vs. Negotiation</h2>
+    <p>Auctions are <strong>only</strong> concerned with allocating goods. Negotiation is a richer process for reaching agreements on matters of common interest.</p>
+    <div class="card card-rose">
+      <h4>Four Components of Any Negotiation</h4>
+      <ol>
+        <li><strong>Negotiation set</strong> — the possible proposals agents can make</li>
+        <li><strong>Protocol</strong> — defines what legal proposals an agent can make, based on prior history</li>
+        <li><strong>Strategies</strong> — one per agent, typically private</li>
+        <li><strong>Rule</strong> — determines <em>when</em> a deal is struck and <em>what</em> the agreement is</li>
+      </ol>
+    </div>
+    <div class="card card-amber">
+      <h4>Complexity Factors</h4>
+      <ul>
+        <li><strong>Multiple issues</strong> — hard to compare offers across issues (the car salesman problem); exponential possible deals</li>
+        <li><strong>Multiple agents</strong> — one-to-one / many-to-one / many-to-many</li>
+      </ul>
+      <p>This chapter focuses on <strong>single-issue, symmetric, one-to-one</strong> negotiation settings.</p>
+    </div>
+  </section>
+
+  <!-- 3. Rubinstein's Alternating Offers -->
+  <section id="rubinstein">
+    <h2>3. Rubinstein's Alternating Offers</h2>
+    <p>A classic <strong>one-to-one protocol</strong> where agents negotiate over a series of rounds:</p>
+    <div class="card card-rose">
+      <h4>Protocol Rules</h4>
+      <div class="step">
+        <div class="step-num">0</div>
+        <div class="step-text"><strong>Round 0:</strong> Agent 1 makes a proposal x<sup>0</sup>. Agent 2 either <strong>accepts</strong> (A) or <strong>rejects</strong> (R).</div>
+      </div>
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text"><strong>Round 1:</strong> If rejected, Agent 2 makes a proposal. Agent 1 accepts or rejects.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">...</div>
+        <div class="step-text">This continues, alternating proposers each round.</div>
+      </div>
+    </div>
+    <div class="card card-red">
+      <h4>Key Limitation</h4>
+      <p>The protocol <strong>does not guarantee</strong> agreement will be reached. Agents could keep rejecting forever. If there is no agreement, the result is the <strong>conflict deal</strong>, denoted <strong>&Theta;</strong>.</p>
+    </div>
+    <div class="insight">
+      <h4>Two Fundamental Assumptions</h4>
+      <ul>
+        <li><strong>Disagreement is the worst outcome</strong> — both agents prefer any agreement over the conflict deal</li>
+        <li><strong>Agents seek to maximise utility</strong> — they prefer larger utility values</li>
+      </ul>
+    </div>
+    <details>
+      <summary>Show Transcript — Rubinstein's Protocol</summary>
+      <div class="transcript-content">
+        This brilliantly illustrates Rubinstein's alternating offers protocol. It's a classic one-to-one setup that plays out over a series of rounds. In round zero, Agent 1 kicks things off by making a proposal. Agent 2 then has a super simple choice — accept it or reject it. But there's a pretty big catch here. The rules of this protocol alone don't actually guarantee that an agreement will ever be reached. These agents could theoretically just keep rejecting each other's proposals until the end of time.
+      </div>
+    </details>
+  </section>
+
+  <!-- 4. Dividing the Pie -->
+  <section id="pie-division">
+    <h2>4. Dividing the Pie</h2>
+    <p>Model the negotiation as dividing a resource of value <strong>1</strong> into two parts. A proposal is a pair <strong>(x, 1−x)</strong> where 0 ≤ x ≤ 1.</p>
+    <div class="formula">
+      <div class="formula-label">Set of Possible Deals</div>
+      {(x, 1 − x) : 0 ≤ x ≤ 1}
+    </div>
+
+    <div class="vs-container">
+      <div class="vs-box left">
+        <h4>1 Round (Ultimatum Game)</h4>
+        <ul>
+          <li>Agent 1 has <strong>all the power</strong></li>
+          <li>Agent 1 proposes <strong>(1, 0)</strong></li>
+          <li>Agent 2 accepts — still better than the conflict deal</li>
+          <li>This is a <strong>Nash Equilibrium</strong></li>
+        </ul>
+      </div>
+      <div class="vs-box right">
+        <h4>2 Rounds</h4>
+        <ul>
+          <li>Power shifts to <strong>Agent 2</strong></li>
+          <li>Whatever Agent 1 proposes, Agent 2 rejects</li>
+          <li>Then Agent 2 proposes <strong>(0, 1)</strong></li>
+          <li>Agent 1 accepts — still better than conflict</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="insight">
+      <h4>With a Fixed Number of Rounds</h4>
+      <p>The <strong>last proposer takes everything</strong>. This happens any time there is a fixed number of rounds. The other agent still accepts because any deal is better than the conflict deal.</p>
+    </div>
+  </section>
+
+  <!-- 5. Patient Players (Indefinite Rounds) -->
+  <section id="patient-players">
+    <h2>5. Patient Players — Indefinite Rounds</h2>
+    <p>What if there are an <strong>indefinite number of rounds</strong>?</p>
+    <div class="card card-rose">
+      <h4>Example Strategy for Agent 1</h4>
+      <p>"Always propose (1, 0) and always reject any offer from Agent 2."</p>
+      <ul>
+        <li>If Agent 2 continually rejects → conflict deal (worst outcome)</li>
+        <li>So Agent 2 should accept <strong>immediately</strong> — no point waiting</li>
+      </ul>
+    </div>
+    <div class="card card-amber">
+      <h4>Infinite Nash Equilibria</h4>
+      <p>Whatever (x, 1−x) Agent 1 proposes, immediate acceptance is the Nash equilibrium as long as Agent 2 <strong>knows</strong> Agent 1's strategy. There are thus <strong>infinitely many</strong> Nash Equilibria — and all are Pareto optimal.</p>
+      <p>The solution concept of Nash Equilibrium is <strong>too weak to help us</strong> here. We need something else...</p>
+    </div>
+  </section>
+
+  <!-- 6. Impatient Players -->
+  <section id="impatient-players">
+    <h2>6. Impatient Players & Discount Factors</h2>
+    <p>We can get <strong>unique results</strong> by taking time into account. For any outcome x and times t<sub>2</sub> &gt; t<sub>1</sub>, both agents prefer x at time t<sub>1</sub> over x at time t<sub>2</sub>. Agents are, to varying degrees, <strong>impatient</strong>.</p>
+    <div class="card card-rose">
+      <h4>Discount Factor &delta;<sub>i</sub></h4>
+      <ul>
+        <li>Each agent <em>i</em> has a discount factor <strong>&delta;<sub>i</sub></strong> where 0 ≤ &delta; &lt; 1</li>
+        <li>The closer &delta;<sub>i</sub> is to <strong>1</strong>, the <strong>more patient</strong> the agent</li>
+        <li>The closer &delta;<sub>i</sub> is to <strong>0</strong>, the <strong>more impatient</strong></li>
+      </ul>
+    </div>
+    <div class="card card-blue">
+      <h4>Value Over Time</h4>
+      <p>If agent <em>i</em> is offered x, the value of that slice over time is:</p>
+      <ul>
+        <li>Time 0: <strong>x</strong></li>
+        <li>Time 1: <strong>&delta;<sub>i</sub> · x</strong></li>
+        <li>Time 2: <strong>&delta;<sub>i</sub><sup>2</sup> · x</strong></li>
+        <li>Time k: <strong>&delta;<sub>i</sub><sup>k</sup> · x</strong></li>
+      </ul>
+    </div>
+
+    <div class="example">
+      <span class="example-title">Intuition</span>
+      <h4>The Hot Pizza Analogy</h4>
+      <p>Imagine negotiating over a fresh, hot pizza. If you argue for an hour, by the time you agree, the pizza is cold — technically whole, but worth much less. That's exactly what discount factors model: <strong>delay erodes value</strong>.</p>
+    </div>
+    <details>
+      <summary>Show Transcript — Discount Factors</summary>
+      <div class="transcript-content">
+        Think about it like this. If a negotiation only has one round, it's essentially just an ultimatum game. But what happens in a two-round game, where time literally eats away at the value of the prize? Imagine negotiating over a fresh, hot pizza. If you sit there arguing for an hour, by the time you finally agree, the pizza is totally cold. A high delta, let's say 0.8, means the agent is highly patient. A low delta, like 0.2, means the agent is super impatient.
+      </div>
+    </details>
+  </section>
+
+  <!-- 7. Discount Factor Formulas -->
+  <section id="discount-formulas">
+    <h2>7. Discount Factor Formulas</h2>
+    <h3>2-Round Game with Impatience</h3>
+    <p>In a 2-round game, Agent 2 can play as before, but if they wait, they only get <strong>&delta;<sub>2</sub></strong> (whole pie, but discounted). Agent 1 can exploit this:</p>
+    <div class="card card-rose">
+      <h4>Agent 1's Optimal Offer</h4>
+      <p>Agent 1 offers <strong>(1 − &delta;<sub>2</sub>, &delta;<sub>2</sub>)</strong>. Agent 2 might as well accept — can do no better. This is a Nash Equilibrium.</p>
+    </div>
+    <h3>General Case (Infinite Rounds)</h3>
+    <p>In the general case, Agent 1 makes the proposal that gives Agent 2 what Agent 2 could enforce in the second round:</p>
+    <div class="formula">
+      <div class="formula-label">Agent 1's Share</div>
+      (1 − &delta;<sub>2</sub>) / (1 − &delta;<sub>1</sub>&delta;<sub>2</sub>)
+    </div>
+    <div class="formula">
+      <div class="formula-label">Agent 2's Share</div>
+      &delta;<sub>2</sub>(1 − &delta;<sub>1</sub>) / (1 − &delta;<sub>1</sub>&delta;<sub>2</sub>)
+    </div>
+
+    <div class="example">
+      <span class="example-title">Division Table</span>
+      <h4>Pie Division for Various Discount Factors</h4>
+      <table>
+        <tr><th>&delta;<sub>1</sub> \ &delta;<sub>2</sub></th><th>0.8</th><th>0.6</th><th>0.4</th><th>0.2</th></tr>
+        <tr><td><strong>0.8</strong></td><td>(0.556, 0.444)</td><td>(0.769, 0.231)</td><td>(0.882, 0.118)</td><td>(0.952, 0.048)</td></tr>
+        <tr><td><strong>0.6</strong></td><td>(0.385, 0.615)</td><td>(0.625, 0.375)</td><td>(0.789, 0.211)</td><td>(0.909, 0.091)</td></tr>
+        <tr><td><strong>0.4</strong></td><td>(0.294, 0.706)</td><td>(0.526, 0.474)</td><td>(0.714, 0.286)</td><td>(0.870, 0.130)</td></tr>
+        <tr><td><strong>0.2</strong></td><td>(0.238, 0.762)</td><td>(0.455, 0.545)</td><td>(0.652, 0.348)</td><td>(0.833, 0.167)</td></tr>
+      </table>
+    </div>
+    <div class="insight">
+      <h4>Key Insight: Patience = Power</h4>
+      <p>The more patient either agent is (higher &delta;), the <strong>more pie they get</strong>. An impatient Agent 2 will accept a much smaller offer early because getting a tiny slice now is worth more than a delayed larger slice.</p>
+    </div>
+  </section>
+
+  <!-- 8. Negotiation Decision Functions -->
+  <section id="decision-functions">
+    <h2>8. Negotiation Decision Functions</h2>
+    <p>The strategic approach relies on thinking about the other player's discount factor. A simpler alternative: use a <strong>negotiation decision function</strong> — a time-dependent curve that shapes bargaining behaviour without considering the opponent at all.</p>
+    <div class="card card-amber">
+      <h4>Trade-off</h4>
+      <p>Simplifies negotiation — no need to model the opponent. But <strong>fails to take the opponent's actions into account</strong>, so it can't exploit mistakes.</p>
+    </div>
+  </section>
+
+  <!-- 9. Boulware vs. Conceder -->
+  <section id="boulware-conceder">
+    <h2>9. Boulware vs. Conceder</h2>
+    <p>Two classic, totally opposite negotiation decision functions:</p>
+    <div class="vs-container">
+      <div class="vs-box left">
+        <h4>Boulware (Stubborn)</h4>
+        <ul>
+          <li>Very <strong>slow initial decrease</strong> in price</li>
+          <li>Holds firm for most of the negotiation</li>
+          <li>Then <strong>drops sharply</strong> near the deadline</li>
+          <li>Curve stays high, then falls steeply</li>
+        </ul>
+      </div>
+      <div class="vs-box right">
+        <h4>Conceder (Yielding)</h4>
+        <ul>
+          <li>Makes concessions <strong>early</strong></li>
+          <li>Price <strong>drops rapidly</strong> at the start</li>
+          <li>Makes <strong>fewer concessions</strong> later</li>
+          <li>Curve drops quickly, then flattens</li>
+        </ul>
+      </div>
+    </div>
+    <details>
+      <summary>Show Transcript — Boulware vs. Conceder</summary>
+      <div class="transcript-content">
+        First, there's the stubborn Boulware function. This agent barely drops their asking price for the vast majority of the negotiation. They hold incredibly firm, making this very slow initial decrease until time is almost totally up, at which point they just drop sharply. On the complete opposite end of the spectrum is the Conceder function. An agent using this strategy yields and gives up value almost immediately, dropping their price rapidly right at the beginning of the negotiation.
+      </div>
+    </details>
+  </section>
+
+  <!-- 10. Task-Oriented Domains -->
+  <section id="tod">
+    <h2>10. Task-Oriented Domains (TODs)</h2>
+    <p>Negotiation in domains where agents divide up tasks (not just resources).</p>
+    <div class="example">
+      <span class="example-title">Motivating Example</span>
+      <h4>The Carpool Problem</h4>
+      <p>You have 3 children at different schools. Your neighbour has 4 children. Delivery of each child is an indivisible task. You can negotiate a carpool — carry each other's children to shared destinations. The worst case is no agreement: you just do your own tasks, no worse off than before.</p>
+    </div>
+    <div class="card card-rose">
+      <h4>TOD Formal Definition</h4>
+      <p>A task-oriented domain is a triple <strong>⟨T, Ag, c⟩</strong>:</p>
+      <ul>
+        <li><strong>T</strong> — the (finite) set of all possible tasks</li>
+        <li><strong>Ag</strong> = {1, ..., n} — the (finite) set of participant agents</li>
+        <li><strong>c : 2<sup>T</sup> → ℝ<sup>+</sup></strong> — the cost function for executing each subset of tasks</li>
+      </ul>
+    </div>
+    <div class="card card-blue">
+      <h4>Cost Function Properties</h4>
+      <ul>
+        <li><strong>Monotonic:</strong> if T<sub>1</sub> ⊆ T<sub>2</sub>, then c(T<sub>1</sub>) ≤ c(T<sub>2</sub>) — more tasks cost more</li>
+        <li><strong>c(∅) = 0</strong> — doing nothing costs nothing</li>
+      </ul>
+    </div>
+    <p>An <strong>encounter</strong> is a collection of tasks ⟨T<sub>1</sub>, ..., T<sub>n</sub>⟩ where T<sub>i</sub> ⊆ T for each agent. This is where agents can negotiate by reallocating tasks.</p>
+  </section>
+
+  <!-- 11. Deals in TODs -->
+  <section id="deals-tod">
+    <h2>11. Deals in TODs</h2>
+    <p>With two agents and encounter ⟨T<sub>1</sub>, T<sub>2</sub>⟩, a <strong>deal</strong> &delta; = ⟨D<sub>1</sub>, D<sub>2</sub>⟩ is an allocation of the tasks T<sub>1</sub> ∪ T<sub>2</sub>.</p>
+    <div class="formula">
+      <div class="formula-label">Cost of Deal &delta; to Agent i</div>
+      cost<sub>i</sub>(&delta;) = c(D<sub>i</sub>)
+    </div>
+    <div class="formula">
+      <div class="formula-label">Utility of Deal &delta; to Agent i</div>
+      utility<sub>i</sub>(&delta;) = c(T<sub>i</sub>) − cost<sub>i</sub>(&delta;)
+    </div>
+    <div class="card card-rose">
+      <h4>Key Concepts</h4>
+      <ul>
+        <li>Utility = how much the agent <strong>gains</strong> from the deal (original cost minus new cost)</li>
+        <li>If utility is <strong>negative</strong>, the agent is worse off</li>
+        <li>A deal is <strong>individually rational</strong> if it gives positive utility</li>
+        <li>The <strong>conflict deal &Theta;</strong> = ⟨T<sub>1</sub>, T<sub>2</sub>⟩ (original allocation) → utility<sub>i</sub>(&Theta;) = 0 for all agents</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 12. Dominance & Negotiation Set -->
+  <section id="dominance">
+    <h2>12. Dominance & the Negotiation Set</h2>
+    <p>A deal &delta;<sub>1</sub> <strong>dominates</strong> another deal &delta;<sub>2</sub> (i.e., &delta;<sub>1</sub> ≻ &delta;<sub>2</sub>) if and only if:</p>
+    <div class="card card-rose">
+      <h4>Dominance Conditions</h4>
+      <ul>
+        <li>&delta;<sub>1</sub> is <strong>at least as good</strong> for every agent: ∀i, utility<sub>i</sub>(&delta;<sub>1</sub>) ≥ utility<sub>i</sub>(&delta;<sub>2</sub>)</li>
+        <li>&delta;<sub>1</sub> is <strong>strictly better</strong> for some agent: ∃i, utility<sub>i</sub>(&delta;<sub>1</sub>) > utility<sub>i</sub>(&delta;<sub>2</sub>)</li>
+      </ul>
+    </div>
+    <div class="card card-green">
+      <h4>Key Definitions</h4>
+      <ul>
+        <li><strong>Pareto optimal</strong>: a deal that is <strong>not dominated</strong> by any other deal</li>
+        <li><strong>Individually rational</strong>: a deal that weakly dominates the conflict deal (at least as good as no deal for everyone)</li>
+      </ul>
+    </div>
+    <div class="insight">
+      <h4>The Negotiation Set</h4>
+      <p>The negotiation set consists of deals that are both <strong>individually rational</strong> AND <strong>Pareto optimal</strong>. These are the only "reasonable" deals — agents won't accept worse-than-conflict deals, and non-Pareto deals can always be improved.</p>
+    </div>
+  </section>
+
+  <!-- 13. Monotonic Concession Protocol -->
+  <section id="monotonic">
+    <h2>13. The Monotonic Concession Protocol</h2>
+    <p>A one-to-one negotiation protocol where agents propose <strong>simultaneously</strong>.</p>
+    <div class="card card-rose">
+      <h4>Protocol Rules</h4>
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text"><strong>Round 0:</strong> Both agents simultaneously propose a deal from the negotiation set.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text"><strong>Agreement check:</strong> If one agent finds the other's proposal at least as good as their own → deal! (If both hold, flip a coin.)</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text"><strong>Round u+1:</strong> Each agent either <strong>concedes</strong> (makes a better offer for the opponent) or <strong>waits</strong>.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-text"><strong>Monotonic rule:</strong> No agent can make a proposal that is less preferred by the other than their previous offer. <strong>No backtracking!</strong></div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-text"><strong>Termination:</strong> If neither agent concedes in some round u > 0 → <strong>conflict deal</strong>.</div>
+      </div>
+    </div>
+    <div class="card card-amber">
+      <h4>Properties</h4>
+      <ul>
+        <li><span class="tag-pass">Guaranteed to end</span> in a finite number of rounds (if deal set is finite)</li>
+        <li><span class="tag-pass">Easy to verify</span> if rules are being followed</li>
+        <li><span class="tag-fail">No guarantee of speed</span> — number of possible deals is O(2<sup>|T|</sup>), exponential in the number of tasks</li>
+      </ul>
+    </div>
+    <p>Utility functions of both agents are assumed to be <strong>known to both agents</strong>.</p>
+    <details>
+      <summary>Show Transcript — Monotonic Concession</summary>
+      <div class="transcript-content">
+        Instead of taking turns like we saw in Rubinstein's model, agents propose deals simultaneously right in round one. The absolute core rule here, the monotonic part, is that no agent is ever allowed to backtrack. You literally cannot make a proposal that the other agent prefers less than your previous offer. And crucially, if you hit a round where neither agent makes a concession, the negotiation instantly terminates in that dreaded conflict deal.
+      </div>
+    </details>
+  </section>
+
+  <!-- 14. Negotiation Strategies -->
+  <section id="strategies">
+    <h2>14. Negotiation Strategies</h2>
+    <p>Three key questions when using the monotonic concession protocol:</p>
+    <table>
+      <tr><th>Question</th><th>Answer</th></tr>
+      <tr>
+        <td>What should an agent's <strong>first proposal</strong> be?</td>
+        <td>Its <strong>most preferred deal</strong></td>
+      </tr>
+      <tr>
+        <td>On any given round, <strong>who should concede</strong>?</td>
+        <td>The agent <strong>least willing to risk conflict</strong></td>
+      </tr>
+      <tr>
+        <td>If an agent concedes, <strong>how much</strong>?</td>
+        <td><strong>Just enough</strong> to change the balance of risk</td>
+      </tr>
+    </table>
+    <p>The <strong>Zeuthen strategy</strong> answers the last two questions mathematically.</p>
+  </section>
+
+  <!-- 15. The Zeuthen Strategy -->
+  <section id="zeuthen">
+    <h2>15. The Zeuthen Strategy</h2>
+    <p>Key idea: evaluate an agent's <strong>willingness to risk conflict</strong>.</p>
+    <div class="card card-rose">
+      <h4>Core Intuition</h4>
+      <ul>
+        <li>If you've conceded <strong>a lot</strong>, your proposal is near the conflict deal</li>
+        <li>In case conflict occurs, you're <strong>not much worse off</strong></li>
+        <li>So you are <strong>more willing to risk conflict</strong> (hold firm)</li>
+      </ul>
+      <p>An agent is <strong>more willing to risk conflict</strong> when the difference between its current proposal and the conflict deal is <strong>low</strong>.</p>
+    </div>
+    <details>
+      <summary>Show Transcript — Zeuthen Strategy</summary>
+      <div class="transcript-content">
+        The Zeuthen Strategy dictates that an agent continuously measures its willingness to risk conflict. Intuitively, an agent is way more willing to risk a conflict if the utility difference between their current proposal and the dreaded conflict deal is very low. They simply have less to lose. Under this strategy, an agent will concede, if and literally only if, its calculated willingness to risk conflict is smaller than or equal to the other agent's risk.
+      </div>
+    </details>
+  </section>
+
+  <!-- 16. Zeuthen Risk Formula -->
+  <section id="zeuthen-formula">
+    <h2>16. Zeuthen Risk Formula</h2>
+    <p>Agent <em>i</em>'s willingness to risk conflict at round <em>t</em>, denoted <strong>risk<sub>i</sub><sup>t</sup></strong>:</p>
+    <div class="formula">
+      <div class="formula-label">Zeuthen Risk Formula</div>
+      risk<sub>i</sub><sup>t</sup> = { 1 &nbsp; if utility<sub>i</sub>(&delta;<sub>i</sub><sup>t</sup>) = 0 &nbsp; | &nbsp; [utility<sub>i</sub>(&delta;<sub>i</sub><sup>t</sup>) − utility<sub>i</sub>(&delta;<sub>j</sub><sup>t</sup>)] / utility<sub>i</sub>(&delta;<sub>i</sub><sup>t</sup>) &nbsp; otherwise }
+    </div>
+    <p>Where &delta;<sub>i</sub><sup>t</sup> is agent <em>i</em>'s proposal at round <em>t</em>, and &delta;<sub>j</sub><sup>t</sup> is the other agent's proposal.</p>
+    <div class="card card-rose">
+      <h4>Zeuthen Decision Rules</h4>
+      <ul>
+        <li>The agent with the <strong>smaller risk value</strong> should concede (less willing to risk conflict → more to lose)</li>
+        <li>Concede <strong>just enough</strong> to make the other agent's risk value less than your own</li>
+        <li>Start by proposing your <strong>most preferred deal</strong></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 17. Zeuthen Properties -->
+  <section id="zeuthen-properties">
+    <h2>17. Properties of the Zeuthen Strategy</h2>
+    <div class="card card-green">
+      <h4>When Both Agents Use Zeuthen + Monotonic Concession</h4>
+      <ul>
+        <li><span class="tag-pass">Guaranteed to terminate</span></li>
+        <li><span class="tag-fail">No guarantee</span> the negotiation will succeed</li>
+        <li><span class="tag-pass">If agreement is reached</span>, it is guaranteed to be <strong>individually rational</strong> AND <strong>Pareto optimal</strong></li>
+      </ul>
+    </div>
+    <div class="card card-blue">
+      <h4>Nash Equilibrium</h4>
+      <p>The Zeuthen strategy is in <strong>Nash equilibrium</strong>: if one agent uses it, the other can do no better than using it too. This is valuable for designing automated agents — the strategy can be <strong>publicly known</strong> and no one can exploit it.</p>
+    </div>
+    <div class="card card-amber">
+      <h4>The Equal-Risk Edge Case</h4>
+      <p>If both agents have <strong>equal willingness to risk conflict</strong> on the final round, the strategy says both should concede. But an intelligent agent might <strong>defect</strong> (hold firm), hoping the other concedes. If both defect → conflict deal (everyone loses). Solution: <strong>flip a coin</strong> to decide who concedes.</p>
+    </div>
+  </section>
+
+  <!-- 18. Deception -->
+  <section id="deception">
+    <h2>18. Deception in TODs</h2>
+    <p>Deception can benefit agents in two ways:</p>
+    <div class="vs-container">
+      <div class="vs-box left">
+        <h4>Phantom & Decoy Tasks</h4>
+        <ul>
+          <li><strong>Pretending</strong> you have tasks that you don't</li>
+          <li>Can be prevented by ensuring tasks are <strong>verifiable</strong></li>
+        </ul>
+      </div>
+      <div class="vs-box right">
+        <h4>Hidden Tasks</h4>
+        <ul>
+          <li><strong>Pretending not to have</strong> tasks that you do</li>
+          <li>If you hide a task similar to another agent's, they won't propose taking it on</li>
+          <li>May incur a small additional cost to you, but avoids a beneficial swap</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 19. Summary -->
+  <section id="summary">
+    <h2>19. Summary & Exam Tips</h2>
+
+    <h3>Protocol Comparison</h3>
+    <table>
+      <tr><th>Feature</th><th>Rubinstein (Alternating)</th><th>Monotonic Concession</th></tr>
+      <tr><td>Proposing</td><td>Alternating (one at a time)</td><td>Simultaneous</td></tr>
+      <tr><td>Patient players</td><td>Infinite Nash equilibria</td><td>N/A</td></tr>
+      <tr><td>Impatient players</td><td>Unique equilibrium via &delta;</td><td>Zeuthen strategy</td></tr>
+      <tr><td>Backtracking</td><td>No restriction</td><td><span class="tag-fail">Forbidden</span></td></tr>
+      <tr><td>Termination</td><td>Not guaranteed</td><td><span class="tag-pass">Guaranteed</span> (finite deals)</td></tr>
+      <tr><td>Agreement quality</td><td>Depends on &delta;</td><td><span class="tag-pass">IR + Pareto optimal</span></td></tr>
+    </table>
+
+    <div class="card card-rose">
+      <h4>Exam Checklist</h4>
+      <ul>
+        <li>Understand <strong>Rubinstein's alternating offers</strong> — how rounds work, the conflict deal &Theta;</li>
+        <li>Know the <strong>ultimatum game</strong> result: 1 round → proposer takes all</li>
+        <li>Be able to calculate <strong>pie divisions</strong> using discount factors: Agent 1 gets (1−&delta;<sub>2</sub>)/(1−&delta;<sub>1</sub>&delta;<sub>2</sub>)</li>
+        <li>Know <strong>Boulware vs. Conceder</strong> strategies and their curves</li>
+        <li>Understand <strong>TOD definitions</strong>: cost function, utility, conflict deal, individual rationality</li>
+        <li>Know the <strong>negotiation set</strong> = individually rational ∩ Pareto optimal</li>
+        <li>Understand the <strong>monotonic concession protocol</strong> rules (simultaneous, no backtracking, conflict on no-concession)</li>
+        <li>Know the <strong>Zeuthen risk formula</strong> and how it determines who concedes</li>
+        <li>Know Zeuthen guarantees: <strong>terminates, IR + Pareto optimal</strong> if agreement, <strong>Nash equilibrium</strong></li>
+        <li>Understand <strong>deception</strong>: phantom/decoy tasks vs. hidden tasks</li>
+      </ul>
+    </div>
+
+    <div class="example">
+      <span class="example-title">Quick Reference</span>
+      <h4>Key Formulas</h4>
+      <table>
+        <tr><th>Formula</th><th>Meaning</th></tr>
+        <tr><td>utility<sub>i</sub>(&delta;) = c(T<sub>i</sub>) − c(D<sub>i</sub>)</td><td>Agent's gain from deal &delta;</td></tr>
+        <tr><td>(1−&delta;<sub>2</sub>) / (1−&delta;<sub>1</sub>&delta;<sub>2</sub>)</td><td>Agent 1's share with discount factors</td></tr>
+        <tr><td>&delta;<sub>2</sub>(1−&delta;<sub>1</sub>) / (1−&delta;<sub>1</sub>&delta;<sub>2</sub>)</td><td>Agent 2's share with discount factors</td></tr>
+        <tr><td>risk<sub>i</sub><sup>t</sup> = [u<sub>i</sub>(&delta;<sub>i</sub><sup>t</sup>) − u<sub>i</sub>(&delta;<sub>j</sub><sup>t</sup>)] / u<sub>i</sub>(&delta;<sub>i</sub><sup>t</sup>)</td><td>Zeuthen willingness to risk conflict</td></tr>
+      </table>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  const sections = document.querySelectorAll('section');
+  const navLinks = document.querySelectorAll('.sidebar a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop;
+      if (window.pageYOffset >= sectionTop - 80) {
+        current = section.getAttribute('id');
+      }
+    });
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === '#' + current) {
+        link.classList.add('active');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

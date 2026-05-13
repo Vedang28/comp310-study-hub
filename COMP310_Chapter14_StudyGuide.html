@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COMP310 Chapter 14 — Allocating Scarce Resources</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0f172a; color: #e2e8f0; line-height: 1.7; }
+
+  /* Sidebar */
+  .sidebar { position: fixed; top: 0; left: 0; width: 260px; height: 100vh; background: #1e293b; border-right: 1px solid #334155; overflow-y: auto; padding: 20px 0; z-index: 100; }
+  .sidebar h2 { color: #10b981; font-size: 14px; padding: 0 20px 15px; border-bottom: 1px solid #334155; margin-bottom: 10px; letter-spacing: 1px; text-transform: uppercase; }
+  .sidebar a { display: block; padding: 8px 20px; color: #94a3b8; text-decoration: none; font-size: 13px; border-left: 3px solid transparent; transition: all 0.2s; }
+  .sidebar a:hover { color: #e2e8f0; background: #1a2332; }
+  .sidebar a.active { color: #10b981; border-left-color: #10b981; background: rgba(16,185,129,0.08); }
+
+  /* Main */
+  .main { margin-left: 260px; max-width: 900px; padding: 40px 50px 80px; }
+  .chapter-label { color: #10b981; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+  .main-title { font-size: 36px; font-weight: 700; margin-bottom: 8px; color: #f1f5f9; }
+  .subtitle { color: #94a3b8; font-size: 16px; margin-bottom: 40px; }
+
+  section { margin-bottom: 50px; scroll-margin-top: 30px; }
+  section h2 { font-size: 24px; color: #10b981; margin-bottom: 18px; padding-bottom: 8px; border-bottom: 2px solid #10b981; }
+  section h3 { font-size: 18px; color: #34d399; margin: 20px 0 10px; }
+  p { margin-bottom: 14px; color: #cbd5e1; }
+  ul, ol { margin: 10px 0 16px 24px; color: #cbd5e1; }
+  li { margin-bottom: 6px; }
+  strong { color: #f1f5f9; }
+
+  /* Cards */
+  .card { background: #1e293b; border-radius: 10px; padding: 22px 26px; margin: 18px 0; border-left: 4px solid #334155; }
+  .card-emerald { border-left-color: #10b981; }
+  .card-amber { border-left-color: #f59e0b; }
+  .card-red { border-left-color: #ef4444; }
+  .card-blue { border-left-color: #3b82f6; }
+  .card-green { border-left-color: #22c55e; }
+  .card-purple { border-left-color: #a855f7; }
+  .card-cyan { border-left-color: #06b6d4; }
+  .card h4 { color: #10b981; margin-bottom: 10px; font-size: 16px; }
+  .card-amber h4 { color: #f59e0b; }
+  .card-red h4 { color: #ef4444; }
+  .card-blue h4 { color: #3b82f6; }
+  .card-green h4 { color: #22c55e; }
+  .card-purple h4 { color: #a855f7; }
+  .card-cyan h4 { color: #06b6d4; }
+
+  /* Formula boxes */
+  .formula { background: #0f172a; border: 1px solid #10b981; border-radius: 8px; padding: 18px 24px; margin: 16px 0; text-align: center; font-family: 'Courier New', monospace; font-size: 16px; color: #34d399; }
+  .formula-label { font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+
+  /* Example boxes */
+  .example { background: #0c1526; border-radius: 10px; padding: 22px 26px; margin: 18px 0; border: 1px solid #1e293b; }
+  .example h4 { color: #f59e0b; margin-bottom: 12px; font-size: 15px; }
+  .example-title { display: inline-block; background: #f59e0b; color: #0f172a; padding: 2px 10px; border-radius: 4px; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+
+  /* Comparison tables */
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  th { background: #10b981; color: #0f172a; padding: 10px 14px; text-align: left; font-weight: 700; font-size: 13px; }
+  td { padding: 10px 14px; border-bottom: 1px solid #1e293b; font-size: 14px; }
+  tr:nth-child(even) { background: rgba(30,41,59,0.5); }
+  .tag-pass { background: #22c55e; color: #0f172a; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; }
+  .tag-fail { background: #ef4444; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; }
+  .tag-warn { background: #f59e0b; color: #0f172a; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; }
+
+  /* Steps */
+  .step { display: flex; align-items: flex-start; gap: 16px; margin: 14px 0; }
+  .step-num { min-width: 32px; height: 32px; background: #10b981; color: #0f172a; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0; }
+  .step-text { padding-top: 4px; }
+
+  /* Proof boxes */
+  .proof { background: #0c1526; border: 1px solid #3b82f6; border-radius: 10px; padding: 22px 26px; margin: 18px 0; }
+  .proof h4 { color: #3b82f6; margin-bottom: 12px; }
+  .proof .case { margin: 12px 0; padding: 12px 16px; background: #1e293b; border-radius: 8px; }
+  .proof .case-label { color: #60a5fa; font-weight: 700; font-size: 14px; margin-bottom: 6px; }
+
+  /* Key insight */
+  .insight { background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(16,185,129,0.05)); border: 1px solid rgba(16,185,129,0.3); border-radius: 10px; padding: 20px 24px; margin: 18px 0; }
+  .insight h4 { color: #10b981; margin-bottom: 8px; }
+
+  /* Collapsible transcript */
+  details { margin: 18px 0; }
+  summary { cursor: pointer; color: #10b981; font-weight: 600; padding: 10px 0; }
+  details .transcript-content { background: #1e293b; padding: 20px; border-radius: 8px; margin-top: 8px; font-size: 14px; color: #94a3b8; line-height: 1.8; max-height: 300px; overflow-y: auto; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #0f172a; }
+  ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #475569; }
+</style>
+</head>
+<body>
+
+<!-- Sidebar Navigation -->
+<nav class="sidebar">
+  <h2>Ch 14 — Auctions</h2>
+  <a href="#overview">Overview</a>
+  <a href="#what-is-auction">What is an Auction?</a>
+  <a href="#protocol-dimensions">Auction Protocol Dimensions</a>
+  <a href="#types-of-value">Types of Value</a>
+  <a href="#english">English Auction</a>
+  <a href="#dutch">Dutch Auction</a>
+  <a href="#fpsb">First-Price Sealed-Bid</a>
+  <a href="#vickrey">Vickrey Auction</a>
+  <a href="#vickrey-intuition">Why Vickrey Works</a>
+  <a href="#proof-overbid">Proof: Overbidding</a>
+  <a href="#proof-underbid">Proof: Underbidding</a>
+  <a href="#collusion">Collusion & Flaws</a>
+  <a href="#combinatorial-intro">Combinatorial Auctions</a>
+  <a href="#valuation-fn">Valuation Functions</a>
+  <a href="#allocation-sw">Allocation & Social Welfare</a>
+  <a href="#winner-determination">Winner Determination</a>
+  <a href="#bidding-languages">Bidding Languages</a>
+  <a href="#xor-bids">XOR Bids</a>
+  <a href="#or-bids">OR Bids</a>
+  <a href="#ilp">ILP Formulation</a>
+  <a href="#vcg">The VCG Mechanism</a>
+  <a href="#vcg-payment">VCG Payment Formula</a>
+  <a href="#summary">Summary & Exam Tips</a>
+</nav>
+
+<!-- Main Content -->
+<div class="main">
+  <div class="chapter-label">COMP310 — Multi-Agent Systems</div>
+  <h1 class="main-title">Chapter 14: Allocating Scarce Resources</h1>
+  <p class="subtitle">Auctions, Bidding Languages, Winner Determination & the VCG Mechanism</p>
+
+  <!-- 1. Overview -->
+  <section id="overview">
+    <h2>1. Overview</h2>
+    <p>Allocating scarce resources among competing agents is a central problem in multi-agent systems. When demand exceeds supply, we need a mechanism to decide <strong>who gets what</strong> and <strong>at what price</strong>.</p>
+    <div class="card card-emerald">
+      <h4>What is a Scarce Resource?</h4>
+      <ul>
+        <li>A <strong>physical object</strong> (e.g., artwork, equipment)</li>
+        <li>The <strong>right to use land</strong> or spectrum</li>
+        <li><strong>Computational resources</strong> (processor time, memory, bandwidth)</li>
+      </ul>
+    </div>
+    <p>If the resource isn't scarce, or there's no competition, allocation is trivial. When there is <strong>greater demand than supply</strong>, we turn to <strong>auctions</strong> — market institutions where traders exchange price information through bids and asks.</p>
+    <div class="insight">
+      <h4>Why Auctions?</h4>
+      <p>Auctions grew massively with the internet (frictionless commerce). eBay, Google AdWords auctions — things that weren't previously profitable to auction are now routine. Auctions are effective at <strong>allocating resources efficiently</strong> and can <strong>reveal truths about bidders</strong>.</p>
+    </div>
+    <details>
+      <summary>Show Transcript — Introduction</summary>
+      <div class="transcript-content">
+        Hey everyone! Welcome back to This Explainer. I am absolutely thrilled to jump into today's topic with you, because we're unpacking something genuinely fascinating. We're looking at Chapter 14, Allocating Scarce Resources. Think about it. When humans, or even machines, want the exact same limited things, how do we actually decide who gets what fairly and efficiently? Well, the answer almost always comes down to auctions, and the incredibly clever, kind of sneaky mathematics behind them.
+      </div>
+    </details>
+  </section>
+
+  <!-- 2. What is an Auction? -->
+  <section id="what-is-auction">
+    <h2>2. What is an Auction?</h2>
+    <p>An <strong>auction</strong> takes place between an agent called the <strong>auctioneer</strong> and a collection of agents called the <strong>bidders</strong>. The goal is to allocate a good (the scarce resource) to one of the bidders.</p>
+    <div class="card card-emerald">
+      <h4>Key Terminology</h4>
+      <ul>
+        <li><strong>Traders</strong> — participants in the auction with allocations of goods and money</li>
+        <li><strong>Bid</strong> — an offer to buy at a given price</li>
+        <li><strong>Ask</strong> — an offer to sell at a given price</li>
+        <li><strong>Exchange</strong> — the free alteration of allocations of goods and money between traders</li>
+        <li><strong>Limit price</strong> — the value or maximum price a trader places on the good (affects behaviour)</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 3. Auction Protocol Dimensions -->
+  <section id="protocol-dimensions">
+    <h2>3. Auction Protocol Dimensions</h2>
+    <p>Auction protocols vary along three key dimensions:</p>
+    <table>
+      <tr><th>Dimension</th><th>Options</th><th>Details</th></tr>
+      <tr>
+        <td><strong>Winner Determination</strong></td>
+        <td>First-price vs. Second-price</td>
+        <td>Who gets the good, and what do they pay?</td>
+      </tr>
+      <tr>
+        <td><strong>Open Cry vs. Sealed Bid</strong></td>
+        <td>Public vs. Private bids</td>
+        <td>Are bids visible? Can agents exploit public knowledge?</td>
+      </tr>
+      <tr>
+        <td><strong>One-shot vs. Iterated</strong></td>
+        <td>Single bid vs. Multiple rounds</td>
+        <td>If iterated: ascending or descending? What terminates it?</td>
+      </tr>
+    </table>
+  </section>
+
+  <!-- 4. Types of Value -->
+  <section id="types-of-value">
+    <h2>4. Types of Value</h2>
+    <p>Different auction models embody different assumptions about how bidders value the good:</p>
+    <div class="card card-emerald">
+      <h4>Private Value</h4>
+      <p>The good has a value to me that is <strong>independent</strong> of what it is worth to you. Example: John Lennon's last dollar bill — its sentimental value is purely personal.</p>
+    </div>
+    <div class="card card-amber">
+      <h4>Common Value</h4>
+      <p>The good has the <strong>same value to all of us</strong>, but we have <strong>differing estimates</strong> of what it is. This leads to the <strong>winner's curse</strong>: the winning bid in an auction exceeds the intrinsic value or true worth of the item.</p>
+    </div>
+    <div class="card card-purple">
+      <h4>Correlated Value</h4>
+      <p>Our values are <strong>related</strong>. The more you're prepared to pay, the more I should be prepared to pay. A middle ground between private and common value.</p>
+    </div>
+    <div class="insight">
+      <h4>The Winner's Curse</h4>
+      <p>With common-value goods, the winner tends to be the bidder who <strong>overestimated</strong> the true value the most. Winning itself is evidence of overpaying! Each trader has a <strong>limit price</strong> that affects their bidding behaviour.</p>
+    </div>
+  </section>
+
+  <!-- 5. English Auction -->
+  <section id="english">
+    <h2>5. English Auction</h2>
+    <p>The classic auction format everyone knows — the "going once, going twice" style.</p>
+    <div class="card card-emerald">
+      <h4>How It Works</h4>
+      <ul>
+        <li>Buyers call out <strong>ascending bids</strong> (prices increase)</li>
+        <li>The auctioneer may call out prices with buyers indicating agreement</li>
+        <li>A <strong>reserve price</strong> may be set (the minimum acceptable price)</li>
+        <li>Ends at a fixed time (internet auctions) or when no more bidding activity</li>
+        <li>The <strong>"last man standing"</strong> pays their bid</li>
+      </ul>
+    </div>
+    <table>
+      <tr><th>Property</th><th>Classification</th></tr>
+      <tr><td>Price</td><td><span class="tag-pass">First-price</span></td></tr>
+      <tr><td>Visibility</td><td><span class="tag-pass">Open-cry</span></td></tr>
+      <tr><td>Direction</td><td><span class="tag-pass">Ascending</span></td></tr>
+      <tr><td>Use Case</td><td>~95% of internet auctions, antiques, artwork</td></tr>
+      <tr><td>Vulnerabilities</td><td><span class="tag-fail">Winner's curse</span> <span class="tag-fail">Shills</span></td></tr>
+    </table>
+    <details>
+      <summary>Show Transcript — English Auction</summary>
+      <div class="transcript-content">
+        To really grasp why we even need advanced auction designs, we've got to look at the baseline. So think of your standard English auction. You know, the kind you see in the movies with an auctioneer talking a mile a minute. In that open cry format, you actually gain valuable market information as other people bid. You get a feel for how much everyone else values the item.
+      </div>
+    </details>
+  </section>
+
+  <!-- 6. Dutch Auction -->
+  <section id="dutch">
+    <h2>6. Dutch Auction</h2>
+    <p>Also called a <strong>"descending clock" auction</strong>. Some auctions literally use a clock to display the prices.</p>
+    <div class="card card-emerald">
+      <h4>How It Works</h4>
+      <ul>
+        <li>Starts at a <strong>high price</strong>, auctioneer calls out <strong>descending prices</strong></li>
+        <li>One bidder claims the good by indicating the current price is acceptable</li>
+        <li>Winner pays the price at which they <strong>"stop the clock"</strong></li>
+        <li>Ties are broken by restarting from a slightly higher price</li>
+      </ul>
+    </div>
+    <table>
+      <tr><th>Property</th><th>Classification</th></tr>
+      <tr><td>Price</td><td><span class="tag-pass">First-price</span></td></tr>
+      <tr><td>Visibility</td><td><span class="tag-pass">Open-cry</span></td></tr>
+      <tr><td>Direction</td><td><span class="tag-warn">Descending</span></td></tr>
+      <tr><td>Use Case</td><td>Perishable goods: flowers (Netherlands), fish (Spain/Israel), tobacco (Canada)</td></tr>
+      <tr><td>Speed</td><td><span class="tag-pass">High volume</span> — auctions proceed swiftly</td></tr>
+    </table>
+  </section>
+
+  <!-- 7. First-Price Sealed-Bid -->
+  <section id="fpsb">
+    <h2>7. First-Price Sealed-Bid (FPSB)</h2>
+    <p>In a <strong>sealed-bid auction</strong>, none of the open-cry dynamics happen. You learn nothing about the market. At most, you know the winning price after the auction.</p>
+    <div class="card card-emerald">
+      <h4>How It Works</h4>
+      <ul>
+        <li>Each bidder submits a <strong>single sealed bid</strong></li>
+        <li>The <strong>highest bid wins</strong></li>
+        <li>Winner pays their own bid (first-price)</li>
+      </ul>
+    </div>
+    <table>
+      <tr><th>Property</th><th>Classification</th></tr>
+      <tr><td>Price</td><td><span class="tag-pass">First-price</span></td></tr>
+      <tr><td>Visibility</td><td><span class="tag-warn">Sealed bid</span></td></tr>
+      <tr><td>Rounds</td><td><span class="tag-warn">One-shot</span></td></tr>
+      <tr><td>Use Case</td><td>Treasury bonds (UK), property (Scotland)</td></tr>
+    </table>
+    <div class="card card-red">
+      <h4>The Problem: Strategic Bidding</h4>
+      <p>Because you pay exactly what you bid, bidders are incentivised to <strong>shade their bids below their true valuation</strong> — constantly second-guessing each other to avoid overpaying. This makes the auction inefficient.</p>
+    </div>
+    <details>
+      <summary>Show Transcript — Sealed-Bid Problem</summary>
+      <div class="transcript-content">
+        But contrast that with a first-price sealed bid system. In that scenario, everyone slides their offer into a secret envelope. You learn absolutely nothing about the rest of the market. The highest bidder just wins, and they pay exactly what they offered. The massive problem here? It's strategic bidding. Players are constantly second-guessing each other, just to avoid paying too much.
+      </div>
+    </details>
+  </section>
+
+  <!-- 8. Vickrey Auction -->
+  <section id="vickrey">
+    <h2>8. Vickrey Auction</h2>
+    <p>The Vickrey auction is a <strong>second-price sealed-bid</strong> auction, devised by William Vickrey (Nobel Prize winner). It adds a single brilliant twist that changes the entire game.</p>
+    <div class="card card-emerald">
+      <h4>The Vickrey Rule</h4>
+      <ul>
+        <li>Each bidder submits a <strong>single sealed bid</strong></li>
+        <li>Bidders do <strong>not</strong> see the bids made by others</li>
+        <li>The <strong>highest bid wins</strong></li>
+        <li>But the winner <strong>pays the amount of the second-highest bid</strong>, not their own</li>
+      </ul>
+    </div>
+    <table>
+      <tr><th>Property</th><th>Classification</th></tr>
+      <tr><td>Price</td><td><span class="tag-pass">Second-price</span></td></tr>
+      <tr><td>Visibility</td><td><span class="tag-warn">Sealed bid</span></td></tr>
+      <tr><td>Rounds</td><td><span class="tag-warn">One-shot</span></td></tr>
+      <tr><td>Use Case</td><td>Stamps, paper collectibles, online ad auctions</td></tr>
+    </table>
+    <div class="insight">
+      <h4>Key Result</h4>
+      <p>In a Vickrey auction, it is a <strong>dominant strategy</strong> for each bidder to bid their <strong>true valuation</strong>. No mind games required — the math enforces honesty.</p>
+    </div>
+    <details>
+      <summary>Show Transcript — Vickrey Auction</summary>
+      <div class="transcript-content">
+        So picture a one-shot, sealed bid environment. Historically, this format was super common for selling things like rare stamps or paper collectibles. Everyone just submits a single sealed envelope, meaning nobody has a clue what anybody else is bringing to the table. But then, William Vickrey, who actually won a Nobel prize for this, came along and added a single brilliant twist to the rules that honestly changed everything. Here is the core rule of the Vickrey auction. Yes, the highest bid still wins. But, and this is a massive but, the winning bidder pays the amount of the second highest bid, not their own bid. Mathematically, it makes it in the bidder's absolute best interest to just bid the true, honest value. No mind games required.
+      </div>
+    </details>
+  </section>
+
+  <!-- 9. Why Vickrey Works — Intuition -->
+  <section id="vickrey-intuition">
+    <h2>9. Why Does the Vickrey Auction Work?</h2>
+    <p>It sounds counterintuitive — why would a seller accept less money? The answer lies in the <strong>payoff structure</strong> that makes lying pointless.</p>
+    <div class="formula">
+      <div class="formula-label">Payoff for bidder i</div>
+      p<sub>i</sub> = { v<sub>i</sub> − max<sub>j≠i</sub> b<sub>j</sub> &nbsp; if b<sub>i</sub> &gt; max<sub>j≠i</sub> b<sub>j</sub> &nbsp; | &nbsp; 0 &nbsp; otherwise }
+    </div>
+    <p>Where <strong>v<sub>i</sub></strong> is bidder i's true value and <strong>b<sub>i</sub></strong> is their bid. If you win, your payoff is your value minus the second-highest bid. If you lose, your payoff is 0.</p>
+    <div class="card card-blue">
+      <h4>Intuition: Two Ways to Lie</h4>
+      <ul>
+        <li><strong>Bid more</strong> than your valuation → might win but risk negative payoff</li>
+        <li><strong>Bid less</strong> than your valuation → risk losing, but if you win you pay the same anyway</li>
+      </ul>
+      <p>Neither deviation can ever make you <strong>better off</strong> than bidding truthfully. At best, they give the same result. At worst, they hurt you.</p>
+    </div>
+  </section>
+
+  <!-- 10. Proof: Overbidding -->
+  <section id="proof-overbid">
+    <h2>10. Proof: Overbidding Doesn't Help</h2>
+    <p>Assume bidder <em>i</em> bids <strong>b<sub>i</sub> &gt; v<sub>i</sub></strong> (overbids). We analyse three cases based on where the second-highest bid falls:</p>
+    <div class="proof">
+      <h4>Case Analysis: Overbidding (b<sub>i</sub> &gt; v<sub>i</sub>)</h4>
+      <div class="case">
+        <div class="case-label">Case 1: max<sub>j≠i</sub> b<sub>j</sub> &lt; v<sub>i</sub></div>
+        <p>The bidder would <strong>win whether or not</strong> the bid was truthful. Both strategies give the <strong>same payoff</strong>: v<sub>i</sub> − max<sub>j≠i</sub> b<sub>j</sub>.</p>
+        <p><span class="tag-warn">Result: No benefit from overbidding</span></p>
+      </div>
+      <div class="case">
+        <div class="case-label">Case 2: max<sub>j≠i</sub> b<sub>j</sub> &gt; b<sub>i</sub></div>
+        <p>The bidder would <strong>lose regardless</strong> — the other bid is higher than even the inflated bid. Both strategies have <strong>equal payoffs</strong> (zero).</p>
+        <p><span class="tag-warn">Result: No benefit from overbidding</span></p>
+      </div>
+      <div class="case">
+        <div class="case-label">Case 3: v<sub>i</sub> &lt; max<sub>j≠i</sub> b<sub>j</sub> &lt; b<sub>i</sub></div>
+        <p>Overbidding <strong>wins</strong> the auction, but the payoff is <strong>negative</strong> (v<sub>i</sub> − max<sub>j≠i</sub> b<sub>j</sub> &lt; 0). Truthful bidding would have <strong>lost and paid zero</strong>.</p>
+        <p><span class="tag-fail">Result: Overbidding is WORSE</span></p>
+      </div>
+    </div>
+    <div class="insight">
+      <h4>Conclusion</h4>
+      <p>Overbidding can only give an <strong>equal or worse</strong> outcome compared to truthful bidding. It is never strictly better.</p>
+    </div>
+    <details>
+      <summary>Show Transcript — Overbidding Proof</summary>
+      <div class="transcript-content">
+        First up, let's assume you try to game the whole system by overbidding. Mathematically speaking, your bid is strictly greater than your true internal valuation of the item. If you overbid, a couple of things could happen. First, sure, you might win the auction. But because you artificially inflated your bid, the second highest bid might actually be higher than what you personally think the item is worth. If that happens, yeah, you win, but you pay a price that leaves you with a negative payoff. You literally lose money. Or, alternatively, the other bids might be so low that you would have won anyway just by telling the truth, or they're so high that you still lose regardless. The big takeaway here? Deviating by overbidding can only ever give you an equal or worse outcome than just telling the truth.
+      </div>
+    </details>
+  </section>
+
+  <!-- 11. Proof: Underbidding -->
+  <section id="proof-underbid">
+    <h2>11. Proof: Underbidding Doesn't Help</h2>
+    <p>Assume bidder <em>i</em> bids <strong>b<sub>i</sub> &lt; v<sub>i</sub></strong> (underbids). Again, three cases:</p>
+    <div class="proof">
+      <h4>Case Analysis: Underbidding (b<sub>i</sub> &lt; v<sub>i</sub>)</h4>
+      <div class="case">
+        <div class="case-label">Case 1: max<sub>j≠i</sub> b<sub>j</sub> &gt; v<sub>i</sub></div>
+        <p>The bidder would <strong>lose regardless</strong> — the highest other bid exceeds even the true valuation. Both strategies give <strong>zero payoff</strong>.</p>
+        <p><span class="tag-warn">Result: No benefit from underbidding</span></p>
+      </div>
+      <div class="case">
+        <div class="case-label">Case 2: max<sub>j≠i</sub> b<sub>j</sub> &lt; b<sub>i</sub></div>
+        <p>The bidder would <strong>win either way</strong>. Both strategies give the <strong>same payoff</strong>.</p>
+        <p><span class="tag-warn">Result: No benefit from underbidding</span></p>
+      </div>
+      <div class="case">
+        <div class="case-label">Case 3: b<sub>i</sub> &lt; max<sub>j≠i</sub> b<sub>j</sub> &lt; v<sub>i</sub></div>
+        <p>Truthful bidding would have <strong>won with a positive payoff</strong> (v<sub>i</sub> − max<sub>j≠i</sub> b<sub>j</sub> &gt; 0). But underbidding <strong>loses</strong>, earning zero.</p>
+        <p><span class="tag-fail">Result: Underbidding is WORSE</span></p>
+      </div>
+    </div>
+    <div class="insight">
+      <h4>Final Conclusion: Truthful Bidding is Dominant</h4>
+      <p>Neither overbidding nor underbidding can ever improve your outcome. <strong>Truthful bidding (b<sub>i</sub> = v<sub>i</sub>) is a weakly dominant strategy</strong> in the Vickrey auction.</p>
+    </div>
+    <details>
+      <summary>Show Transcript — Underbidding Proof</summary>
+      <div class="transcript-content">
+        What if you decide to play it sneaky and underbid? In this scenario, your bid is actually less than your true valuation. Well, by artificially lowering your bid, you're mathematically just giving yourself a worse chance of winning overall. You could easily lose an auction that you actually would have won if you'd just been truthful. But let's say you underbid and you still manage to win. Does it help? No. Because of the Vickrey Rule, you still pay the exact same second highest price anyway. Your lie literally didn't save you a single penny. Truthful bidding as a dominant strategy is practically enforced by the math.
+      </div>
+    </details>
+  </section>
+
+  <!-- 12. Collusion & Flaws -->
+  <section id="collusion">
+    <h2>12. Collusion & Real-World Flaws</h2>
+    <p>While the math is elegant, the Vickrey auction is <strong>not a panacea</strong>. None of the auction types discussed are immune to collusion.</p>
+    <div class="example">
+      <span class="example-title">Real-World Case Study</span>
+      <h4>New Zealand Spectrum Auction</h4>
+      <p>When New Zealand sold radio spectrum rights using a Vickrey-style auction, interdependencies between licenses led to strategic bidding. One firm bid <strong>NZ$100,000</strong> for a license — but the second-highest bid was only <strong>NZ$6</strong>. They paid $6 for a $100,000 asset.</p>
+    </div>
+    <div class="card card-red">
+      <h4>Bidder Collusion</h4>
+      <p>A <strong>grand coalition of bidders</strong> can agree beforehand to:</p>
+      <ul>
+        <li>Propose artificially <strong>low bids</strong> for a good</li>
+        <li>Obtain the true value for a good</li>
+        <li><strong>Share the profit</strong> afterwards</li>
+      </ul>
+    </div>
+    <div class="card card-red">
+      <h4>Shill Bidding</h4>
+      <p>An auctioneer could employ <strong>bogus bidders (shills)</strong> to artificially increase bids in open-cry auctions. This can result in the <strong>winner's curse</strong> — winning actually means you've been tricked into overpaying.</p>
+    </div>
+    <details>
+      <summary>Show Transcript — Collusion</summary>
+      <div class="transcript-content">
+        When the New Zealand government tried to sell off radio spectrum rights using a Vickrey-style auction, they hit a massive wall because of how interdependent those rights were. One firm actually bid $100,000 New Zealand dollars for a license. But because of strategic behavior and a complete lack of competing bids for that one isolated frequency, the second highest bid was literally $6. They paid $6 for a $100,000 asset. It was a shocking discrepancy, and it really highlighted that these auction formats aren't just some magical cure-all. An auctioneer might sneak in bogus bidders, which are known as shills, specifically to artificially inflate that second highest bid.
+      </div>
+    </details>
+  </section>
+
+  <!-- 13. Combinatorial Auctions — Intro -->
+  <section id="combinatorial-intro">
+    <h2>13. Combinatorial Auctions</h2>
+    <p>A <strong>combinatorial auction</strong> is an auction for <strong>bundles of goods</strong>, not just single items. This is essential when items have <strong>interdependent values</strong>.</p>
+    <div class="example">
+      <span class="example-title">Motivating Example</span>
+      <h4>Spectrum Licenses</h4>
+      <p>For the 1.7–1.72 GHz bandwidth for Brooklyn to be useful, you need a license for Manhattan, Queens, and Staten Island too. The most valuable licenses cover the <strong>same bandwidth</strong>. A different bandwidth license is better than nothing, but more expensive.</p>
+    </div>
+    <div class="card card-emerald">
+      <h4>Formal Setup</h4>
+      <ul>
+        <li>Define a set of items to be auctioned: <strong>Z = {z<sub>1</sub>, ..., z<sub>m</sub>}</strong></li>
+        <li>A set of agents: <strong>Ag = {1, ..., n}</strong></li>
+        <li>Each agent <em>i</em> has a <strong>valuation function</strong> over bundles</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 14. Valuation Functions -->
+  <section id="valuation-fn">
+    <h2>14. Valuation Functions</h2>
+    <p>Each agent's preferences are given by a <strong>valuation function</strong>:</p>
+    <div class="formula">
+      <div class="formula-label">Valuation Function</div>
+      v<sub>i</sub> : 2<sup>Z</sup> → ℝ
+    </div>
+    <p>For every possible bundle of goods Z ⊆ Z, <strong>v<sub>i</sub>(Z)</strong> says how much Z is worth to agent <em>i</em>.</p>
+    <div class="card card-emerald">
+      <h4>Key Properties</h4>
+      <ul>
+        <li><strong>Normalised</strong>: v<sub>i</sub>(∅) = 0 — an empty allocation is worth nothing</li>
+        <li><strong>Free disposal</strong>: Z<sub>1</sub> ⊆ Z<sub>2</sub> implies v<sub>i</sub>(Z<sub>1</sub>) ≤ v<sub>i</sub>(Z<sub>2</sub>) — more stuff is never worse</li>
+      </ul>
+    </div>
+    <div class="card card-amber">
+      <h4>The Representation Problem</h4>
+      <p>Specifying all preferences is <strong>exponential</strong>: v<sub>i</sub> : 2<sup>Z</sup> → ℝ. For 1122 items, you'd need to specify <strong>2<sup>1122</sup></strong> values per bidder — computationally intractable. This is why we need <strong>bidding languages</strong>.</p>
+    </div>
+  </section>
+
+  <!-- 15. Allocation & Social Welfare -->
+  <section id="allocation-sw">
+    <h2>15. Allocation of Goods & Social Welfare</h2>
+    <p>An <strong>outcome</strong> for a combinatorial auction is an <strong>allocation</strong> — a list of sets Z<sub>1</sub>, ..., Z<sub>n</sub>, one per agent.</p>
+    <div class="card card-emerald">
+      <h4>Allocation Rules</h4>
+      <ul>
+        <li>Each Z<sub>i</sub> ⊆ Z (each agent gets a subset of goods)</li>
+        <li>For all i ≠ j: <strong>Z<sub>i</sub> ∩ Z<sub>j</sub> = ∅</strong> (no good allocated to more than one agent)</li>
+        <li>Not all goods need to be allocated</li>
+      </ul>
+    </div>
+    <p>The set of all such allocations is denoted <strong>alloc(Z, Ag)</strong>.</p>
+    <h3>Social Welfare Function</h3>
+    <p>A desirable property is to <strong>maximise social welfare</strong> — the sum of all agents' utilities:</p>
+    <div class="formula">
+      <div class="formula-label">Social Welfare</div>
+      sw(Z<sub>1</sub>, ..., Z<sub>n</sub>, v<sub>1</sub>, ..., v<sub>n</sub>) = Σ<sub>i=1</sub><sup>n</sup> v<sub>i</sub>(Z<sub>i</sub>)
+    </div>
+  </section>
+
+  <!-- 16. Winner Determination -->
+  <section id="winner-determination">
+    <h2>16. Winner Determination Problem</h2>
+    <p>Given a set of goods Z and valuation functions v<sub>1</sub>, ..., v<sub>n</sub>, the goal is to find the allocation Z<sub>1</sub>*, ..., Z<sub>n</sub>* that <strong>maximises social welfare</strong>:</p>
+    <div class="formula">
+      <div class="formula-label">Winner Determination</div>
+      Z<sub>1</sub>*, ..., Z<sub>n</sub>* = argmax<sub>(Z<sub>1</sub>,...,Z<sub>n</sub>) ∈ alloc(Z,Ag)</sub> sw(Z<sub>1</sub>, ..., Z<sub>n</sub>, v<sub>1</sub>, ..., v<sub>n</sub>)
+    </div>
+    <div class="card card-amber">
+      <h4>The Hat Notation: v&#x0302;<sub>i</sub></h4>
+      <p>Each agent <em>i</em> <strong>declares</strong> a valuation v&#x0302;<sub>i</sub>. The hat (^) denotes that this is what the agent <strong>says</strong>, not necessarily what it truly is. Remember: <strong>an agent may lie!</strong></p>
+    </div>
+    <div class="card card-red">
+      <h4>Computational Complexity</h4>
+      <p>Determining the winner is a <strong>combinatorial optimisation problem</strong> that is <strong>NP-hard</strong>. But this is a worst-case result — optimal or approximate approaches may work well in practice.</p>
+    </div>
+  </section>
+
+  <!-- 17. Bidding Languages -->
+  <section id="bidding-languages">
+    <h2>17. Bidding Languages</h2>
+    <p>Rather than exhaustive evaluations of all 2<sup>|Z|</sup> bundles, bidding languages let bidders construct valuations from the bids they want to mention.</p>
+    <div class="card card-emerald">
+      <h4>Atomic Bid</h4>
+      <p>An <strong>atomic bid</strong> β is a pair <strong>(Z, p)</strong> where:</p>
+      <ul>
+        <li><strong>Z ⊆ Z</strong> is a set of items</li>
+        <li><strong>p</strong> is the price the bidder is prepared to pay for bundle Z</li>
+      </ul>
+    </div>
+    <p>A bundle Z' <strong>satisfies</strong> an atomic bid (Z, p) if <strong>Z ⊆ Z'</strong> (the bundle contains at least the items in the bid).</p>
+    <div class="formula">
+      <div class="formula-label">Atomic Bid Valuation</div>
+      v<sub>β</sub>(Z') = { p &nbsp; if Z' satisfies (Z, p) &nbsp; | &nbsp; 0 &nbsp; otherwise }
+    </div>
+    <p>Atomic bids alone can't construct complex valuations — bidders need to <strong>combine</strong> them using <strong>XOR</strong> or <strong>OR</strong> connectives.</p>
+  </section>
+
+  <!-- 18. XOR Bids -->
+  <section id="xor-bids">
+    <h2>18. XOR Bids</h2>
+    <p>With XOR bids, we pay for <strong>at most one</strong> of the bundles (exclusive or).</p>
+    <div class="card card-emerald">
+      <h4>XOR Bid Definition</h4>
+      <p>A bid β = (Z<sub>1</sub>, p<sub>1</sub>) XOR ... XOR (Z<sub>k</sub>, p<sub>k</sub>) defines:</p>
+    </div>
+    <div class="formula">
+      <div class="formula-label">XOR Valuation</div>
+      v<sub>β</sub>(Z') = { 0 if Z' doesn't satisfy any (Z<sub>i</sub>, p<sub>i</sub>) &nbsp; | &nbsp; max{p<sub>i</sub> | Z<sub>i</sub> ⊆ Z'} otherwise }
+    </div>
+    <ul>
+      <li>Pay <strong>nothing</strong> if the allocation doesn't satisfy any bid</li>
+      <li>Otherwise, pay the <strong>largest price</strong> of any satisfied bid</li>
+    </ul>
+    <div class="example">
+      <span class="example-title">Worked Example</span>
+      <h4>B<sub>1</sub> = ({a,b}, 3) XOR ({c,d}, 5)</h4>
+      <p>"I'll pay 3 for a bundle containing a and b but not c and d. I'll pay 5 for a bundle containing c and d but not a and b. And I'll pay 5 for a bundle containing a, b, c and d."</p>
+      <table>
+        <tr><th>Bundle Z'</th><th>v<sub>β₁</sub>(Z')</th><th>Reasoning</th></tr>
+        <tr><td>{a}</td><td>0</td><td>Neither {a,b} nor {c,d} is satisfied</td></tr>
+        <tr><td>{b}</td><td>0</td><td>Neither atomic bid satisfied</td></tr>
+        <tr><td>{a, b}</td><td><strong>3</strong></td><td>{a,b} ⊆ {a,b} — first bid satisfied</td></tr>
+        <tr><td>{c, d}</td><td><strong>5</strong></td><td>{c,d} ⊆ {c,d} — second bid satisfied</td></tr>
+        <tr><td>{a, b, c, d}</td><td><strong>5</strong></td><td>Both satisfied → max(3, 5) = 5 (XOR!)</td></tr>
+      </table>
+    </div>
+    <div class="card card-blue">
+      <h4>XOR Bids are Fully Expressive</h4>
+      <p>XOR bids can express <strong>any</strong> valuation function over a set of goods. However, this may require an <strong>exponentially large</strong> number of atomic bids. The valuation of a bundle can be computed in <strong>polynomial time</strong>.</p>
+    </div>
+  </section>
+
+  <!-- 19. OR Bids -->
+  <section id="or-bids">
+    <h2>19. OR Bids</h2>
+    <p>With OR bids, we are prepared to pay for <strong>more than one</strong> bundle simultaneously.</p>
+    <div class="card card-emerald">
+      <h4>OR Bid Definition</h4>
+      <p>Given β = (Z<sub>1</sub>, p<sub>1</sub>) OR ... OR (Z<sub>k</sub>, p<sub>k</sub>), we find the set of atomic bids W contained in β such that:</p>
+      <ul>
+        <li>Every bid in W is <strong>satisfied</strong> by Z'</li>
+        <li>Each pair of bids in W has <strong>mutually disjoint</strong> sets of goods</li>
+        <li>No other subset W' gives a <strong>higher total price</strong></li>
+      </ul>
+    </div>
+    <div class="example">
+      <span class="example-title">Worked Example</span>
+      <h4>B<sub>1</sub> = ({a,b}, 3) OR ({c,d}, 5)</h4>
+      <p>"I'll pay 3 for a bundle with a and b. I'll pay 5 for c and d. And I'll pay <strong>8</strong> for both bundles together."</p>
+      <table>
+        <tr><th>Bundle Z'</th><th>v<sub>β₁</sub>(Z')</th><th>vs. XOR</th></tr>
+        <tr><td>{a}</td><td>0</td><td>Same</td></tr>
+        <tr><td>{b}</td><td>0</td><td>Same</td></tr>
+        <tr><td>{a, b}</td><td><strong>3</strong></td><td>Same</td></tr>
+        <tr><td>{c, d}</td><td><strong>5</strong></td><td>Same</td></tr>
+        <tr><td>{a, b, c, d}</td><td><strong>8</strong></td><td><span class="tag-fail">Different! XOR gave 5</span></td></tr>
+      </table>
+      <p>With OR, the last bundle costs 3 + 5 = <strong>8</strong> because we can pay for both bundles (disjoint goods).</p>
+    </div>
+    <div class="card card-amber">
+      <h4>OR Bids: Limitations</h4>
+      <ul>
+        <li>OR bids are <strong>strictly less expressive</strong> than XOR bids</li>
+        <li>Some valuations cannot be expressed, e.g.: v({a}) = 1, v({b}) = 1, v({a,b}) = 1</li>
+        <li>Computing v<sub>β</sub>(Z) for an OR bid is <strong>NP-hard</strong></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 20. ILP Formulation -->
+  <section id="ilp">
+    <h2>20. Winner Determination via ILP</h2>
+    <p>A typical approach is to formulate winner determination as an <strong>Integer Linear Programming (ILP)</strong> problem and use a standard solver.</p>
+    <div class="formula">
+      <div class="formula-label">ILP Formulation</div>
+      maximize Σ<sub>i∈Ag, Z⊆Z</sub> x<sub>i,Z</sub> · v<sub>i</sub>(Z)
+    </div>
+    <div class="card card-emerald">
+      <h4>Subject to Constraints</h4>
+      <ol>
+        <li><strong>Each good allocated at most once:</strong> Σ<sub>i∈Ag, Z⊆Z | z∈Z</sub> x<sub>i,Z</sub> ≤ 1 &nbsp; for all z ∈ Z</li>
+        <li><strong>Each agent gets at most one bundle:</strong> Σ<sub>Z⊆Z</sub> x<sub>i,Z</sub> ≤ 1 &nbsp; for all i ∈ Ag</li>
+        <li><strong>Non-negativity:</strong> x<sub>i,Z</sub> ≥ 0 &nbsp; for all i ∈ Ag, Z ⊆ Z</li>
+      </ol>
+    </div>
+    <div class="card card-blue">
+      <h4>Alternative Approaches</h4>
+      <ul>
+        <li><strong>Approximation algorithms</strong> — guaranteed to terminate quickly with a result within a known distance from optimal (but few have been found within reasonable bounds)</li>
+        <li><strong>Heuristic solutions</strong> — greedy allocations: find the largest bid we can satisfy, then the next largest, etc.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 21. VCG Mechanism -->
+  <section id="vcg">
+    <h2>21. The VCG Mechanism</h2>
+    <p>Auctions are easy to <strong>strategically manipulate</strong> — in general, we don't know if agents' declared valuations are true. The <strong>Vickrey-Clarke-Groves (VCG)</strong> mechanism solves this.</p>
+    <div class="insight">
+      <h4>Incentive Compatible</h4>
+      <p>A mechanism is <strong>incentive compatible</strong> if telling the truth is a <strong>dominant strategy</strong>. VCG is a generalisation of the Vickrey auction to combinatorial settings — no agent can benefit by declaring anything other than its true valuation.</p>
+    </div>
+    <div class="card card-emerald">
+      <h4>How VCG Works</h4>
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">Every agent <em>i</em> simultaneously declares a valuation function v&#x0302;<sub>i</sub> (may not be true)</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">The mechanism computes the allocation Z<sub>1</sub>*, ..., Z<sub>n</sub>* that <strong>maximises social welfare</strong> based on declared valuations</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">Every agent <em>i</em> pays p<sub>i</sub> — the "compensation" for the utility that other agents lose by agent <em>i</em> participating</div>
+      </div>
+    </div>
+    <div class="card card-blue">
+      <h4>Key Notation</h4>
+      <ul>
+        <li><strong>v<sup>0</sup></strong> — the <strong>indifferent valuation</strong>: v<sup>0</sup>(Z) = 0 for all Z (a bid that doesn't care about any goods)</li>
+        <li><strong>sw<sub>−i</sub></strong> — social welfare function <strong>without agent <em>i</em></strong>: sw<sub>−i</sub>(Z<sub>1</sub>, ..., Z<sub>n</sub>, v<sub>1</sub>, ..., v<sub>n</sub>) = Σ<sub>j∈Ag, j≠i</sub> v<sub>j</sub>(Z<sub>j</sub>)</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 22. VCG Payment -->
+  <section id="vcg-payment">
+    <h2>22. VCG Payment Formula</h2>
+    <p>Each agent <em>i</em> pays the <strong>difference in social welfare to others</strong> between the world without them and the world with them.</p>
+    <h3>Step 1: Compute the "without i" allocation</h3>
+    <p>Let Z<sub>1</sub>', ..., Z<sub>n</sub>' be the allocation that would have been chosen if agent <em>i</em> declared v<sup>0</sup> (indifferent) and every other agent declared the same:</p>
+    <div class="formula">
+      <div class="formula-label">Allocation Without Agent i</div>
+      Z<sub>1</sub>', ..., Z<sub>n</sub>' = argmax<sub>(Z<sub>1</sub>,...,Z<sub>n</sub>) ∈ alloc(Z,Ag)</sub> sw(Z<sub>1</sub>, ..., Z<sub>n</sub>, v&#x0302;<sub>1</sub>, ..., v<sup>0</sup>, ..., v&#x0302;<sub>n</sub>)
+    </div>
+    <h3>Step 2: Compute the payment</h3>
+    <div class="formula">
+      <div class="formula-label">VCG Payment for Agent i</div>
+      p<sub>i</sub> = sw<sub>−i</sub>(Z<sub>1</sub>', ..., Z<sub>n</sub>', v&#x0302;<sub>1</sub>, ..., v<sup>0</sup>, ..., v&#x0302;<sub>n</sub>) − sw<sub>−i</sub>(Z<sub>1</sub>*, ..., Z<sub>n</sub>*, v&#x0302;<sub>1</sub>, ..., v&#x0302;<sub>i</sub>, ..., v&#x0302;<sub>n</sub>)
+    </div>
+    <div class="card card-emerald">
+      <h4>In Plain English</h4>
+      <p>p<sub>i</sub> = (how well everyone else does when <em>i</em> doesn't participate) − (how well everyone else does when <em>i</em> does participate)</p>
+      <p>You pay for the <strong>harm</strong> your participation causes to other agents.</p>
+    </div>
+    <div class="example">
+      <span class="example-title">Sanity Check</span>
+      <h4>VCG with a Single Item = Vickrey Auction</h4>
+      <p>With a singleton bundle, the only agent that pays anything is the one with the <strong>highest bid</strong>. If they hadn't participated, the agent with the <strong>second-highest bid</strong> would have won. Therefore, agent <em>i</em> compensates by paying the <strong>second-highest bid</strong> — exactly the Vickrey rule!</p>
+    </div>
+    <div class="insight">
+      <h4>Why VCG is a Game Changer</h4>
+      <ul>
+        <li><strong>Incentive compatible</strong>: no agent benefits from lying — same reasoning as Vickrey proof</li>
+        <li><strong>Social welfare maximisation can be implemented in dominant strategies</strong></li>
+        <li>Called "a rare ray of sunshine on the problems of multi-agent interaction"</li>
+      </ul>
+    </div>
+    <details>
+      <summary>Show Transcript — VCG Mechanism</summary>
+      <div class="transcript-content">
+        To tackle this massive headache, economists came up with the Vickrey Clark Groves, or VCG mechanism. It basically takes the enforced honesty of the Vickrey auction and scales it all the way up to this insane combinatorial level. Here's how it works. In a VCG auction, each agent pays the cost to the other agents of having participated in the auction at all. Think of it like this. You are basically paying for the harm your winning causes everyone else by taking those specific items off the board. If you were to simplify VCG down to just a single item, the math completely proves the winning agent pays exactly the second highest bid, meaning it perfectly mirrors the Vickrey auction. There is absolutely zero benefit for an agent to declare anything other than their true valuation, and it mathematically guarantees that the final outcome will maximize overall social welfare.
+      </div>
+    </details>
+  </section>
+
+  <!-- 23. Summary & Exam Tips -->
+  <section id="summary">
+    <h2>23. Summary & Exam Tips</h2>
+
+    <h3>Auction Types Comparison</h3>
+    <table>
+      <tr><th>Auction</th><th>Price</th><th>Visibility</th><th>Direction</th><th>Truthful?</th></tr>
+      <tr><td>English</td><td>First</td><td>Open-cry</td><td>Ascending</td><td><span class="tag-fail">No</span></td></tr>
+      <tr><td>Dutch</td><td>First</td><td>Open-cry</td><td>Descending</td><td><span class="tag-fail">No</span></td></tr>
+      <tr><td>FPSB</td><td>First</td><td>Sealed</td><td>One-shot</td><td><span class="tag-fail">No</span></td></tr>
+      <tr><td>Vickrey</td><td>Second</td><td>Sealed</td><td>One-shot</td><td><span class="tag-pass">Yes</span></td></tr>
+    </table>
+
+    <h3>Bidding Language Comparison</h3>
+    <table>
+      <tr><th>Property</th><th>XOR Bids</th><th>OR Bids</th></tr>
+      <tr><td>Expressiveness</td><td><span class="tag-pass">Fully expressive</span></td><td><span class="tag-fail">Strictly less</span></td></tr>
+      <tr><td>Computing valuation</td><td><span class="tag-pass">Polynomial time</span></td><td><span class="tag-fail">NP-hard</span></td></tr>
+      <tr><td>Multiple bundles</td><td>At most one</td><td>Can pay for many</td></tr>
+      <tr><td>Size</td><td>May need exponentially many</td><td>More compact</td></tr>
+    </table>
+
+    <div class="card card-emerald">
+      <h4>Exam Checklist</h4>
+      <ul>
+        <li>Be able to <strong>classify</strong> each auction type along the three protocol dimensions</li>
+        <li>Know the <strong>Vickrey truthful bidding proof</strong> — the 3-case analysis for both overbidding and underbidding</li>
+        <li>Understand <strong>winner's curse</strong> and how it relates to common-value auctions</li>
+        <li>Know the difference between <strong>XOR and OR bids</strong> and be able to compute valuations for given bundles</li>
+        <li>Understand the <strong>winner determination problem</strong> (NP-hard) and ILP formulation</li>
+        <li>Know the <strong>VCG payment formula</strong> and why it's incentive compatible</li>
+        <li>Be able to show VCG reduces to Vickrey for single items</li>
+        <li>Know real-world flaws: <strong>collusion, shills, NZ spectrum example</strong></li>
+      </ul>
+    </div>
+
+    <div class="example">
+      <span class="example-title">Practice Problem</span>
+      <h4>XOR Bid Evaluation (Exam-Style)</h4>
+      <p>Given: B<sub>i</sub> = ({a,b}, 5) XOR ({e,f,g}, 2) XOR ({e}, 2) XOR ({c,d,e}, 4)</p>
+      <table>
+        <tr><th>Bundle</th><th>Answer</th><th>Reasoning</th></tr>
+        <tr><td>v<sub>Bi</sub>({e})</td><td><strong>2</strong></td><td>{e} ⊆ {e} — third bid satisfied (price 2)</td></tr>
+        <tr><td>v<sub>Bi</sub>({e, f})</td><td><strong>2</strong></td><td>{e} ⊆ {e,f} — third bid satisfied (price 2)</td></tr>
+        <tr><td>v<sub>Bi</sub>({c,d,f,g})</td><td><strong>0</strong></td><td>No atomic bid is a subset of {c,d,f,g}</td></tr>
+        <tr><td>v<sub>Bi</sub>({c,d,e,f,g})</td><td><strong>4</strong></td><td>Bids 2,3,4 all satisfied → max(2, 2, 4) = 4</td></tr>
+        <tr><td>v<sub>Bi</sub>({a,b,c,d,e,f,g})</td><td><strong>5</strong></td><td>All 4 bids satisfied → max(5, 2, 2, 4) = 5</td></tr>
+      </table>
+    </div>
+  </section>
+
+</div>
+
+<!-- Scroll-tracking JavaScript -->
+<script>
+  const sections = document.querySelectorAll('section');
+  const navLinks = document.querySelectorAll('.sidebar a');
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop;
+      if (window.pageYOffset >= sectionTop - 80) {
+        current = section.getAttribute('id');
+      }
+    });
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === '#' + current) {
+        link.classList.add('active');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

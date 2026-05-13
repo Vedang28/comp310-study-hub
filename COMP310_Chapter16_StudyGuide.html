@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COMP310 Chapter 16 — Argumentation</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#0f172a;color:#e2e8f0;line-height:1.7;display:flex;min-height:100vh}
+nav{position:fixed;top:0;left:0;width:260px;height:100vh;background:#1e293b;border-right:1px solid #334155;overflow-y:auto;padding:1.2rem 0;z-index:100}
+nav h2{font-size:.95rem;color:#0ea5e9;padding:0 1.2rem .8rem;border-bottom:1px solid #334155;margin-bottom:.5rem;letter-spacing:.5px}
+nav a{display:block;padding:.45rem 1.2rem;color:#94a3b8;text-decoration:none;font-size:.82rem;border-left:3px solid transparent;transition:all .15s}
+nav a:hover{color:#e2e8f0;background:#334155}
+nav a.active{color:#0ea5e9;border-left-color:#0ea5e9;background:rgba(14,165,233,.08)}
+main{margin-left:260px;max-width:900px;padding:2.5rem 3rem 4rem;flex:1}
+h1{font-size:2rem;color:#f8fafc;margin-bottom:.3rem}
+.subtitle{color:#0ea5e9;font-size:1.05rem;margin-bottom:2.5rem}
+h2{font-size:1.45rem;color:#f8fafc;margin:2.8rem 0 1rem;padding-bottom:.5rem;border-bottom:2px solid #0ea5e9}
+h3{font-size:1.15rem;color:#e2e8f0;margin:1.5rem 0 .8rem}
+p{margin-bottom:1rem;color:#cbd5e1}
+ul,ol{margin:0 0 1rem 1.5rem;color:#cbd5e1}
+li{margin-bottom:.4rem}
+strong{color:#f1f5f9}
+
+.card{background:#1e293b;border-radius:10px;padding:1.5rem;margin-bottom:1.2rem;border-left:4px solid #334155}
+.card-sky{border-left-color:#0ea5e9}
+.card-amber{border-left-color:#f59e0b}
+.card-rose{border-left-color:#f43f5e}
+.card-emerald{border-left-color:#10b981}
+.card-purple{border-left-color:#a855f7}
+.card-cyan{border-left-color:#06b6d4}
+
+.formula-box{background:#0f172a;border:1px solid #0ea5e9;border-radius:8px;padding:1rem 1.5rem;margin:1rem 0;font-family:'Courier New',monospace;font-size:.95rem;color:#e2e8f0;text-align:center;line-height:1.9}
+
+.example-box{background:#0c1222;border-radius:8px;padding:1.3rem 1.5rem;margin:1rem 0;border:1px solid #1e293b}
+.example-box .ex-title{color:#0ea5e9;font-weight:700;font-size:.9rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:.7rem}
+
+.step-list{list-style:none;margin-left:0;counter-reset:step}
+.step-list li{counter-increment:step;display:flex;align-items:flex-start;gap:.8rem;margin-bottom:.8rem;padding:.6rem .8rem;background:#1e293b;border-radius:8px}
+.step-list li::before{content:counter(step);background:#0ea5e9;color:#0f172a;font-weight:800;font-size:.8rem;min-width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0;margin-top:2px}
+
+.tag{display:inline-block;padding:2px 10px;border-radius:999px;font-size:.75rem;font-weight:600}
+.tag-pass{background:rgba(16,185,129,.15);color:#10b981}
+.tag-fail{background:rgba(244,63,94,.15);color:#f43f5e}
+.tag-sky{background:rgba(14,165,233,.15);color:#0ea5e9}
+.tag-amber{background:rgba(245,158,11,.15);color:#f59e0b}
+
+table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.9rem}
+th{background:#0ea5e9;color:#0f172a;padding:.6rem .8rem;text-align:left;font-weight:700}
+td{padding:.55rem .8rem;border-bottom:1px solid #334155;color:#cbd5e1}
+tr:hover td{background:rgba(14,165,233,.04)}
+
+.vs-container{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0}
+.vs-container .card{margin-bottom:0}
+
+.proof-box{background:#0f172a;border:1px solid #a855f7;border-radius:8px;padding:1.2rem 1.5rem;margin:1rem 0}
+.proof-box .proof-title{color:#a855f7;font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:.8rem}
+.proof-box .case{margin-bottom:.6rem;padding:.5rem .8rem;background:#1e293b;border-radius:6px;border-left:3px solid #a855f7}
+.proof-box .case-title{color:#c084fc;font-weight:600;font-size:.85rem;margin-bottom:.3rem}
+
+.diagram-box{background:#0c1222;border:1px solid #334155;border-radius:8px;padding:1.5rem;margin:1rem 0;text-align:center;font-family:'Courier New',monospace;font-size:.9rem;line-height:1.8;color:#e2e8f0}
+
+details{margin:.8rem 0}
+summary{cursor:pointer;color:#0ea5e9;font-weight:600;font-size:.9rem;padding:.5rem 0}
+summary:hover{color:#38bdf8}
+details[open] summary{margin-bottom:.5rem}
+.transcript-text{background:#1e293b;border-radius:8px;padding:1rem 1.2rem;font-size:.85rem;color:#94a3b8;line-height:1.8;max-height:300px;overflow-y:auto}
+
+@media(max-width:900px){nav{display:none}main{margin-left:0;padding:1.5rem}}
+</style>
+</head>
+<body>
+
+<nav>
+<h2>CH 16 — ARGUMENTATION</h2>
+<a href="#intro">Introduction</a>
+<a href="#why-argumentation">Why Argumentation?</a>
+<a href="#types-of-argument">Types of Argument</a>
+<a href="#abstract-argumentation">Abstract Argumentation</a>
+<a href="#attack-relations">Attack Relations</a>
+<a href="#conflict-free">Conflict-Free Positions</a>
+<a href="#mutually-defensive">Mutually Defensive</a>
+<a href="#admissible">Admissible Positions</a>
+<a href="#preferred-extensions">Preferred Extensions</a>
+<a href="#pathological-cases">Pathological Cases</a>
+<a href="#credulous-sceptical">Credulous &amp; Sceptical</a>
+<a href="#grounded-extensions">Grounded Extensions</a>
+<a href="#grounded-algorithm">Grounded Algorithm</a>
+<a href="#grounded-example">Grounded Example</a>
+<a href="#full-example">Full Worked Example</a>
+<a href="#deductive-argumentation">Deductive Argumentation</a>
+<a href="#toulmin-model">Toulmin's Model</a>
+<a href="#formal-arguments">Formal Arguments</a>
+<a href="#rebut-undercut">Rebut vs Undercut</a>
+<a href="#deductive-examples">Deductive Examples</a>
+<a href="#attack-and-defeat">Attack and Defeat</a>
+<a href="#expected-utility">Expected Utility</a>
+<a href="#optimal-agent">Finding the Optimal Agent</a>
+</nav>
+
+<main>
+<h1>Chapter 16: Argumentation</h1>
+<p class="subtitle">Dung's Abstract Argumentation, Deductive Argumentation &amp; Expected Utility</p>
+
+<!-- SECTION: Introduction -->
+<section id="intro">
+<h2>1. Introduction</h2>
+<div class="card card-sky">
+<p><strong>Argumentation</strong> is a means through which agents can reach agreement. Unlike the negotiation mechanisms of Chapter 15, argumentation allows for more complex interactions — agents can present reasons, challenge foundations, and build structured logical positions.</p>
+<p>Argumentation can be used for a range of tasks including <strong>negotiation</strong>, <strong>inquiry</strong>, <strong>persuasion</strong>, and <strong>deliberation</strong>.</p>
+</div>
+
+<details>
+<summary>Show Transcript — Introduction</summary>
+<div class="transcript-text">
+Welcome to This Explainer. Today we're diving straight into the complex logic behind multi-agent systems, turning those intimidating exam questions into intuitive step-by-step algorithms. We're going to crack the code together on exactly how autonomous agents make decisions, argue their points, and calculate risks. We've got Conflicts, rebuttals, and undercuts, Admissibility and preferred extensions, Calculating grounded extensions, Navigating expected utility, and Finding the optimal agent.
+</div>
+</details>
+</section>
+
+<!-- SECTION: Why Argumentation -->
+<section id="why-argumentation">
+<h2>2. Why Argumentation?</h2>
+<div class="card card-sky">
+<p>In multi-agent systems, agents don't always agree. They need a <strong>systematic way to resolve conflicts</strong>. Rather than just exchanging offers (as in negotiation), argumentation lets agents present structured reasons for their positions and challenge each other's reasoning.</p>
+</div>
+<div class="card card-amber">
+<p><strong>Key distinction from negotiation:</strong> In negotiation, agents exchange proposals and make concessions. In argumentation, agents present <strong>arguments</strong> backed by evidence and logic, and these arguments can be <strong>attacked</strong> and <strong>defended</strong>.</p>
+</div>
+</section>
+
+<!-- SECTION: Types of Argument -->
+<section id="types-of-argument">
+<h2>3. Types of Argument</h2>
+<p>Michael Gilbert identified <strong>four modes of argument</strong>:</p>
+<table>
+<tr><th>Mode</th><th>Description</th><th>Key Feature</th></tr>
+<tr><td><strong>Logical</strong></td><td>Based on formal logic, premises, and conclusions</td><td>Rational deduction</td></tr>
+<tr><td><strong>Emotional</strong></td><td>Appeals to feelings and emotions</td><td>Affective persuasion</td></tr>
+<tr><td><strong>Visceral</strong></td><td>Physical or instinctive responses</td><td>Body language, tone</td></tr>
+<tr><td><strong>Kisceral</strong></td><td>Based on intuition, faith, or mysticism</td><td>Inner conviction</td></tr>
+</table>
+<div class="card card-sky">
+<p>In multi-agent systems, we focus primarily on the <strong>logical mode</strong> — arguments that can be formalized mathematically. This gives us two main frameworks: <strong>abstract argumentation</strong> (Dung) and <strong>deductive argumentation</strong> (Toulmin-style).</p>
+</div>
+</section>
+
+<!-- SECTION: Abstract Argumentation -->
+<section id="abstract-argumentation">
+<h2>4. Abstract Argumentation (Dung)</h2>
+<div class="card card-sky">
+<p><strong>Dung's abstract argumentation framework</strong> treats arguments as <strong>atomic, indivisible entities</strong>. We don't look inside arguments at their internal structure — we only care about the <strong>attack relationships</strong> between them.</p>
+</div>
+<div class="formula-box">
+An argumentation framework is a pair: &lt;Args, Attacks&gt;<br>
+where Args = set of arguments, Attacks ⊆ Args × Args
+</div>
+<div class="example-box">
+<div class="ex-title">Example</div>
+<p>Consider arguments {A, B, C} where A attacks B and B attacks C.</p>
+<p>Args = {A, B, C}<br>Attacks = {(A,B), (B,C)}</p>
+<p>This is represented as a directed graph: A → B → C</p>
+</div>
+
+<details>
+<summary>Show Transcript — Dung's System</summary>
+<div class="transcript-text">
+Before we can actually solve that exam, we've got to understand the fundamental rules of debate in Dung's argumentation system. Because in a multi-agent system, agents don't always agree, right? They need a systematic way to resolve conflicts.
+</div>
+</details>
+</section>
+
+<!-- SECTION: Attack Relations -->
+<section id="attack-relations">
+<h2>5. Attack Relations</h2>
+<p>In an argumentation graph, an arrow from A to B means <strong>"A attacks B"</strong>.</p>
+<div class="vs-container">
+<div class="card card-rose">
+<h3>Rebuttal</h3>
+<p>A <strong>direct contradiction</strong> — two arguments with opposing conclusions. Like two people yelling "it is!" and "it is not!" at each other.</p>
+<p><span class="tag tag-fail">Symmetrical</span> — if A rebuts B, then B rebuts A.</p>
+</div>
+<div class="card card-amber">
+<h3>Undercut</h3>
+<p>Attacks the <strong>foundation/support</strong> of an argument, not the conclusion itself. Like knocking the legs out from under a table.</p>
+<p><span class="tag tag-sky">Asymmetrical</span> — A can undercut B without B undercutting A.</p>
+</div>
+</div>
+
+<div class="example-box">
+<div class="ex-title">Everyday Example</div>
+<p><strong>P:</strong> "Since the weather is sunny, I'll go cycling" <span class="tag tag-pass">Support → Conclusion</span></p>
+<p><strong>Q:</strong> "Since today is a weekday and I have work, I can't go cycling" <span class="tag tag-fail">Rebuts P</span></p>
+<p><strong>R:</strong> "Since today is a holiday, I don't have to go to work" <span class="tag tag-amber">Undercuts Q</span></p>
+<p>R doesn't directly say "I can go cycling" — it attacks Q's <em>support</em> (the premise about having to work).</p>
+</div>
+
+<details>
+<summary>Show Transcript — Rebuttals &amp; Undercuts</summary>
+<div class="transcript-text">
+So, first up is a rebuttal. The crucial point here is that a rebuttal is a direct contradiction. It's literally like two people yelling "it is" and "it is not" at each other. If argument 1 says a premise is true and argument 2 says that exact same premise is false, boom, that's a rebuttal. A total head-on collision of facts. Now, an undercut. An undercut is much sneakier. It attacks the very foundation, the supporting evidence, of the other person's argument. You aren't necessarily saying their final conclusion is totally wrong, but you are proving that the reason they arrived at that conclusion, yeah, it's flawed. It's like knocking the legs out from under a table.
+</div>
+</details>
+</section>
+
+<!-- SECTION: Conflict-Free -->
+<section id="conflict-free">
+<h2>6. Conflict-Free Positions</h2>
+<div class="card card-sky">
+<p>A <strong>position</strong> is a subset of arguments. A position is <strong>conflict-free</strong> if no argument in the set attacks another argument in the same set.</p>
+</div>
+<div class="formula-box">
+A set S ⊆ Args is <strong>conflict-free</strong> iff<br>
+∄ A, B ∈ S such that (A, B) ∈ Attacks
+</div>
+<div class="example-box">
+<div class="ex-title">Example: Graph A → B → C</div>
+<p>Conflict-free sets: ∅, {A}, {B}, {C}, {A,C}</p>
+<p>{A,B} is <strong>not</strong> conflict-free because A attacks B.</p>
+<p>{B,C} is <strong>not</strong> conflict-free because B attacks C.</p>
+</div>
+<div class="card card-amber">
+<p><strong>Problem:</strong> Conflict-free gives us too many options. The empty set ∅ is always conflict-free (trivially — nothing to attack). We need stricter definitions to determine which arguments actually "win" the debate.</p>
+</div>
+
+<details>
+<summary>Show Transcript — Conflict-Free</summary>
+<div class="transcript-text">
+Now, if we only look for conflict-free sets, we end up with a massive kind of chaotic list of possibilities. A conflict-free set simply means no argument inside the set attacks another argument in that same set. But notice the very first one listed, the empty set. Well, technically, a set with nothing in it has no conflicts. But as you can easily see, just being conflict-free gives us way too many options. It doesn't actually tell us who won the debate, which is exactly why we need stricter definitions.
+</div>
+</details>
+</section>
+
+<!-- SECTION: Mutually Defensive -->
+<section id="mutually-defensive">
+<h2>7. Mutually Defensive Positions</h2>
+<div class="card card-sky">
+<p>A position is <strong>mutually defensive</strong> if for every argument in the set that is attacked by an outside argument, there exists another argument in the set that <strong>counter-attacks</strong> (defends against) that attacker.</p>
+</div>
+<div class="formula-box">
+A set S is <strong>mutually defensive</strong> iff<br>
+∀ B ∉ S: if (B, A) ∈ Attacks for some A ∈ S,<br>
+then ∃ C ∈ S such that (C, B) ∈ Attacks
+</div>
+<div class="card card-amber">
+<p><strong>Note:</strong> The empty set ∅ is trivially mutually defensive (nothing to defend). But a set that is mutually defensive is <strong>not necessarily conflict-free</strong> — the two properties are independent.</p>
+</div>
+</section>
+
+<!-- SECTION: Admissible -->
+<section id="admissible">
+<h2>8. Admissible Positions</h2>
+<div class="card card-emerald">
+<p>A position is <strong>admissible</strong> if it is <strong>both conflict-free AND mutually defensive</strong>. This is the sweet spot — your set doesn't fight itself, and it can defend against all outside attacks.</p>
+</div>
+<div class="formula-box">
+Admissible = Conflict-Free + Mutually Defensive
+</div>
+<ul class="step-list">
+<li>Check that no argument in the set attacks another argument in the same set (conflict-free)</li>
+<li>For every external attack on any member of the set, verify a counter-attack exists within the set (mutually defensive)</li>
+<li>If both conditions hold, the set is admissible</li>
+</ul>
+<div class="card card-sky">
+<p>The <strong>empty set ∅ is always admissible</strong> — trivially conflict-free and trivially mutually defensive.</p>
+</div>
+
+<details>
+<summary>Show Transcript — Admissibility</summary>
+<div class="transcript-text">
+So to be admissible, your position must make sense internally and be capable of defending itself. It has to be a completely coherent stance. If an outside argument attacks you, your set absolutely must contain a counterargument that attacks the attacker. It's mutually defensive. If you can't defend against an incoming attack, your set is not admissible. Simple as that. Now, the empty set is always admissible because, well, there's nothing there to attack, but obviously we're looking for more substantial positions.
+</div>
+</details>
+</section>
+
+<!-- SECTION: Preferred Extensions -->
+<section id="preferred-extensions">
+<h2>9. Preferred Extensions</h2>
+<div class="card card-sky">
+<p>A <strong>preferred extension</strong> is a <strong>maximal admissible set</strong> — an admissible set that cannot be made any larger while remaining admissible. You've pushed your defendable territory to the absolute limit.</p>
+</div>
+<div class="formula-box">
+S is a <strong>preferred extension</strong> iff<br>
+S is admissible AND ∄ S' ⊃ S such that S' is also admissible
+</div>
+<div class="card card-emerald">
+<p><strong>Guarantee:</strong> Every argumentation framework has <strong>at least one</strong> preferred extension (at minimum, the empty set is admissible, so there's always at least one maximal admissible set).</p>
+</div>
+
+<div class="example-box">
+<div class="ex-title">Finding Preferred Extensions — Process</div>
+<ol>
+<li>List all conflict-free sets</li>
+<li>Filter to only those that are also mutually defensive (= admissible sets)</li>
+<li>Remove any admissible set that is a proper subset of another admissible set</li>
+<li>The remaining sets are the preferred extensions</li>
+</ol>
+</div>
+
+<details>
+<summary>Show Transcript — Preferred Extensions</summary>
+<div class="transcript-text">
+And that's where a preferred extension comes in. It takes admissibility a step further into a maximal, admissible set. This means it's a fully expanded position that will break if you try to add even one more argument to it. You are pushing your defendable territory to the absolute limit. You basically gather as many arguments as you possibly can that still perfectly defend each other. But the moment you pull in an argument that introduces an undefended attack, you've gone too far. And remember, every argumentation graph is guaranteed to have at least one preferred extension.
+</div>
+</details>
+</section>
+
+<!-- SECTION: Pathological Cases -->
+<section id="pathological-cases">
+<h2>10. Pathological Cases</h2>
+<h3>Mutual Attacks</h3>
+<div class="card card-rose">
+<p>When two arguments attack each other (A ↔ B), both {A} and {B} are admissible (each defends itself against the other). This gives us <strong>two preferred extensions</strong>: {A} and {B}.</p>
+</div>
+
+<h3>Odd-Length Cycles</h3>
+<div class="card card-amber">
+<p>An odd cycle like A → B → C → A creates a problem. No non-empty conflict-free set can be mutually defensive. The only preferred extension is <strong>∅</strong> — the empty set.</p>
+</div>
+
+<h3>Self-Attacking Arguments</h3>
+<div class="card card-rose">
+<p>If an argument attacks itself (A → A), it can never be in any admissible set because including it immediately violates the conflict-free condition.</p>
+</div>
+
+<h3>Larger Graphs</h3>
+<div class="example-box">
+<div class="ex-title">Complex Graph Example</div>
+<p>Consider: A → B → C, D → C, D → E, E → D</p>
+<p>Finding preferred extensions requires systematic checking of all conflict-free sets for admissibility, then finding the maximal ones.</p>
+<p>Multiple preferred extensions can coexist, representing different "defensible worldviews."</p>
+</div>
+</section>
+
+<!-- SECTION: Credulous & Sceptical -->
+<section id="credulous-sceptical">
+<h2>11. Credulous &amp; Sceptical Acceptance</h2>
+<p>Given the preferred extensions, we can classify arguments by how strongly they're accepted:</p>
+
+<div class="vs-container">
+<div class="card card-emerald">
+<h3>Credulously Accepted</h3>
+<p>An argument is credulously accepted if it appears in <strong>at least one</strong> preferred extension.</p>
+<p><span class="tag tag-pass">Optimistic</span> — "there exists a defensible worldview that includes this argument."</p>
+</div>
+<div class="card card-sky">
+<h3>Sceptically Accepted</h3>
+<p>An argument is sceptically accepted if it appears in <strong>every</strong> preferred extension.</p>
+<p><span class="tag tag-sky">Cautious</span> — "no matter which defensible worldview you adopt, this argument is included."</p>
+</div>
+</div>
+
+<div class="card card-amber">
+<p><strong>Key insight:</strong> If there is only one preferred extension, then credulously accepted = sceptically accepted (same set of arguments).</p>
+</div>
+
+<div class="example-box">
+<div class="ex-title">Example: A ↔ B (mutual attack)</div>
+<p>Preferred extensions: {A} and {B}</p>
+<p><strong>A</strong> is credulously accepted (in {A}) but <strong>not</strong> sceptically accepted (not in {B})</p>
+<p><strong>B</strong> is credulously accepted (in {B}) but <strong>not</strong> sceptically accepted (not in {A})</p>
+<p>No argument is sceptically accepted here.</p>
+</div>
+</section>
+
+<!-- SECTION: Grounded Extensions -->
+<section id="grounded-extensions">
+<h2>12. Grounded Extensions</h2>
+<div class="card card-sky">
+<p>The <strong>grounded extension</strong> is the most <strong>sceptical</strong> (cautious) approach. It contains only arguments that are <strong>absolutely guaranteed</strong> to be acceptable. Unlike preferred extensions (which can be multiple), there is always <strong>exactly one</strong> grounded extension.</p>
+</div>
+
+<div class="vs-container">
+<div class="card card-emerald">
+<h3>Preferred Extension</h3>
+<p>Pushes for the <strong>largest</strong> defendable position — "build a sprawling castle."</p>
+<p>Can have <strong>multiple</strong> preferred extensions.</p>
+<p><span class="tag tag-pass">Brave / Expansive</span></p>
+</div>
+<div class="card card-sky">
+<h3>Grounded Extension</h3>
+<p>Plays it incredibly safe — "an immovable anchor built from absolute guarantees."</p>
+<p>Always <strong>exactly one</strong> grounded extension.</p>
+<p><span class="tag tag-sky">Cautious / Sceptical</span></p>
+</div>
+</div>
+
+<div class="card card-amber">
+<p><strong>In multi-agent systems:</strong> The choice between preferred and grounded extensions dictates how an AI behaves. Does it take a strong, expansive stance that might be debated? Or does it only commit to undeniable bedrock facts?</p>
+</div>
+
+<details>
+<summary>Show Transcript — Preferred vs Grounded</summary>
+<div class="transcript-text">
+So, contrasting the two, a preferred extension pushes for the largest defendable position. It's kind of like building a sprawling castle. Meanwhile, a grounded extension plays it incredibly safe. It's like an immovable anchor, building only from what is absolutely guaranteed. In multi-agent systems, the choice between these two literally dictates how an AI behaves. Does it take a strong, expansive stance that might be debated? Or does it only commit to undeniable bedrock facts?
+</div>
+</details>
+</section>
+
+<!-- SECTION: Grounded Algorithm -->
+<section id="grounded-algorithm">
+<h2>13. The IN/OUT Algorithm</h2>
+<div class="card card-sky">
+<p>Computing the grounded extension uses a simple iterative labelling algorithm:</p>
+</div>
+
+<ul class="step-list">
+<li><strong>Find unattacked arguments</strong> — any argument with no incoming attacks is labelled <strong>IN</strong></li>
+<li><strong>Mark attacked arguments OUT</strong> — any argument attacked by an IN argument is labelled <strong>OUT</strong></li>
+<li><strong>Re-check the graph</strong> — did removing OUT arguments free up new unattacked arguments? If so, label them IN</li>
+<li><strong>Repeat</strong> until no more changes occur — the set of all IN arguments is the grounded extension</li>
+</ul>
+
+<div class="card card-amber">
+<p><strong>Arguments left unlabelled</strong> (neither IN nor OUT) are <strong>undecided</strong> — we cannot determine their status. This happens with cycles (mutual attacks, odd cycles, etc.).</p>
+</div>
+
+<div class="formula-box">
+Grounded Extension = { all arguments labelled IN }
+</div>
+
+<details>
+<summary>Show Transcript — Grounded Algorithm</summary>
+<div class="transcript-text">
+Let's follow a strict algorithm to build one. It's a very systematic iterative process. First, look at your graph. Is there any argument that nobody is attacking? Great. Keep them in. Now, because those arguments are in, anything they attack is instantly destroyed. Throw them out. Delete them completely. Now look at the graph again. Did deleting those arguments suddenly free up a new argument from being attacked? If yes, that new argument is now in. You just repeat this cycle until the dust settles and nothing else changes.
+</div>
+</details>
+</section>
+
+<!-- SECTION: Grounded Example -->
+<section id="grounded-example">
+<h2>14. Grounded Extension — Worked Example</h2>
+<div class="example-box">
+<div class="ex-title">Large Graph Example (Slides 21-22)</div>
+<p>Arguments: {a, b, d, e, g, h, i, j, k, l, m, n, p, q} with complex attack relations.</p>
+</div>
+
+<div class="proof-box">
+<div class="proof-title">Step-by-Step Solution</div>
+<div class="case">
+<div class="case-title">Step 1: Find unattacked arguments</div>
+<p><strong>h</strong> is not attacked by anything → <strong>h is IN</strong></p>
+<p><strong>g</strong> is not attacked by anything → <strong>g is IN</strong></p>
+</div>
+<div class="case">
+<div class="case-title">Step 2: Mark arguments attacked by IN arguments as OUT</div>
+<p>h attacks p → <strong>p is OUT</strong></p>
+<p>g attacks d → <strong>d is OUT</strong></p>
+<p>g attacks p (already OUT) → confirmed OUT</p>
+</div>
+<div class="case">
+<div class="case-title">Step 3: Re-check — freed arguments</div>
+<p>p was the only attacker of q, and p is OUT → <strong>q is IN</strong></p>
+<p>b was attacked by d (now OUT), and b has no other attackers → <strong>b is IN</strong></p>
+</div>
+<div class="case">
+<div class="case-title">Step 4: Undecided arguments</div>
+<p>m, k, l — attack each other in a cycle → <strong>undecided</strong></p>
+<p>c — status depends on m (undecided) → <strong>undecided</strong></p>
+<p>i, j — mutually attack each other → <strong>undecided</strong></p>
+<p>n — depends on i or j (undecided) → <strong>undecided</strong></p>
+<p>f — depends on n (undecided) → <strong>undecided</strong></p>
+</div>
+</div>
+
+<div class="formula-box">
+Grounded Extension = {b, g, h, q}
+</div>
+</section>
+
+<!-- SECTION: Full Worked Example -->
+<section id="full-example">
+<h2>15. Full Worked Example</h2>
+<div class="example-box">
+<div class="ex-title">Graph: B → A, B → E, D → E, C → E, E → D, A → E (5 arguments)</div>
+<p>Attacks: B→A, B→E, D→E, C→E, E→D, A→E</p>
+</div>
+
+<h3>Conflict-Free Sets</h3>
+<div class="card card-sky">
+<p>∅, {A}, {B}, {C}, {D}, {E}, {A,D}, {A,E}, {B,C}</p>
+<p>These are the only positions with no internal attack relations.</p>
+</div>
+
+<h3>Admissible Sets</h3>
+<div class="card card-emerald">
+<p><strong>∅</strong> — trivially admissible</p>
+<p><strong>{B,C}</strong> — conflict-free; B defends against attacks on C, and C is not attacked. B is not attacked. Both mutually defensive.</p>
+<p>No other conflict-free sets are also mutually defensive.</p>
+</div>
+
+<h3>Results</h3>
+<table>
+<tr><th>Property</th><th>Result</th></tr>
+<tr><td>Preferred Extensions</td><td><strong>{B, C}</strong></td></tr>
+<tr><td>Credulously Accepted</td><td>B, C</td></tr>
+<tr><td>Sceptically Accepted</td><td>B, C (only one extension, so same)</td></tr>
+<tr><td>Grounded Extension</td><td><strong>∅</strong> (empty set)</td></tr>
+</table>
+
+<div class="card card-amber">
+<p><strong>Why is the grounded extension empty?</strong> Every argument is attacked by at least one other argument. There are no unattacked arguments to start the IN/OUT algorithm, so no arguments can be determined as IN.</p>
+</div>
+</section>
+
+<!-- SECTION: Deductive Argumentation -->
+<section id="deductive-argumentation">
+<h2>16. Deductive Argumentation</h2>
+<div class="card card-sky">
+<p>Abstract argumentation treats arguments as atomic (no internal structure). But arguments <strong>do</strong> have structure — premises, warrants, conclusions — that can be exploited.</p>
+<p>In <strong>deductive argumentation</strong>, arguments are modelled using <strong>logical formulae</strong>. This models <strong>defeasible reasoning</strong> — reasoning that can be overturned by new evidence.</p>
+</div>
+</section>
+
+<!-- SECTION: Toulmin's Model -->
+<section id="toulmin-model">
+<h2>17. Toulmin's Argument Model</h2>
+<p>Stephen Toulmin proposed a structured model of argument with six components:</p>
+
+<table>
+<tr><th>Component</th><th>Role</th><th>Description</th></tr>
+<tr><td><strong>Claim (C)</strong></td><td>Conclusion</td><td>The conclusion whose merit must be established</td></tr>
+<tr><td><strong>Ground/Support (S)</strong></td><td>Fact/Evidence</td><td>A fact appealed to as foundation for the claim</td></tr>
+<tr><td><strong>Warrant (W)</strong></td><td>Rule/Axiom</td><td>A statement authorising movement from ground to claim</td></tr>
+<tr><td><strong>Backing (B)</strong></td><td>Credentials</td><td>Certifies the warrant; introduced when warrant alone isn't convincing</td></tr>
+<tr><td><strong>Rebuttal (R)</strong></td><td>Exception</td><td>Restrictions that may legitimately be applied to the claim</td></tr>
+<tr><td><strong>Qualifier (Q)</strong></td><td>Degree of force</td><td>Words expressing certainty: "probably", "certainly", "impossible"</td></tr>
+</table>
+
+<div class="diagram-box">
+(S) Support ──────→ Therefore (Q) Qualifier + (C) Claim<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+&nbsp;&nbsp;Since&nbsp;&nbsp;Because&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Unless<br>
+&nbsp;&nbsp;(W)&nbsp;&nbsp;&nbsp;&nbsp;(B)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(R)<br>
+Warrant&nbsp;&nbsp;Backing&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Rebuttal
+</div>
+
+<div class="example-box">
+<div class="ex-title">Harry's Nationality (Toulmin's Example)</div>
+<p><strong>Support:</strong> Harry was born in Bermuda</p>
+<p><strong>Warrant:</strong> A man born in Bermuda will generally be a British subject</p>
+<p><strong>Backing:</strong> The following statutes and other legal provisions...</p>
+<p><strong>Qualifier:</strong> So, <em>presumably</em></p>
+<p><strong>Claim:</strong> Harry is a British subject</p>
+<p><strong>Rebuttal:</strong> Unless both his parents were aliens / he has become a naturalised American / ...</p>
+</div>
+</section>
+
+<!-- SECTION: Formal Arguments -->
+<section id="formal-arguments">
+<h2>18. Formal Deductive Arguments</h2>
+<div class="card card-sky">
+<p>Given a <strong>database Σ</strong> (a possibly inconsistent set of logical formulae representing available evidence), a <strong>deductive argument</strong> is a pair <strong>(S, p)</strong> where:</p>
+</div>
+
+<div class="formula-box">
+A deductive argument (S, p) requires:<br><br>
+1. S ⊆ Σ &nbsp;&nbsp;(based on available evidence)<br>
+2. S ⊢ p &nbsp;&nbsp;(conclusion provable from support)<br>
+3. S is logically consistent<br>
+4. There is no S' ⊂ S such that S' ⊢ p &nbsp;&nbsp;(minimal support)
+</div>
+
+<div class="example-box">
+<div class="ex-title">Socrates Example</div>
+<p><strong>Database Σ = {</strong> human(Socrates), human(Heracles), father(Heracles, Zeus), father(Apollo, Zeus), divine(X) → ¬mortal(X), human(X) → mortal(X), father(X, Zeus) → divine(X), ¬(father(X, Zeus)) → divine(X) <strong>}</strong></p>
+<p><strong>Arg₁ =</strong> ({human(Socrates), human(X) → mortal(X)}, mortal(Socrates))</p>
+<p>S = {human(Socrates), human(X) → mortal(X)}, p = mortal(Socrates)</p>
+<p>This is valid: S ⊆ Σ, S ⊢ p, S is consistent, and no proper subset of S proves p.</p>
+</div>
+</section>
+
+<!-- SECTION: Rebut vs Undercut (Formal) -->
+<section id="rebut-undercut">
+<h2>19. Rebut vs Undercut (Formal Definition)</h2>
+<p>Let (S₁, p₁) and (S₂, p₂) be arguments from database Σ.</p>
+
+<div class="vs-container">
+<div class="card card-rose">
+<h3>Rebut</h3>
+<p>(S₂, p₂) <strong>rebuts</strong> (S₁, p₁) if:</p>
+<div class="formula-box" style="text-align:left">p₂ ≡ ¬p₁</div>
+<p>The conclusions directly <strong>contradict</strong> each other.</p>
+<p><span class="tag tag-fail">Always symmetrical</span> — if A rebuts B, then B rebuts A.</p>
+</div>
+<div class="card card-amber">
+<h3>Undercut</h3>
+<p>(S₂, p₂) <strong>undercuts</strong> (S₁, p₁) if:</p>
+<div class="formula-box" style="text-align:left">p₂ ≡ ¬q₁ for some q₁ ∈ S₁</div>
+<p>The conclusion of one argument <strong>attacks a premise</strong> in the support of the other.</p>
+<p><span class="tag tag-amber">Not necessarily symmetrical</span></p>
+</div>
+</div>
+</section>
+
+<!-- SECTION: Deductive Examples -->
+<section id="deductive-examples">
+<h2>20. Deductive Argumentation — Examples</h2>
+
+<h3>Heracles Example</h3>
+<div class="example-box">
+<div class="ex-title">Rebut and Undercut in Action</div>
+<p><strong>Arg₂ =</strong> ({human(Heracles), human(X) → mortal(X)}, <span style="color:#10b981">mortal(Heracles)</span>)</p>
+<p><strong>Arg₃ =</strong> ({father(Heracles, Zeus), father(X,Zeus) → divine(X), divine(X) → ¬mortal(X)}, <span style="color:#f43f5e">¬mortal(Heracles)</span>)</p>
+<p><strong>Arg₃ rebuts Arg₂:</strong> mortal(Heracles) vs ¬mortal(Heracles) — direct contradiction.</p>
+<br>
+<p><strong>Arg₄ =</strong> ({¬(father(X,Zeus) → divine(X))}, <span style="color:#10b981">¬(father(X,Zeus) → divine(X))</span>)</p>
+<p><strong>Arg₄ undercuts Arg₃:</strong> Arg₄'s conclusion negates a premise in Arg₃'s support set.</p>
+</div>
+
+<h3>Recycling Example</h3>
+<div class="example-box">
+<div class="ex-title">Three Arguments about Recycling</div>
+<p><strong>Argument x:</strong> a = "We recycle", b = "We save resources", a → b = "If we recycle, then we save resources"</p>
+<p>Formally: ({a, a → b}, b)</p>
+<br>
+<p><strong>Argument y:</strong> c = "Recycled products are not used", a ∧ c → ¬b = "If we recycle and recycled products are not used then we don't save resources"</p>
+<p>Formally: ({a, c, a ∧ c → ¬b}, ¬b)</p>
+<p><span class="tag tag-fail">x and y rebut each other</span> (b vs ¬b)</p>
+<br>
+<p><strong>Argument z:</strong> d = "We create more desirable recycled products", d → ¬c = "If we create more desirable recycled products then recycled products are used"</p>
+<p>Formally: ({d, d → ¬c}, ¬c)</p>
+<p><span class="tag tag-amber">z undercuts y</span> (¬c attacks premise c in y's support)</p>
+</div>
+</section>
+
+<!-- SECTION: Attack and Defeat -->
+<section id="attack-and-defeat">
+<h2>21. Attack and Defeat</h2>
+<div class="card card-sky">
+<p>Deductive argumentation connects back to Dung's abstract framework:</p>
+<ul>
+<li>A <strong>rebuttal</strong> or <strong>undercut</strong> between two deductive arguments becomes an <strong>attack</strong> in the Dung-style system</li>
+<li>Once attacks are identified, we can use <strong>preferred extensions</strong> or <strong>grounded extensions</strong> to determine which arguments to accept</li>
+</ul>
+</div>
+<div class="card card-amber">
+<p><strong>Important note:</strong> A rebut is <strong>symmetrical</strong> — this causes problems with some kinds of extensions (e.g., it creates mutual attacks, which can lead to multiple preferred extensions or empty grounded extensions).</p>
+</div>
+</section>
+
+<!-- SECTION: Expected Utility -->
+<section id="expected-utility">
+<h2>22. Expected Utility</h2>
+<div class="card card-purple">
+<p>Pivoting from logical debate to <strong>decision theory</strong>. When an agent takes action in an uncertain world, we need hard numbers to measure risk and reward.</p>
+</div>
+
+<div class="card card-sky">
+<p>An agent's environment is described by:</p>
+<ul>
+<li><strong>States (E)</strong> — the possible states of the environment</li>
+<li><strong>Actions (α)</strong> — actions the agent can take</li>
+<li><strong>Transition probabilities</strong> — P(state' | action, state)</li>
+<li><strong>Utility function U</strong> — the payoff for each outcome</li>
+</ul>
+</div>
+
+<div class="formula-box">
+Expected Utility = Σ [P(run) × U(run)]<br><br>
+where P(run) = product of transition probabilities along the path<br>
+and U(run) = sum of utilities earned along the path
+</div>
+
+<div class="card card-emerald">
+<p>A <strong>run</strong> is a complete end-to-end path through the agent's decision tree — from the initial state to a terminal state. Each run has a probability (product of transition probabilities) and a utility (sum of payoffs).</p>
+</div>
+
+<details>
+<summary>Show Transcript — Expected Utility</summary>
+<div class="transcript-text">
+Now we are pivoting entirely away from abstract logical debate and into the mathematical probability of decision theory. Because while arguments are great for beliefs, when an agent actually takes action in a chaotic world, we need hard numbers to measure risk and reward. We've got states, labeled E. We have actions, labeled alpha. We have the probability of an action leading to a specific state. And finally, a utility function, those U values, which represent the points or payoff the agent gets for that outcome.
+</div>
+</details>
+</section>
+
+<!-- SECTION: Finding the Optimal Agent -->
+<section id="optimal-agent">
+<h2>23. Finding the Optimal Agent</h2>
+<div class="card card-sky">
+<p>To determine which agent is <strong>optimal</strong>, calculate the expected utility for each agent and compare. The agent with the <strong>higher expected utility</strong> is the optimal agent for that environment.</p>
+</div>
+
+<ul class="step-list">
+<li><strong>Draw the decision tree</strong> — visualise all possible runs for each agent, branching at each action</li>
+<li><strong>Identify all runs</strong> — trace every complete path from start state to end state</li>
+<li><strong>Calculate P(run)</strong> — multiply all transition probabilities along each path</li>
+<li><strong>Calculate U(run)</strong> — sum all utilities earned along each path</li>
+<li><strong>Compute Expected Utility</strong> — EU = Σ P(run) × U(run) for all runs</li>
+<li><strong>Compare agents</strong> — the agent with higher EU is optimal</li>
+</ul>
+
+<div class="example-box">
+<div class="ex-title">Exam Example — Comparing Two Agents</div>
+<p><strong>Agent 1:</strong> Starting at E₀, action α₀ branches to E₁ or E₂. From there, action α₂ leads to final states.</p>
+<p><strong>Agent 2:</strong> Different action choices leading to different paths and probabilities.</p>
+<br>
+<p>After computing all runs:</p>
+<table>
+<tr><th>Agent</th><th>Expected Utility</th><th>Optimal?</th></tr>
+<tr><td>Agent 1</td><td>12.9</td><td><span class="tag tag-fail">No</span></td></tr>
+<tr><td>Agent 2</td><td>13.2</td><td><span class="tag tag-pass">Yes</span></td></tr>
+</table>
+<p>Since 13.2 &gt; 12.9, <strong>Agent 2 is the optimal agent</strong>.</p>
+</div>
+
+<details>
+<summary>Show Transcript — Optimal Agent</summary>
+<div class="transcript-text">
+We're going to calculate the expected utility for agent one and agent two to see who wins. And by visualizing the possible runs for both agents as distinct decision trees, we can clearly trace exactly where each potential action leads in that environment. We're calculating expected utility by finding the payoff of each run, factoring in its likelihood, and then summing them all up. So for agent one, we look at every single end-to-end path. We multiply the probabilities along a specific path and then multiply that by the sum of the utilities earned along the way. When you crunch the actual numbers from the exam's model answer, agent one gets 12.9. Agent two, with its completely different paths and probabilities, gets a total of 13.2. Because 13.2 is obviously greater than 12.9, we have objectively and mathematically proven that agent two is the optimal agent in this specific environment.
+</div>
+</details>
+</section>
+
+</main>
+
+<script>
+const sections=document.querySelectorAll('section[id]');
+const navLinks=document.querySelectorAll('nav a');
+function updateActive(){
+let current='';
+sections.forEach(s=>{
+const top=s.offsetTop-120;
+if(window.scrollY>=top)current=s.getAttribute('id');
+});
+navLinks.forEach(a=>{
+a.classList.remove('active');
+if(a.getAttribute('href')==='#'+current)a.classList.add('active');
+});
+}
+window.addEventListener('scroll',updateActive);
+updateActive();
+</script>
+
+</body>
+</html>

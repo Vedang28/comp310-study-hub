@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COMP310 Chapter 4: Practical Reasoning Agents</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#0f172a;color:#e2e8f0;line-height:1.7}
+  .header{background:linear-gradient(135deg,#1e293b,#0f172a);border-bottom:2px solid #10b981;padding:2rem 2rem 1.5rem;text-align:center}
+  .header h1{font-size:2rem;color:#f8fafc;margin-bottom:.3rem}
+  .header .subtitle{color:#94a3b8;font-size:1rem}
+  .header .meta{margin-top:.8rem;color:#64748b;font-size:.85rem}
+  .nav{background:#1e293b;border-bottom:1px solid #334155;padding:1rem 2rem;position:sticky;top:0;z-index:100;display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center}
+  .nav a{color:#94a3b8;text-decoration:none;padding:.4rem .8rem;border-radius:6px;font-size:.8rem;transition:all .2s;border:1px solid transparent}
+  .nav a:hover{background:#334155;color:#f8fafc;border-color:#475569}
+  .nav a.active{background:#10b981;color:white}
+  .container{max-width:1000px;margin:0 auto;padding:2rem}
+  .section{margin-bottom:3rem;scroll-margin-top:80px}
+  .section-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem}
+  .section-number{background:#10b981;color:white;width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1rem;flex-shrink:0}
+  .section-title{font-size:1.5rem;color:#f8fafc}
+  .section-time{color:#64748b;font-size:.85rem;margin-left:auto;background:#1e293b;padding:.3rem .8rem;border-radius:20px;border:1px solid #334155;white-space:nowrap}
+  .card{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:1.5rem;margin-bottom:1rem}
+  .card h3{color:#34d399;font-size:1.05rem;margin-bottom:.8rem}
+  .card p{color:#cbd5e1;margin-bottom:.5rem}
+  .concept{background:linear-gradient(135deg,#1a3a2a,#1e293b);border-left:4px solid #10b981;border-radius:0 12px 12px 0;padding:1.2rem 1.5rem;margin:1rem 0}
+  .concept .label{color:#34d399;font-weight:700;font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem}
+  .def-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0}
+  @media(max-width:700px){.def-grid{grid-template-columns:1fr}}
+  .def-box{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:1.2rem}
+  .def-box .symbol{font-size:1.8rem;font-weight:700;color:#f59e0b;margin-bottom:.3rem}
+  .def-box .name{color:#34d399;font-weight:600;margin-bottom:.3rem}
+  .def-box .desc{color:#94a3b8;font-size:.9rem}
+  .pseudocode{background:#0f172a;border:1px solid #334155;border-radius:10px;padding:1.2rem 1.5rem;font-family:'SF Mono','Fira Code','Consolas',monospace;font-size:.85rem;color:#e2e8f0;overflow-x:auto;margin:1rem 0;line-height:1.9}
+  .pseudocode .keyword{color:#c084fc;font-weight:600}
+  .pseudocode .comment{color:#64748b;font-style:italic}
+  .pseudocode .highlight{color:#34d399}
+  .pseudocode .type{color:#f59e0b}
+  .pseudocode .changed{background:#10b98122;padding:0 .3rem;border-radius:3px}
+  .rule-box{background:#0f172a;border:1px solid #475569;border-radius:10px;padding:1rem 1.5rem;margin:.8rem 0;font-family:'SF Mono','Fira Code',monospace;font-size:.95rem;text-align:center}
+  .rule-box .condition{color:#34d399}
+  .rule-box .arrow{color:#f59e0b;font-size:1.2rem;margin:0 .5rem}
+  .rule-box .action{color:#f472b6}
+  .warning{background:linear-gradient(135deg,#3b1f1f,#1e293b);border-left:4px solid #f87171;border-radius:0 12px 12px 0;padding:1.2rem 1.5rem;margin:1rem 0}
+  .warning .label{color:#f87171;font-weight:700;font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem}
+  .success{background:linear-gradient(135deg,#1a3a2a,#1e293b);border-left:4px solid #34d399;border-radius:0 12px 12px 0;padding:1.2rem 1.5rem;margin:1rem 0}
+  .success .label{color:#34d399;font-weight:700;font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem}
+  ul.notes{list-style:none;padding-left:0}
+  ul.notes li{padding:.4rem 0 .4rem 1.5rem;position:relative;color:#cbd5e1}
+  ul.notes li::before{content:'';position:absolute;left:0;top:.85rem;width:8px;height:8px;border-radius:50%;background:#10b981}
+  ol.steps{list-style:none;padding-left:0;counter-reset:step}
+  ol.steps li{counter-increment:step;padding:.6rem 0 .6rem 2.5rem;position:relative;color:#cbd5e1}
+  ol.steps li::before{content:counter(step);position:absolute;left:0;top:.5rem;width:24px;height:24px;border-radius:50%;background:#10b981;color:white;font-size:.75rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .comp-table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.9rem}
+  .comp-table th{background:#334155;color:#f8fafc;padding:.8rem 1rem;text-align:left;font-weight:600}
+  .comp-table td{padding:.8rem 1rem;border-bottom:1px solid #334155;color:#cbd5e1}
+  .comp-table tr:hover td{background:#1e293b}
+  details{margin:1rem 0}
+  details summary{cursor:pointer;color:#34d399;font-size:.9rem;padding:.5rem 0;user-select:none}
+  details summary:hover{color:#6ee7b7}
+  details .transcript-text{background:#0f172a;border:1px solid #334155;border-radius:8px;padding:1rem 1.2rem;margin-top:.5rem;color:#94a3b8;font-size:.88rem;line-height:1.8}
+  .exam-tip{background:linear-gradient(135deg,#2d1b4e,#1e293b);border-left:4px solid #a78bfa;border-radius:0 12px 12px 0;padding:1.2rem 1.5rem;margin:1rem 0}
+  .exam-tip .label{color:#a78bfa;font-weight:700;font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem}
+  .footer{text-align:center;padding:2rem;color:#475569;font-size:.85rem;border-top:1px solid #1e293b}
+  .kw{color:#f59e0b;font-weight:600}
+  .kw-blue{color:#60a5fa;font-weight:600}
+  .kw-green{color:#34d399;font-weight:600}
+  .kw-red{color:#f87171;font-weight:600}
+  .kw-purple{color:#a78bfa;font-weight:600}
+  .blocks-vis{display:flex;gap:2rem;justify-content:center;align-items:flex-end;margin:1.5rem 0;flex-wrap:wrap}
+  .block-stack{display:flex;flex-direction:column-reverse;align-items:center}
+  .block{width:60px;height:40px;border:2px solid #475569;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;color:#f8fafc;background:#1e293b}
+  .block.a{border-color:#60a5fa;color:#60a5fa}
+  .block.b{border-color:#f59e0b;color:#f59e0b}
+  .block.c{border-color:#f472b6;color:#f472b6}
+  .table-line{width:80px;height:3px;background:#475569;border-radius:2px;margin-top:4px}
+  .arrow-between{font-size:2rem;color:#64748b;align-self:center}
+  .quote-box{background:#0f172a;border:1px solid #334155;border-radius:10px;padding:1.2rem 1.5rem;margin:1rem 0;font-style:italic;color:#94a3b8;border-left:3px solid #475569}
+  .quote-box .author{font-style:normal;color:#64748b;margin-top:.5rem;font-size:.85rem}
+  .version-tag{display:inline-block;background:#10b981;color:white;padding:.2rem .6rem;border-radius:4px;font-size:.75rem;font-weight:700;margin-left:.5rem}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>COMP310 - Chapter 4</h1>
+  <div class="subtitle">Practical Reasoning Agents</div>
+  <div class="meta">Shufang Zhu | University of Liverpool | Multi-Agent Systems</div>
+</div>
+
+<div class="nav" id="topnav">
+  <a href="#s1">1. Practical Reasoning</a>
+  <a href="#s2">2. Intentions</a>
+  <a href="#s3">3. Means-Ends / STRIPS</a>
+  <a href="#s4">4. Blocksworld</a>
+  <a href="#s5">5. Action Schemas</a>
+  <a href="#s6">6. Formal Plans</a>
+  <a href="#s7">7. Agent Control Loop</a>
+  <a href="#s8">8. Commitment</a>
+  <a href="#s9">9. Reconsideration</a>
+  <a href="#s10">10. Summary</a>
+</div>
+
+<div class="container">
+
+  <!-- ==================== SECTION 1 ==================== -->
+  <div class="section" id="s1">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <div class="section-title">What is Practical Reasoning?</div>
+      <div class="section-time">Slides 3-4 | 0:00</div>
+    </div>
+
+    <div class="concept">
+      <div class="label">Core Definition</div>
+      <p><span class="kw">Practical reasoning</span> is reasoning directed towards <span class="kw-green">actions</span> &mdash; the process of figuring out what to do. It is distinct from <span class="kw-blue">theoretical reasoning</span>, which is directed towards <em>beliefs</em>.</p>
+    </div>
+
+    <div class="quote-box">
+      "Practical reasoning is a matter of weighing conflicting considerations for and against competing options, where the relevant considerations are provided by what the agent desires/values/cares about and what the agent believes..."
+      <div class="author">&mdash; Bratman</div>
+    </div>
+
+    <div class="card">
+      <h3>Two Components of Practical Reasoning</h3>
+      <div class="def-grid">
+        <div class="def-box">
+          <div class="symbol">D</div>
+          <div class="name">Deliberation</div>
+          <div class="desc">Deciding <span class="kw">what</span> state of affairs to achieve. The outputs are <span class="kw-green">intentions</span>.</div>
+        </div>
+        <div class="def-box">
+          <div class="symbol">M</div>
+          <div class="name">Means-Ends Reasoning</div>
+          <div class="desc">Deciding <span class="kw">how</span> to achieve those states. The outputs are <span class="kw-green">plans</span>.</div>
+        </div>
+      </div>
+      <p style="margin-top:.8rem;">The interplay between <span class="kw-blue">beliefs</span>, <span class="kw-purple">desires</span>, and <span class="kw-green">intentions</span> defines how the BDI model works.</p>
+    </div>
+
+    <details>
+      <summary>Transcript (0:00 - 0:54)</summary>
+      <div class="transcript-text">Alright, let's dive right into this explainer. Today we're going to break down the exact computational logic that allows artificial agents to actually reason, plan, and act in complex environments. If you've ever wondered how an AI bridges that massive gap between simply observing the world and physically manipulating it, well, you are absolutely in the right place. We're going to focus heavily on Chapter 4's practical reasoning agents, taking a real deep dive into automated planning and the strict logic behind action sequences.</div>
+    </details>
+  </div>
+
+  <!-- ==================== SECTION 2 ==================== -->
+  <div class="section" id="s2">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <div class="section-title">Intentions in Practical Reasoning</div>
+      <div class="section-time">Slides 5-9 | 0:54</div>
+    </div>
+
+    <div class="card">
+      <h3>7 Properties of Intentions</h3>
+      <table class="comp-table">
+        <tr><th>#</th><th>Property</th><th>Meaning</th></tr>
+        <tr><td>1</td><td>Intentions pose problems</td><td>Agents must determine <em>ways</em> of achieving them &mdash; devote resources to deciding how to bring about &phi;</td></tr>
+        <tr><td>2</td><td>Intentions filter</td><td>New intentions must <span class="kw-red">not conflict</span> with existing ones</td></tr>
+        <tr><td>3</td><td>Agents track success</td><td>If first attempt fails, try an <span class="kw-green">alternative plan</span></td></tr>
+        <tr><td>4</td><td>Believed possible</td><td>Agents believe there is at least <em>some way</em> to achieve them</td></tr>
+        <tr><td>5</td><td>No belief of failure</td><td>Would not be rational to adopt &phi; if you believed you'd fail</td></tr>
+        <tr><td>6</td><td>Believed achievable</td><td>Under "normal circumstances" agents believe they will succeed</td></tr>
+        <tr><td>7</td><td>Side-effect problem</td><td>Intentions are <span class="kw-red">NOT closed under implication</span> (the <em>package deal</em> problem)</td></tr>
+      </table>
+    </div>
+
+    <div class="exam-tip">
+      <div class="label">Exam Tip - Side Effect Problem</div>
+      <p>"I may believe going to the dentist involves pain, and I intend to go to the dentist &mdash; but this does NOT imply I intend to suffer pain!" If I believe &phi; &rArr; &psi; and I intend &phi;, I do <span class="kw-red">not</span> necessarily intend &psi;.</p>
+    </div>
+
+    <div class="quote-box">
+      "My desire to play basketball this afternoon is merely a potential influencer of my conduct. It must vie with my other relevant desires before it is settled what I will do. In contrast, once I intend to play basketball this afternoon, the matter is settled: I normally need not continue to weigh the pros and cons."
+      <div class="author">&mdash; Michael E. Bratman (1990)</div>
+    </div>
+
+    <div class="concept">
+      <div class="label">Key Distinction</div>
+      <p><span class="kw">Intentions are stronger than desires.</span> A desire competes with other desires; an intention is a <em>settled</em> commitment to action.</p>
+    </div>
+
+    <details>
+      <summary>Transcript (0:54 - 1:44)</summary>
+      <div class="transcript-text">First up, Section 1, the practical reasoning agent, deliberation and action. So to really understand how an agent thinks, we literally have to look under the hood at its core operating cycle. What's really fascinating here is the explicit split between belief revision, deliberating to form intentions, and then using means-ends reasoning to actually generate a plan. If you trace the loop, you see the agent operates continuously. First, it gets a percept. It uses a belief revision function, noted right there as BRF, to update its internal model of the world. Then it deliberates to choose an intention i, generates a plan pi to achieve that intention, and finally, it executes it.</div>
+    </details>
+  </div>
+
+  <!-- ==================== SECTION 3 ==================== -->
+  <div class="section" id="s3">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <div class="section-title">Means-Ends Reasoning & STRIPS</div>
+      <div class="section-time">Slides 10-13 | 2:17</div>
+    </div>
+
+    <div class="card">
+      <h3>Planning = Automatic Programming</h3>
+      <p>Give a planning system three inputs and it generates a plan:</p>
+      <ol class="steps">
+        <li>Representation of the <span class="kw">goal/intention</span> to achieve</li>
+        <li>Representation of the <span class="kw">actions</span> it can perform</li>
+        <li>Representation of the <span class="kw">environment</span></li>
+      </ol>
+      <p style="margin-top:.5rem;">The planner outputs a <span class="kw-green">plan to achieve the goal</span>. You don't tell it what to do &mdash; it figures it out!</p>
+    </div>
+
+    <div class="card">
+      <h3>STRIPS Planner</h3>
+      <p><span class="kw">S</span>tanford <span class="kw">R</span>esearch <span class="kw">I</span>nstitute <span class="kw">P</span>roblem <span class="kw">S</span>olver &mdash; developed by Richard Fikes and Nils Nilsson in 1971. Used by Shakey, the robot.</p>
+      <ul class="notes" style="margin-top:.8rem;">
+        <li>World model as <span class="kw-blue">first-order logic formulae</span></li>
+        <li>Actions described by <span class="kw-blue">action schemata</span> (preconditions + effects)</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>Three Parts of Every STRIPS Action</h3>
+      <div class="def-grid" style="grid-template-columns:1fr 1fr 1fr">
+        <div class="def-box">
+          <div class="name" style="color:#34d399">Preconditions</div>
+          <div class="desc">Facts that <strong>must be true</strong> for the action to be attempted</div>
+        </div>
+        <div class="def-box">
+          <div class="name" style="color:#f87171">Delete List</div>
+          <div class="desc">Facts that are <strong>no longer true</strong> after the action</div>
+        </div>
+        <div class="def-box">
+          <div class="name" style="color:#60a5fa">Add List</div>
+          <div class="desc">New facts that <strong>become true</strong> after the action</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Search Strategies</h3>
+      <div class="def-grid">
+        <div class="def-box">
+          <div class="name">Forward Search</div>
+          <div class="desc">Start from <span class="kw-green">current state</span>, progress forward through actions toward goal</div>
+        </div>
+        <div class="def-box">
+          <div class="name">Backward Search (Goal Regression)</div>
+          <div class="desc">Start from <span class="kw">desired goal</span>, work backwards to find required starting conditions</div>
+        </div>
+      </div>
+    </div>
+
+    <details>
+      <summary>Transcript (2:17 - 3:51)</summary>
+      <div class="transcript-text">Which brings us right to section 2, automated planning and strips, the architecture of action. Think of strips, which stands for Stanford Research Institute Problem Solver, as the strict mathematical grammar an agent uses to understand cause and effect. It breaks down literally every possible action into three absolute rules. First, preconditions &mdash; things that must be true right now. Second, the delete list &mdash; facts that will no longer be true. Third, the add list &mdash; brand new facts that become true. An agent can use forward search or backward search (goal regression) to find a valid path from initial state to goal.</div>
+    </details>
+  </div>
+
+  <!-- ==================== SECTION 4 ==================== -->
+  <div class="section" id="s4">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <div class="section-title">The Blocksworld</div>
+      <div class="section-time">Slides 14-15 | 3:51</div>
+    </div>
+
+    <div class="card">
+      <h3>Environment Setup</h3>
+      <p>Robot arm + 3 blocks (A, B, C) + table. Goal: build towers. Uses <span class="kw">closed world assumption</span> (anything not stated = false).</p>
+
+      <div class="blocks-vis">
+        <div>
+          <div class="block-stack">
+            <div class="block a">A</div>
+            <div class="block b">B</div>
+          </div>
+          <div class="table-line"></div>
+        </div>
+        <div>
+          <div class="block-stack">
+            <div class="block c">C</div>
+          </div>
+          <div class="table-line"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Blocksworld Ontology</h3>
+      <table class="comp-table">
+        <tr><th>Predicate</th><th>Meaning</th></tr>
+        <tr><td><code><span class="kw">On(x,y)</span></code></td><td>Object x is on top of object y</td></tr>
+        <tr><td><code><span class="kw">OnTable(x)</span></code></td><td>Object x is on the table</td></tr>
+        <tr><td><code><span class="kw">Clear(x)</span></code></td><td>Nothing is on top of object x</td></tr>
+        <tr><td><code><span class="kw">Holding(x)</span></code></td><td>Arm is holding object x</td></tr>
+        <tr><td><code><span class="kw">ArmEmpty</span></code></td><td>Arm is not holding any object</td></tr>
+      </table>
+      <div style="margin-top:1rem">
+        <p><strong>Example state:</strong> <code>Clear(A), On(A,B), OnTable(B), Clear(C), OnTable(C), ArmEmpty</code></p>
+        <p><strong>Example goal:</strong> <code>{OnTable(A), OnTable(B), OnTable(C), ArmEmpty}</code></p>
+      </div>
+    </div>
+
+    <details>
+      <summary>Transcript (3:51 - 4:54)</summary>
+      <div class="transcript-text">This is the ultimate AI training ground. It's basically the classic toddler versus robot dilemma. While a human toddler just sees wooden blocks labeled A, B, and C to stack on a table, our robotic agent has absolutely zero common sense. It relies entirely on rigid mathematical formulas. It sees a closed world ontology where properties are either strictly true or strictly false, no in between. We track the robot's state with Holding(x) or ArmEmpty. That is the entire known universe for this agent.</div>
+    </details>
+  </div>
+
+  <!-- ==================== SECTION 5 ==================== -->
+  <div class="section" id="s5">
+    <div class="section-header">
+      <div class="section-number">5</div>
+      <div class="section-title">STRIPS Action Schemas</div>
+      <div class="section-time">Slides 16-18, 26 | 4:54</div>
+    </div>
+
+    <div class="card">
+      <h3>The Four Blocksworld Actions</h3>
+
+      <div class="def-grid">
+        <div class="def-box" style="border-color:#34d399">
+          <div class="name">Stack(x, y)</div>
+          <div class="desc">Place held block x on top of block y</div>
+          <div class="pseudocode" style="margin-top:.5rem;font-size:.82rem">
+            <span class="keyword">pre</span>  Clear(y) &and; Holding(x)<br>
+            <span class="kw-red">del</span>  Clear(y) &and; Holding(x)<br>
+            <span class="kw-blue">add</span>  ArmEmpty &and; On(x,y)
+          </div>
+        </div>
+        <div class="def-box" style="border-color:#60a5fa">
+          <div class="name">Pickup(x)</div>
+          <div class="desc">Pick up block x from the table</div>
+          <div class="pseudocode" style="margin-top:.5rem;font-size:.82rem">
+            <span class="keyword">pre</span>  Clear(x) &and; OnTable(x) &and; ArmEmpty<br>
+            <span class="kw-red">del</span>  OnTable(x) &and; ArmEmpty<br>
+            <span class="kw-blue">add</span>  Holding(x)
+          </div>
+        </div>
+        <div class="def-box" style="border-color:#f59e0b">
+          <div class="name">UnStack(x, y)</div>
+          <div class="desc">Pick up block x from on top of block y</div>
+          <div class="pseudocode" style="margin-top:.5rem;font-size:.82rem">
+            <span class="keyword">pre</span>  On(x,y) &and; Clear(x) &and; ArmEmpty<br>
+            <span class="kw-red">del</span>  On(x,y) &and; ArmEmpty<br>
+            <span class="kw-blue">add</span>  Holding(x) &and; Clear(y)
+          </div>
+        </div>
+        <div class="def-box" style="border-color:#f472b6">
+          <div class="name">PutDown(x)</div>
+          <div class="desc">Place held block x onto the table</div>
+          <div class="pseudocode" style="margin-top:.5rem;font-size:.82rem">
+            <span class="keyword">pre</span>  Holding(x)<br>
+            <span class="kw-red">del</span>  Holding(x)<br>
+            <span class="kw-blue">add</span>  OnTable(x) &and; ArmEmpty &and; Clear(x)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="warning">
+      <div class="label">Action Definitions are Important!!!</div>
+      <p>A single missing precondition (e.g., forgetting <code>Clear(x)</code> in UnStack) will completely break the agent. It might try to unstack a block from the <em>middle</em> of a tower &mdash; all because the logic wasn't watertight. <strong>This appeared in the mock paper!</strong></p>
+    </div>
+
+    <div class="card">
+      <h3>Example Plan: Rearranging Blocks</h3>
+      <div class="blocks-vis">
+        <div>
+          <p style="text-align:center;color:#64748b;font-size:.8rem;margin-bottom:.5rem">Initial</p>
+          <div style="display:flex;gap:1rem;justify-content:center">
+            <div><div class="block-stack"><div class="block a">A</div><div class="block b">B</div></div><div class="table-line"></div></div>
+            <div><div class="block-stack"><div class="block c">C</div></div><div class="table-line"></div></div>
+          </div>
+        </div>
+        <div class="arrow-between">&rarr;</div>
+        <div>
+          <p style="text-align:center;color:#64748b;font-size:.8rem;margin-bottom:.5rem">Goal</p>
+          <div style="display:flex;gap:1rem;justify-content:center">
+            <div><div class="block-stack"><div class="block a">A</div><div class="block b">B</div><div class="block c">C</div></div><div class="table-line"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="pseudocode" style="text-align:center;font-size:.9rem">
+        UnStack(A,B) &rarr; PutDown(A) &rarr; Pickup(B) &rarr; Stack(B,C) &rarr; Pickup(A) &rarr; Stack(A,B)
+      </div>
+    </div>
+
+    <details>
+      <summary>Transcript (4:54 - 7:01)</summary>
+      <div class="transcript-text">To execute a stack action, the agent checks preconditions: block Y must be clear and the agent must be holding X. If both are true, the action fires. It deletes old states and adds new ones. Conversely, unstacking requires inverted logic. The agent must verify X is on Y, X is clear, and the arm is empty. A single missing precondition will completely break the agent's ability to interact with the environment. By clearly defining initial beliefs and goal intentions, the agent uses strip sequences to bridge the gap, calculating the shortest sequence of actions.</div>
+    </details>
+  </div>
+
+  <!-- ==================== SECTION 6 ==================== -->
+  <div class="section" id="s6">
+    <div class="section-header">
+      <div class="section-number">6</div>
+      <div class="section-title">Formal Plan Representation</div>
+      <div class="section-time">Slides 20-22</div>
+    </div>
+
+    <div class="card">
+      <h3>Planning Problem Definition</h3>
+      <div class="rule-box">
+        Planning Problem = <span class="condition">&lt; B<sub>0</sub>, Ac, I &gt;</span>
+      </div>
+      <ul class="notes" style="margin-top:1rem">
+        <li><span class="kw">B<sub>0</sub></span> = initial set of beliefs about the world</li>
+        <li><span class="kw">Ac</span> = set of available actions</li>
+        <li><span class="kw">I</span> = goal (intention)</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>Action Structure</h3>
+      <p>Each action &alpha;<sub>i</sub> has structure:</p>
+      <div class="rule-box">
+        <span class="type">&alpha;<sub>i</sub></span> = &lt; <span class="condition">P<sub>&alpha;i</sub></span> , <span class="action">D<sub>&alpha;i</sub></span> , <span class="kw-blue">A<sub>&alpha;i</sub></span> &gt;
+      </div>
+      <p style="margin-top:.5rem;">A plan &pi; = (&alpha;<sub>1</sub>, ..., &alpha;<sub>n</sub>) &mdash; a sequence of actions from Ac.</p>
+    </div>
+
+    <div class="card">
+      <h3>Plan Validity</h3>
+      <ul class="notes">
+        <li>A plan is <span class="kw-green">acceptable</span> if: for all 1 &le; j &le; n, B<sub>j-1</sub> &vDash; P<sub>&alpha;j</sub> (preconditions met at each step)</li>
+        <li>A plan is <span class="kw-green">correct</span> if: it is acceptable AND B<sub>n</sub> &vDash; I (final state satisfies the goal)</li>
+        <li>Beliefs update at each step: <span class="kw">B<sub>0</sub> &xrarr;&alpha;<sub>1</sub> B<sub>1</sub> &xrarr;&alpha;<sub>2</sub> ... &xrarr;&alpha;<sub>n</sub> B<sub>n</sub></span></li>
+      </ul>
+    </div>
+
+    <div class="exam-tip">
+      <div class="label">Exam Tip</div>
+      <p>At each step, beliefs are updated by <span class="kw-red">removing</span> delete list items and <span class="kw-green">adding</span> add list items. Preconditions don't need to literally be <em>in</em> B<sub>j-1</sub>, they just need to be <em>provable</em> from B<sub>j-1</sub>.</p>
+    </div>
+  </div>
+
+  <!-- ==================== SECTION 7 ==================== -->
+  <div class="section" id="s7">
+    <div class="section-header">
+      <div class="section-number">7</div>
+      <div class="section-title">Agent Control Loop Evolution</div>
+      <div class="section-time">Slides 27-33 | 0:54</div>
+    </div>
+
+    <div class="card">
+      <h3>Version 1: Simple Loop</h3>
+      <div class="pseudocode">
+        <span class="keyword">while</span> true <span class="keyword">do</span><br>
+        &nbsp;&nbsp;observe the world;<br>
+        &nbsp;&nbsp;update internal world model;<br>
+        &nbsp;&nbsp;deliberate about what intention to achieve next;<br>
+        &nbsp;&nbsp;use means-ends reasoning to get a plan;<br>
+        &nbsp;&nbsp;execute the plan<br>
+        <span class="keyword">end while</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Version 2: Formal BDI Loop <span class="version-tag">V2</span></h3>
+      <div class="pseudocode">
+        1. B := B<sub>0</sub>; <span class="comment">/* initial beliefs */</span><br>
+        2. <span class="keyword">while</span> true <span class="keyword">do</span><br>
+        3. &nbsp;&nbsp;get next percept <span class="type">&rho;</span>;<br>
+        4. &nbsp;&nbsp;B := <span class="highlight">brf</span>(B, <span class="type">&rho;</span>);<br>
+        5. &nbsp;&nbsp;I := <span class="highlight">deliberate</span>(B);<br>
+        6. &nbsp;&nbsp;&pi; := <span class="highlight">plan</span>(B, I);<br>
+        7. &nbsp;&nbsp;<span class="highlight">execute</span>(&pi;)<br>
+        8. <span class="keyword">end while</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Version 3: With Option Generation & Filtering <span class="version-tag">V3</span></h3>
+      <div class="pseudocode">
+        1. B := B<sub>0</sub>; &nbsp; I := I<sub>0</sub>;<br>
+        2. <span class="keyword">while</span> true <span class="keyword">do</span><br>
+        3. &nbsp;&nbsp;get next percept <span class="type">&rho;</span>;<br>
+        4. &nbsp;&nbsp;B := <span class="highlight">brf</span>(B, <span class="type">&rho;</span>);<br>
+        5. &nbsp;&nbsp;<span class="changed">D := <span class="highlight">options</span>(B, I);</span> <span class="comment">/* generate desires */</span><br>
+        6. &nbsp;&nbsp;<span class="changed">I := <span class="highlight">filter</span>(B, D, I);</span> <span class="comment">/* select intentions */</span><br>
+        7. &nbsp;&nbsp;&pi; := <span class="highlight">plan</span>(B, I, Ac);<br>
+        8. &nbsp;&nbsp;<span class="highlight">execute</span>(&pi;)<br>
+        9. <span class="keyword">end while</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Key Functions</h3>
+      <table class="comp-table">
+        <tr><th>Function</th><th>Signature</th><th>Purpose</th></tr>
+        <tr><td><code>see</code></td><td>E &rarr; Per</td><td>Perception (environment to percepts)</td></tr>
+        <tr><td><code>brf</code></td><td>P(Bel) &times; Per &rarr; P(Bel)</td><td>Belief revision from percepts</td></tr>
+        <tr><td><code>options</code></td><td>P(Bel) &times; P(Int) &rarr; P(Des)</td><td>Generate desires from beliefs + intentions</td></tr>
+        <tr><td><code>filter</code></td><td>P(Bel) &times; P(Des) &times; P(Int) &rarr; P(Int)</td><td>Select intentions from desires</td></tr>
+        <tr><td><code>plan</code></td><td>P(Bel) &times; P(Int) &times; Ac &rarr; Plan</td><td>Generate action plan</td></tr>
+      </table>
+    </div>
+
+    <div class="warning">
+      <div class="label">The Time Cost Problem</div>
+      <p>Deliberation is <span class="kw-red">not instantaneous</span>. The world may change while the agent thinks. Even if it computes the optimal plan, by the time it finishes, the environment may have moved on. This is <span class="kw">calculative rationality</span> &mdash; optimality is hard.</p>
+    </div>
+
+    <details>
+      <summary>Transcript (1:44 - 2:17)</summary>
+      <div class="transcript-text">But you know, there's a massive catch here. Deliberation is not instantaneous. Thinking has a real-time cost. Because the world might literally change while an agent is just sitting there thinking. Achieving pure, calculative rationality, where the agent perfectly executes the mathematically optimal intention, is incredibly difficult. By the time it finishes computing that perfect optimal plan, the environment might have already moved on.</div>
+    </details>
+  </div>
+
+  <!-- ==================== SECTION 8 ==================== -->
+  <div class="section" id="s8">
+    <div class="section-header">
+      <div class="section-number">8</div>
+      <div class="section-title">Degrees of Commitment</div>
+      <div class="section-time">Slides 34-42</div>
+    </div>
+
+    <div class="card">
+      <h3>The Willie the Robot Story</h3>
+      <div class="quote-box">
+        <strong>Under-commitment:</strong> "Willie, bring me a beer." "OK boss." 20 minutes later: "Why didn't you bring me that beer?" "Well, I intended to, but I decided to do something else."
+      </div>
+      <div class="quote-box">
+        <strong>Over-commitment:</strong> Willie is returned as "Model C: The Committed Assistant." You ask for a beer. It gets Genesee. You say "Never mind." One minute later, Willie trundles over with a Genesee in its gripper...
+      </div>
+      <div class="quote-box">
+        <strong>Wise Guy:</strong> You ask Willie to bring your last beer. It gets it, starts walking toward you, lifts its arm, wheels around, <em>deliberately smashes the bottle</em>, and trundles off. "The commitment became unachievable."
+      </div>
+      <p style="color:#64748b;font-size:.85rem;margin-top:.5rem">P. R. Cohen and H. J. Levesque (1990). Intention is choice with commitment.</p>
+    </div>
+
+    <div class="card">
+      <h3>Three Types of Commitment</h3>
+      <table class="comp-table">
+        <tr><th>Type</th><th>When to Drop Intention</th><th>Risk</th></tr>
+        <tr>
+          <td><span class="kw-red">Blind (Fanatical)</span></td>
+          <td>Only when <em>achieved</em></td>
+          <td>Keeps pursuing impossible goals forever</td>
+        </tr>
+        <tr>
+          <td><span class="kw">Single-minded</span></td>
+          <td>When <em>achieved</em> OR believed <em>impossible</em></td>
+          <td>May miss better alternatives</td>
+        </tr>
+        <tr>
+          <td><span class="kw-green">Open-minded</span></td>
+          <td>As long as still believed <em>possible</em></td>
+          <td>Costly &mdash; constant reconsideration</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Control Loop Version 4: Replan When Unsound <span class="version-tag">V4</span></h3>
+      <div class="pseudocode" style="font-size:.82rem">
+        1. B := B<sub>0</sub>; I := I<sub>0</sub>;<br>
+        2. <span class="keyword">while</span> true <span class="keyword">do</span><br>
+        3. &nbsp;&nbsp;get percept; B := brf(B,&rho;); D := options(B,I); I := filter(B,D,I);<br>
+        4. &nbsp;&nbsp;&pi; := plan(B, I, Ac);<br>
+        5. &nbsp;&nbsp;<span class="keyword">while</span> not empty(&pi;) <span class="keyword">do</span><br>
+        6. &nbsp;&nbsp;&nbsp;&nbsp;&alpha; := hd(&pi;); execute(&alpha;); &pi; := tail(&pi;);<br>
+        7. &nbsp;&nbsp;&nbsp;&nbsp;get percept; B := brf(B,&rho;);<br>
+        8. &nbsp;&nbsp;&nbsp;&nbsp;<span class="changed"><span class="keyword">if</span> not sound(&pi;, I, B) <span class="keyword">then</span> &pi; := plan(B, I, Ac);</span><br>
+        9. &nbsp;&nbsp;<span class="keyword">end-while</span><br>
+        10. <span class="keyword">end-while</span>
+      </div>
+      <p style="color:#94a3b8;margin-top:.5rem;">Not committed to <em>means</em> (replans), but still overcommitted to <em>ends</em> (never reconsiders intentions).</p>
+    </div>
+
+    <div class="card">
+      <h3>Version 5: Single-Minded Commitment <span class="version-tag">V5</span></h3>
+      <p>Inner loop condition changes to:</p>
+      <div class="pseudocode" style="font-size:.85rem">
+        <span class="keyword">while</span> not(<span class="highlight">empty</span>(&pi;) <span class="keyword">or</span> <span class="highlight">succeeded</span>(I,B) <span class="keyword">or</span> <span class="highlight">impossible</span>(I,B)) <span class="keyword">do</span>
+      </div>
+      <p style="margin-top:.5rem;">Agent exits when: plan done, intention achieved, or intention impossible.</p>
+    </div>
+
+    <div class="card">
+      <h3>Version 6: Open-Minded Commitment <span class="version-tag">V6</span></h3>
+      <p>Adds intention reconsideration <em>after every action</em> (lines 15-16):</p>
+      <div class="pseudocode" style="font-size:.85rem">
+        &nbsp;&nbsp;...<br>
+        &nbsp;&nbsp;B := brf(B,&rho;);<br>
+        &nbsp;&nbsp;<span class="changed">D := options(B,I); I := filter(B,D,I);</span> <span class="comment">/* reconsider every step */</span><br>
+        &nbsp;&nbsp;if not sound(&pi;, I, B) then &pi; := plan(B, I, Ac);<br>
+        &nbsp;&nbsp;...
+      </div>
+      <p style="margin-top:.5rem;color:#f87171;">Problem: constant reconsideration is <span class="kw-red">expensive</span>!</p>
+    </div>
+
+    <div class="exam-tip">
+      <div class="label">Exam Tip</div>
+      <p>Commitment to <span class="kw">ends</span> = the state of affairs the agent wants. Commitment to <span class="kw">means</span> = the specific plan. Version 4 drops means-commitment; Version 5 adds single-minded ends-commitment; Version 6 adds open-minded reconsideration.</p>
+    </div>
+  </div>
+
+  <!-- ==================== SECTION 9 ==================== -->
+  <div class="section" id="s9">
+    <div class="section-header">
+      <div class="section-number">9</div>
+      <div class="section-title">Intention Reconsideration</div>
+      <div class="section-time">Slides 43-45</div>
+    </div>
+
+    <div class="card">
+      <h3>The Reconsideration Dilemma</h3>
+      <div class="def-grid">
+        <div class="def-box" style="border-color:#f87171">
+          <div class="name" style="color:#f87171">Never Reconsider</div>
+          <div class="desc">Agent keeps pursuing intentions even when clearly impossible or pointless</div>
+        </div>
+        <div class="def-box" style="border-color:#f87171">
+          <div class="name" style="color:#f87171">Always Reconsider</div>
+          <div class="desc">Agent spends so much time reconsidering that it never actually <em>achieves</em> anything</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Version 7: Meta-Level Control <span class="version-tag">V7</span></h3>
+      <p>Solution: add a <code>reconsider(I, B)</code> function that <em>decides whether to deliberate</em>:</p>
+      <div class="pseudocode" style="font-size:.85rem">
+        ...<br>
+        B := brf(B, &rho;);<br>
+        <span class="changed"><span class="keyword">if</span> <span class="highlight">reconsider</span>(I, B) <span class="keyword">then</span></span><br>
+        &nbsp;&nbsp;D := options(B, I);<br>
+        &nbsp;&nbsp;I := filter(B, D, I);<br>
+        <span class="keyword">end-if</span><br>
+        <span class="keyword">if</span> not sound(&pi;, I, B) <span class="keyword">then</span> &pi; := plan(B, I, Ac);<br>
+        ...
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>When is reconsider() Optimal?</h3>
+      <table class="comp-table">
+        <tr><th>Situation</th><th>Deliberate?</th><th>Changed?</th><th>Would have changed?</th><th>Optimal?</th></tr>
+        <tr><td>1</td><td>No</td><td>&mdash;</td><td>No</td><td><span class="kw-green">Yes</span> (saved time)</td></tr>
+        <tr><td>2</td><td>No</td><td>&mdash;</td><td>Yes</td><td><span class="kw-red">No</span> (missed opportunity)</td></tr>
+        <tr><td>3</td><td>Yes</td><td>No</td><td>&mdash;</td><td><span class="kw-red">No</span> (wasted time)</td></tr>
+        <tr><td>4</td><td>Yes</td><td>Yes</td><td>&mdash;</td><td><span class="kw-green">Yes</span> (needed change)</td></tr>
+      </table>
+      <p style="margin-top:.8rem;"><strong>Key assumption:</strong> cost of <code>reconsider()</code> is <span class="kw-green">much less</span> than the cost of full deliberation.</p>
+    </div>
+
+    <div class="exam-tip">
+      <div class="label">Exam Tip - The Closing Paradox</div>
+      <p>We can calculate mathematically optimal plans and expected utilities. But deliberation has a time cost. In a rapidly changing multi-agent world, <span class="kw">the most rational thing an agent can do might be to learn when to stop thinking and start acting</span>.</p>
+    </div>
+
+    <details>
+      <summary>Transcript (9:19 - end)</summary>
+      <div class="transcript-text">But all of this leaves us with a totally profound paradox to close on. We just proved mathematically how to calculate the perfect sequence of actions and their expected utilities. But remember what we talked about at the very beginning? Deliberation has a time cost. If calculating this perfect, mathematically optimal plan in a rapidly changing, multi-agent real world takes too long, perhaps the most rational thing an agent can possibly do is learn exactly when to stop thinking and start acting.</div>
+    </details>
+  </div>
+
+  <!-- ==================== SECTION 10 ==================== -->
+  <div class="section" id="s10">
+    <div class="section-header">
+      <div class="section-number">10</div>
+      <div class="section-title">Chapter Summary</div>
+      <div class="section-time">Slide 46</div>
+    </div>
+
+    <div class="card">
+      <h3>What We Covered</h3>
+      <ol class="steps">
+        <li><strong>Practical reasoning</strong> = deliberation (what) + means-ends reasoning (how)</li>
+        <li><strong>Intentions</strong> &mdash; 7 properties, stronger than desires, side-effect problem</li>
+        <li><strong>STRIPS planning</strong> &mdash; preconditions, delete list, add list; forward/backward search</li>
+        <li><strong>Blocksworld</strong> &mdash; ontology, 4 actions (Stack, UnStack, Pickup, PutDown)</li>
+        <li><strong>Formal plans</strong> &mdash; planning problem &lt;B<sub>0</sub>, Ac, I&gt;, acceptable vs correct plans</li>
+        <li><strong>Agent control loop</strong> &mdash; 7 versions, progressively refined</li>
+        <li><strong>Commitment</strong> &mdash; blind, single-minded, open-minded</li>
+        <li><strong>Intention reconsideration</strong> &mdash; meta-level control, 4 optimality situations</li>
+      </ol>
+    </div>
+
+    <div class="exam-tip">
+      <div class="label">Key Formulas to Remember</div>
+      <table class="comp-table">
+        <tr><th>Symbol</th><th>Meaning</th></tr>
+        <tr><td><code>brf(B, &rho;)</code></td><td>Belief revision function</td></tr>
+        <tr><td><code>options(B, I)</code></td><td>Generate desires from beliefs + current intentions</td></tr>
+        <tr><td><code>filter(B, D, I)</code></td><td>Select intentions from beliefs, desires, current intentions</td></tr>
+        <tr><td><code>plan(B, I, Ac)</code></td><td>Generate plan from beliefs, intentions, actions</td></tr>
+        <tr><td><code>sound(&pi;, I, B)</code></td><td>Is plan &pi; still correct for intention I given beliefs B?</td></tr>
+        <tr><td><code>reconsider(I, B)</code></td><td>Should the agent re-deliberate?</td></tr>
+        <tr><td><code>&alpha; = &lt;P, D, A&gt;</code></td><td>Action = preconditions, delete list, add list</td></tr>
+        <tr><td><code>&pi; = (&alpha;<sub>1</sub>,...,&alpha;<sub>n</sub>)</code></td><td>Plan = sequence of actions</td></tr>
+      </table>
+    </div>
+
+    <div class="success">
+      <div class="label">Reading</div>
+      <p>"Plans and resource-bounded practical reasoning", Michael E. Bratman, David J. Israel, Martha E. Pollack. <em>Computational Intelligence</em> 4: 1988, pp349-355.</p>
+      <p style="margin-top:.3rem;color:#94a3b8;">Next chapter: Reactive and Hybrid Agents.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  COMP310 Chapter 4 Study Guide | Generated from lecture slides + NotebookLM transcript
+</div>
+
+<script>
+  const sections=document.querySelectorAll('.section');
+  const navLinks=document.querySelectorAll('.nav a');
+  const observer=new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        navLinks.forEach(l=>l.classList.remove('active'));
+        const id=entry.target.getAttribute('id');
+        const a=document.querySelector(`.nav a[href="#${id}"]`);
+        if(a)a.classList.add('active');
+      }
+    });
+  },{rootMargin:'-80px 0px -70% 0px'});
+  sections.forEach(s=>observer.observe(s));
+</script>
+</body>
+</html>

@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COMP310 Chapter 3: Deductive Reasoning Agents</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    line-height: 1.7;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    border-bottom: 2px solid #3b82f6;
+    padding: 2rem 2rem 1.5rem;
+    text-align: center;
+  }
+  .header h1 {
+    font-size: 2rem;
+    color: #f8fafc;
+    margin-bottom: 0.3rem;
+  }
+  .header .subtitle {
+    color: #94a3b8;
+    font-size: 1rem;
+  }
+  .header .meta {
+    margin-top: 0.8rem;
+    color: #64748b;
+    font-size: 0.85rem;
+  }
+
+  /* Navigation */
+  .nav {
+    background: #1e293b;
+    border-bottom: 1px solid #334155;
+    padding: 1rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .nav a {
+    color: #94a3b8;
+    text-decoration: none;
+    padding: 0.4rem 1rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+  }
+  .nav a:hover {
+    background: #334155;
+    color: #f8fafc;
+    border-color: #475569;
+  }
+  .nav a.active {
+    background: #3b82f6;
+    color: white;
+  }
+
+  /* Main content */
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  /* Section */
+  .section {
+    margin-bottom: 3rem;
+    scroll-margin-top: 80px;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .section-number {
+    background: #3b82f6;
+    color: white;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-size: 1.5rem;
+    color: #f8fafc;
+  }
+  .section-time {
+    color: #64748b;
+    font-size: 0.85rem;
+    margin-left: auto;
+    background: #1e293b;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    border: 1px solid #334155;
+    white-space: nowrap;
+  }
+
+  /* Cards */
+  .card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .card h3 {
+    color: #60a5fa;
+    font-size: 1.05rem;
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .card p {
+    color: #cbd5e1;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Key concept highlight */
+  .concept {
+    background: linear-gradient(135deg, #1e3a5f 0%, #1e293b 100%);
+    border-left: 4px solid #3b82f6;
+    border-radius: 0 12px 12px 0;
+    padding: 1.2rem 1.5rem;
+    margin: 1rem 0;
+  }
+  .concept .label {
+    color: #60a5fa;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.4rem;
+  }
+
+  /* Definition boxes */
+  .def-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+  @media (max-width: 700px) {
+    .def-grid { grid-template-columns: 1fr; }
+  }
+  .def-box {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 1.2rem;
+  }
+  .def-box .symbol {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #f59e0b;
+    margin-bottom: 0.3rem;
+  }
+  .def-box .name {
+    color: #60a5fa;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+  .def-box .desc {
+    color: #94a3b8;
+    font-size: 0.9rem;
+  }
+
+  /* Code / pseudocode */
+  .pseudocode {
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 1.2rem 1.5rem;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.9rem;
+    color: #e2e8f0;
+    overflow-x: auto;
+    margin: 1rem 0;
+    line-height: 1.9;
+  }
+  .pseudocode .keyword { color: #c084fc; font-weight: 600; }
+  .pseudocode .comment { color: #64748b; font-style: italic; }
+  .pseudocode .highlight { color: #34d399; }
+  .pseudocode .type { color: #f59e0b; }
+
+  /* Rule box */
+  .rule-box {
+    background: #0f172a;
+    border: 1px solid #475569;
+    border-radius: 10px;
+    padding: 1rem 1.5rem;
+    margin: 0.8rem 0;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.95rem;
+    text-align: center;
+  }
+  .rule-box .condition { color: #34d399; }
+  .rule-box .arrow { color: #f59e0b; font-size: 1.2rem; margin: 0 0.5rem; }
+  .rule-box .action { color: #f472b6; }
+
+  /* Grid world visualization */
+  .grid-world {
+    display: inline-grid;
+    grid-template-columns: repeat(3, 70px);
+    grid-template-rows: repeat(3, 70px);
+    gap: 2px;
+    background: #475569;
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 1rem auto;
+  }
+  .grid-cell {
+    background: #1e293b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    color: #94a3b8;
+    position: relative;
+  }
+  .grid-cell.robot {
+    background: #1e3a5f;
+    color: #60a5fa;
+    font-size: 1.2rem;
+  }
+  .grid-cell.dirt {
+    background: #3b1f1f;
+    color: #f87171;
+  }
+  .grid-center {
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Warning / limitation box */
+  .warning {
+    background: linear-gradient(135deg, #3b1f1f 0%, #1e293b 100%);
+    border-left: 4px solid #f87171;
+    border-radius: 0 12px 12px 0;
+    padding: 1.2rem 1.5rem;
+    margin: 1rem 0;
+  }
+  .warning .label {
+    color: #f87171;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.4rem;
+  }
+
+  /* Success box */
+  .success {
+    background: linear-gradient(135deg, #1a3a2a 0%, #1e293b 100%);
+    border-left: 4px solid #34d399;
+    border-radius: 0 12px 12px 0;
+    padding: 1.2rem 1.5rem;
+    margin: 1rem 0;
+  }
+  .success .label {
+    color: #34d399;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.4rem;
+  }
+
+  /* Bullet list */
+  ul.notes {
+    list-style: none;
+    padding-left: 0;
+  }
+  ul.notes li {
+    padding: 0.4rem 0 0.4rem 1.5rem;
+    position: relative;
+    color: #cbd5e1;
+  }
+  ul.notes li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.85rem;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #3b82f6;
+  }
+
+  /* Numbered steps */
+  ol.steps {
+    list-style: none;
+    padding-left: 0;
+    counter-reset: step;
+  }
+  ol.steps li {
+    counter-increment: step;
+    padding: 0.6rem 0 0.6rem 2.5rem;
+    position: relative;
+    color: #cbd5e1;
+  }
+  ol.steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 0.5rem;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #3b82f6;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* State transition */
+  .state-flow {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    flex-wrap: wrap;
+    margin: 1rem 0;
+    justify-content: center;
+  }
+  .state {
+    background: #1e293b;
+    border: 2px solid #475569;
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    color: #e2e8f0;
+    text-align: center;
+    min-width: 80px;
+  }
+  .state.active {
+    border-color: #3b82f6;
+    background: #1e3a5f;
+  }
+  .state.dirt-state {
+    border-color: #f59e0b;
+    background: #3b2f1f;
+  }
+  .flow-arrow {
+    color: #64748b;
+    font-size: 0.8rem;
+    text-align: center;
+  }
+  .flow-label {
+    color: #60a5fa;
+    font-size: 0.7rem;
+    display: block;
+  }
+
+  /* Comparison table */
+  .comp-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+  }
+  .comp-table th {
+    background: #334155;
+    color: #f8fafc;
+    padding: 0.8rem 1rem;
+    text-align: left;
+    font-weight: 600;
+  }
+  .comp-table td {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid #334155;
+    color: #cbd5e1;
+  }
+  .comp-table tr:hover td {
+    background: #1e293b;
+  }
+
+  /* Collapsible transcript */
+  details {
+    margin: 1rem 0;
+  }
+  details summary {
+    cursor: pointer;
+    color: #60a5fa;
+    font-size: 0.9rem;
+    padding: 0.5rem 0;
+    user-select: none;
+  }
+  details summary:hover {
+    color: #93bbfc;
+  }
+  details .transcript-text {
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    margin-top: 0.5rem;
+    color: #94a3b8;
+    font-size: 0.88rem;
+    line-height: 1.8;
+  }
+
+  /* Exam tips */
+  .exam-tip {
+    background: linear-gradient(135deg, #2d1b4e 0%, #1e293b 100%);
+    border-left: 4px solid #a78bfa;
+    border-radius: 0 12px 12px 0;
+    padding: 1.2rem 1.5rem;
+    margin: 1rem 0;
+  }
+  .exam-tip .label {
+    color: #a78bfa;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.4rem;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 2rem;
+    color: #475569;
+    font-size: 0.85rem;
+    border-top: 1px solid #1e293b;
+  }
+
+  /* Keyword highlight */
+  .kw { color: #f59e0b; font-weight: 600; }
+  .kw-blue { color: #60a5fa; font-weight: 600; }
+  .kw-green { color: #34d399; font-weight: 600; }
+  .kw-red { color: #f87171; font-weight: 600; }
+  .kw-purple { color: #a78bfa; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>COMP310 - Chapter 3</h1>
+  <div class="subtitle">Deductive Reasoning Agents</div>
+  <div class="meta">Shufang Zhu | University of Liverpool | Multi-Agent Systems</div>
+</div>
+
+<div class="nav" id="topnav">
+  <a href="#s1">1. Agent Architectures</a>
+  <a href="#s2">2. Symbolic Reasoning</a>
+  <a href="#s3">3. Deductive Agents</a>
+  <a href="#s4">4. Action Function</a>
+  <a href="#s5">5. Vacuum World</a>
+  <a href="#s6">6. Execution</a>
+  <a href="#s7">7. Limitations</a>
+  <a href="#s8">8. Agent-Oriented Programming</a>
+  <a href="#s9">9. Summary</a>
+</div>
+
+<div class="container">
+
+  <!-- ==================== SECTION 1 ==================== -->
+  <div class="section" id="s1">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <div class="section-title">Agent Architectures</div>
+      <div class="section-time">Slides 3-4 | 0:00</div>
+    </div>
+
+    <div class="card">
+      <h3>What is an Agent Architecture?</h3>
+      <div class="def-grid">
+        <div class="def-box">
+          <div class="name">Pattie Maes (1991)</div>
+          <div class="desc">A methodology for building agents &mdash; specifying how to decompose an agent into component modules and how they interact. The modules determine actions and future internal state from sensor data.</div>
+        </div>
+        <div class="def-box">
+          <div class="name">Leslie Kaebling (1991)</div>
+          <div class="desc">A specific collection of software/hardware modules, with boxes and arrows showing data and control flow. A general methodology for designing modular decompositions for particular tasks.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Three Classes of Architectures</h3>
+      <table class="comp-table">
+        <tr>
+          <th>Era</th><th>Type</th><th>Key Idea</th>
+        </tr>
+        <tr>
+          <td><span class="kw">1956-present</span></td>
+          <td>Symbolic Reasoning</td>
+          <td>Decisions via <span class="kw-blue">symbol manipulation</span> and explicit logical reasoning</td>
+        </tr>
+        <tr>
+          <td><span class="kw">1985-present</span></td>
+          <td>Reactive Agents</td>
+          <td>Intelligent behaviour emerges from <span class="kw-blue">simple reactive behaviours</span></td>
+        </tr>
+        <tr>
+          <td><span class="kw">1990-present</span></td>
+          <td>Hybrid Agents</td>
+          <td>Combines the best of <span class="kw-blue">reasoning + reactive</span> architectures</td>
+        </tr>
+      </table>
+    </div>
+
+    <details>
+      <summary>Transcript (0:00 - 0:55)</summary>
+      <div class="transcript-text">
+        Hey everyone and welcome to The Explainer. Today we are taking a look right under the hood to figure out the internal logic of how artificial intelligence systems actually make decisions. You know, we hear about AI all the time in these really abstract terms, but today we're exploring the exact, rigorous math that allows a machine to figure out what it should do next. It's kind of wild to think about, right? How do you teach a machine to truly reason? We are going to look inside a digital brain today. We're not just talking about code that blindly follows a rigid recipe. We're exploring agents that actually deduce their actions based on what they know about the world and what they're actively trying to achieve. Think about the difference between a simple calculator just churning out sums and a robot trying to physically navigate a messy room. That second scenario requires an entirely different, incredibly complex level of logical processing.
+      </div>
+    </details>
+  </div>
+
+  <!-- ==================== SECTION 2 ==================== -->
+  <div class="section" id="s2">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <div class="section-title">Symbolic Reasoning Agents</div>
+      <div class="section-time">Slides 5-7 | 0:55</div>
+    </div>
+
+    <div class="concept">
+      <div class="label">Core Definition</div>
+      <p>A <span class="kw">deliberative agent</span> is one that contains an explicitly represented, symbolic model of the world and makes decisions via <span class="kw-blue">symbolic reasoning</span>. This paradigm is known as <span class="kw">symbolic AI</span>.</p>
+    </div>
+
+    <div class="card">
+      <h3>Two Fundamental Problems</h3>
+      <div class="def-grid">
+        <div class="def-box">
+          <div class="symbol">T</div>
+          <div class="name">The Transduction Problem</div>
+          <div class="desc">Translating the real world into accurate symbolic descriptions in time for them to be useful. "Identifying objects is hard!!!" Led to research in vision, speech, and learning.</div>
+        </div>
+        <div class="def-box">
+          <div class="symbol">R</div>
+          <div class="name">The Representation/Reasoning Problem</div>
+          <div class="desc">How to symbolically represent complex real-world entities and reason with them in time. Symbol manipulation algorithms are <span class="kw-red">highly intractable</span> and hard to find compact representations for.</div>
+        </div>
+      </div>
+      <div class="warning">
+        <div class="label">Important</div>
+        <p>Most researchers accept that <strong>neither problem is anywhere near solved</strong>. This is why alternative techniques (reactive, hybrid) were developed.</p>
+      </div>
+    </div>
+
+    <details>
+      <summary>Transcript (0:55 - 2:02)</summary>
+      <div class="transcript-text">
+        First, we'll define deductive reasoning agents, move on to their perception and action functions, and then look at designing the deduction rules. After we get that abstract math mapped out, we'll apply it all to a super fun practical example called the vacuum world before finishing up with the real world limits of these systems. Starting off with part one, the deductive reasoning agent, reducing action selection to a problem of proof. In the logic-based approach to building these systems, figuring out what to do next isn't just about triggering some simple reflex. It is literally treated like solving a math theorem. The agent actually has to logically prove that a specific action is the right one to take. So let's think about the anatomy of this agent in two main parts. First up, it has a logical database represented in the math by the Greek letter Delta. You can think of Delta as the agent's working memory. It's an ever-updating set of logical statements that describe everything it currently knows about its internal state and the outside world. Second, we have the deduction rules represented by the Greek letter Rho. You can think of Rho as the agent's instincts.
+      </div>
+    </details>
+  </div>
+
+  <!-- ==================== SECTION 3 ==================== -->
+  <div class="section" id="s3">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <div class="section-title">Deductive Reasoning Agents</div>
+      <div class="section-time">Slides 8-10 | 2:02</div>
+    </div>
+
+    <div class="concept">
+      <div class="label">Key Idea</div>
+      <p>In logical-based approaches, <span class="kw">decision-making is viewed as deduction</span>. The agent's strategy is encoded as a <span class="kw-blue">logical theory</span>, and selecting an action <span class="kw-green">reduces to a problem of proof</span>.</p>
+    </div>
+
+    <div class="card">
+      <h3>Agent Anatomy: Two Components</h3>
+      <div class="def-grid">
+        <div class="def-box">
+          <div class="symbol">&Delta;</div>
+          <div class="name">Logical Database (Delta)</div>
+          <div class="desc">The agent's <span class="kw-blue">working memory</span>. A set of first-order predicate logic formulae describing the agent's current internal state.<br><br>
+          Examples:<br>
+          <code>Open(valve221)</code><br>
+          <code>Temperature(reactor4726, 321)</code><br>
+          <code>Pressure(tank776, 28)</code></div>
+        </div>
+        <div class="def-box">
+          <div class="symbol">&rho;</div>
+          <div class="name">Deduction Rules (Rho)</div>
+          <div class="desc">The agent's <span class="kw-blue">instincts / theory</span>. A set of deduction rules of the form:<br><br>
+          <code>&psi;(...) &rarr; &phi;(...)</code><br><br>
+          Example:<br>
+          <code>In(0,0) &and; Facing(north) &and; &not;Dirt(0,0) &rarr; Do(forward)</code></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Perception & Next State Functions</h3>
+      <ul class="notes">
+        <li>The <span class="kw">perception function</span>: <code>see : E &rarr; Per</code> maps environment states to percepts (much easier said than done!)</li>
+        <li>The <span class="kw">next state function</span> revises the database: <code>next : &Delta; &times; Per &rarr; &Delta;</code></li>
+        <li>The <span class="kw">action function</span> is defined in terms of deduction rules</li>
+        <li><code>&Delta; &vdash;<sub>&rho;</sub> &phi;</code> means that <span class="kw-blue">&phi; can be proved from &Delta; using &rho;</span></li>
+      </ul>
+    </div>
+
+    <div class="exam-tip">
+      <div class="label">Exam Tip</div>
+      <p>Remember the analogy: <span class="kw">&Delta;</span> is like your <em>memory</em> (where the ball was), and <span class="kw">&rho;</span> is like your <em>instincts</em> (how to reach out). Combined, they mathematically deduce the correct action.</p>
+    </div>
+
+    <details>
+      <summary>Transcript (2:02 - 3:01)</summary>
+      <div class="transcript-text">
+        Well, your memory tracks where the ball was a split second ago, and your instincts tell you exactly how to reach out your hand to grab it. For our agent, when we combine its memory with its instincts, it mathematically deduces the correct action. Moving right along to chapter two, perception and action functions. How the agent senses and reacts. So how does this digital brain actually interact with its environment? Well, it needs a mathematical bridge to update its memory and actually make a physical move. Now what's really interesting about this slide is the specific mathematical notation governing this. I know, it looks intimidating, but it translates beautifully into plain English. It's basically saying if our database, that's the triangle Delta, can logically prove a specific action, which is represented by that Phi symbol, using our deduction rules, that little subscript Rho, then that action is the one we take. This formula right here is the exact mathematical bridge where memory and instinct combine to trigger a tangible action in the real world.
+      </div>
+    </details>
+  </div>
+
+  <!-- ==================== SECTION 4 ==================== -->
+  <div class="section" id="s4">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <div class="section-title">The Action Function</div>
+      <div class="section-time">Slide 11 | 3:01</div>
+    </div>
+
+    <div class="card">
+      <h3>Pseudocode: How the Agent Chooses an Action</h3>
+      <div class="pseudocode">
+        <span class="comment">/* Loop 1: Try to find an action explicitly prescribed */</span><br>
+        <span class="keyword">for each</span> <span class="type">&alpha;</span> &isin; <span class="type">Ac</span> <span class="keyword">do</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> <span class="type">&Delta;</span> <span class="highlight">&vdash;<sub>&rho;</sub></span> Do(<span class="type">&alpha;</span>) <span class="keyword">then</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> <span class="type">&alpha;</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">end-if</span><br>
+        <span class="keyword">end-for</span><br><br>
+        <span class="comment">/* Loop 2: Try to find an action not excluded */</span><br>
+        <span class="keyword">for each</span> <span class="type">&alpha;</span> &isin; <span class="type">Ac</span> <span class="keyword">do</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> <span class="type">&Delta;</span> <span class="highlight">&nvdash;<sub>&rho;</sub></span> &not;Do(<span class="type">&alpha;</span>) <span class="keyword">then</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> <span class="type">&alpha;</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">end-if</span><br>
+        <span class="keyword">end-for</span><br><br>
+        <span class="keyword">return</span> <span class="comment">null</span> &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/* no action found */</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>How It Works (Step by Step)</h3>
+      <ol class="steps">
+        <li><strong>Loop 1 &mdash; Explicit match:</strong> Scans every possible action asking "Can I <em>prove</em> I must do this?" If yes, execute immediately.</li>
+        <li><strong>Loop 2 &mdash; Fallback:</strong> If no action is explicitly prescribed, find any action that is <em>at least not excluded</em> by the rules (not provably wrong).</li>
+        <li><strong>Null &mdash; Freeze:</strong> If even the fallback fails, return null. The agent freezes &mdash; no action found.</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h3>Deduction Rule Structure</h3>
+      <div class="rule-box">
+        <span class="condition">&psi; (conditions / facts about the world)</span>
+        <span class="arrow">&longrightarrow;</span>
+        <span class="action">&phi; (action to take)</span>
+      </div>
+      <p style="text-align: center; color: #94a3b8; margin-top: 0.5rem;">When conditions on the left are met in &Delta;, the agent deduces and executes the action on the right.</p>
+    </div>
+
+    <div class="exam-tip">
+      <div class="label">Exam Tip</div>
+      <p>The two loops represent two levels of reasoning: (1) <span class="kw-green">provably correct</span> actions first, then (2) <span class="kw">not provably wrong</span> actions as fallback. This distinction is important!</p>
+    </div>
+
+    <details>
+      <summary>Transcript (3:01 - 4:30)</summary>
+      <div class="transcript-text">
+        Walk through this step by step. The action function first runs through a loop, scanning every single possible action it could take. It's asking itself, can I prove using my current memory and rules that I absolutely must do this specific action? If it finds an explicitly prescribed action, it executes it immediately. But you know, the real world is totally unpredictable and developers simply can't program a specific rule for every single scenario. That's exactly why the second loop acts as a fallback. It searches for any action that is at least not excluded by its rules. Basically, it tries to find something, really anything, that isn't explicitly a bad idea. If even that fails, it returns null, which means no action is found and the agent just freezes. Now that we understand how the action function searches for an answer, how do we write the actual rules it's searching for? Well, here is the basic and frankly elegant structure of a deduction rule. Over on the left side, we have psi, which represents a specific condition or a set of facts about the world. On the right side, we have phi, representing the action to take. That arrow in the middle simply means implies.
+      </div>
+    </details>
+  </div>
+
+  <!-- ==================== SECTION 5 ==================== -->
+  <div class="section" id="s5">
+    <div class="section-header">
+      <div class="section-number">5</div>
+      <div class="section-title">The Vacuum World</div>
+      <div class="section-time">Slides 12-14 | 4:30</div>
+    </div>
+
+    <div class="card">
+      <h3>Environment Setup</h3>
+      <div style="display: flex; gap: 2rem; align-items: start; flex-wrap: wrap;">
+        <div>
+          <p style="margin-bottom: 1rem;">A 3&times;3 grid. Robot starts at <span class="kw">(0,0)</span> facing north. Dirt at <span class="kw-red">(0,2)</span> and <span class="kw-red">(1,2)</span>. Goal: clean all dirt.</p>
+
+          <div class="grid-center">
+            <div class="grid-world">
+              <div class="grid-cell dirt">Dirt<br>(0,2)</div>
+              <div class="grid-cell dirt">Dirt<br>(1,2)</div>
+              <div class="grid-cell">(2,2)</div>
+              <div class="grid-cell">(0,1)</div>
+              <div class="grid-cell">(1,1)</div>
+              <div class="grid-cell">(2,1)</div>
+              <div class="grid-cell robot">&#x1F916;<br>(0,0)</div>
+              <div class="grid-cell">(1,0)</div>
+              <div class="grid-cell">(2,0)</div>
+            </div>
+          </div>
+        </div>
+        <div style="flex: 1; min-width: 250px;">
+          <div class="def-box" style="margin-bottom: 0.8rem;">
+            <div class="name">3 Domain Predicates</div>
+            <div class="desc">
+              <code><span class="kw">In(x,y)</span></code> &mdash; agent is at (x,y)<br>
+              <code><span class="kw">Dirt(x,y)</span></code> &mdash; dirt at (x,y)<br>
+              <code><span class="kw">Facing(d)</span></code> &mdash; agent faces direction d
+            </div>
+          </div>
+          <div class="def-box">
+            <div class="name">3 Possible Actions</div>
+            <div class="desc">
+              <code>Ac = {<span class="kw-green">turn</span>, <span class="kw-green">forward</span>, <span class="kw-green">suck</span>}</code><br>
+              Note: <em>turn</em> means "turn right"
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="concept">
+      <div class="label">Key Insight</div>
+      <p>The robot doesn't "see" the grid visually. Its reality is <span class="kw">strictly limited to its logical vocabulary</span>: predicates like <code>In(x,y)</code>, <code>Dirt(x,y)</code>, and <code>Facing(d)</code>. An AI's reality is bounded by the vocabulary of its programming.</p>
+    </div>
+
+    <div class="card">
+      <h3>Deduction Rules for the Vacuum Agent</h3>
+      <div class="rule-box">
+        <span class="condition">In(0,0) &and; Facing(north) &and; &not;Dirt(0,0)</span>
+        <span class="arrow">&longrightarrow;</span>
+        <span class="action">Do(forward)</span>
+      </div>
+      <div class="rule-box">
+        <span class="condition">In(0,1) &and; Facing(north) &and; &not;Dirt(0,1)</span>
+        <span class="arrow">&longrightarrow;</span>
+        <span class="action">Do(forward)</span>
+      </div>
+      <div class="rule-box">
+        <span class="condition">In(0,2) &and; Facing(north) &and; &not;Dirt(0,2)</span>
+        <span class="arrow">&longrightarrow;</span>
+        <span class="action">Do(turn)</span>
+      </div>
+      <div class="rule-box">
+        <span class="condition">In(0,2) &and; Facing(east)</span>
+        <span class="arrow">&longrightarrow;</span>
+        <span class="action">Do(forward)</span>
+      </div>
+      <p style="color: #94a3b8; text-align: center; margin-top: 0.5rem;">... and so on for all positions</p>
+    </div>
+
+    <details>
+      <summary>Transcript (4:30 - 5:40)</summary>
+      <div class="transcript-text">
+        Okay, enough abstract symbols. Let's take all those mathematical concepts, the database, the rules, the perception, and apply them to something tangible. Imagine a little digital Roomba-style robot. Welcome to the Vacuum World. Consider the environment our agent lives in here. It's just a simple 3x3 grid. The robot starts down in the bottom left corner at coordinate 0,0. Notice that there's dirt located at coordinates 0,2 and 1,2. The robot's sole underlying objective in its entire life is to clear up all that dirt. It has zero other desires or distractions. And this brilliantly illustrates exactly how an AI perceives reality compared to how we do. On the left, we humans understand the physical grid visually, but on the right, we have the domain predicates. This is the mathematical language the robot actually uses to comprehend that exact same grid. You see, the robot doesn't have human eyes. Instead, its database uses logical statements like nxy to know its location, dirt xy to know if a tile is messy, and facing d to know which direction it's pointed.
+      </div>
+    </details>
+  </div>
+
+  <!-- ==================== SECTION 6 ==================== -->
+  <div class="section" id="s6">
+    <div class="section-header">
+      <div class="section-number">6</div>
+      <div class="section-title">Step-by-Step Execution</div>
+      <div class="section-time">Slide 13 | 5:40</div>
+    </div>
+
+    <div class="card">
+      <h3>Starting Rule Walkthrough</h3>
+      <div class="success">
+        <div class="label">Rule Fires</div>
+        <p>"If I am at (0,0), facing north, and there is no dirt at (0,0), then move forward."</p>
+        <p style="margin-top: 0.5rem;">The robot checks &Delta;. The left side is <span class="kw-green">TRUE</span>. It proves its theorem and moves to (0,1).</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>State Transition Graph (Upper Path)</h3>
+      <div class="state-flow">
+        <div class="state active">In(0,0)<br>Facing(N)<br>Dirt(0,2)<br>Dirt(1,2)</div>
+        <div class="flow-arrow"><span class="flow-label">forward</span>&rarr;</div>
+        <div class="state">In(0,1)<br>Facing(N)<br>Dirt(0,2)<br>Dirt(1,2)</div>
+        <div class="flow-arrow"><span class="flow-label">forward</span>&rarr;</div>
+        <div class="state dirt-state">In(0,2)<br>Facing(N)<br>Dirt(0,2)<br>Dirt(1,2)</div>
+        <div class="flow-arrow"><span class="flow-label">suck</span>&rarr;</div>
+        <div class="state">In(0,2)<br>Facing(N)<br>Dirt(1,2)</div>
+        <div class="flow-arrow">&rarr; ...</div>
+      </div>
+      <p style="color: #94a3b8; text-align: center; font-size: 0.85rem;">Each oval = a unique world state. The robot checks rules at every node and transitions accordingly.</p>
+    </div>
+
+    <div class="card">
+      <h3>Alternative Path (Turn first)</h3>
+      <div class="state-flow">
+        <div class="state active">In(0,0)<br>Facing(N)</div>
+        <div class="flow-arrow"><span class="flow-label">turn</span>&rarr;</div>
+        <div class="state">In(0,0)<br>Facing(E)</div>
+        <div class="flow-arrow"><span class="flow-label">forward</span>&rarr;</div>
+        <div class="state">In(1,0)<br>Facing(E)</div>
+        <div class="flow-arrow"><span class="flow-label">forward</span>&rarr;</div>
+        <div class="state">In(2,0)<br>Facing(E)</div>
+        <div class="flow-arrow">&rarr; ...</div>
+      </div>
+      <p style="color: #94a3b8; text-align: center; font-size: 0.85rem;">Different rules &rho; lead to different execution paths through the same environment.</p>
+    </div>
+
+    <div class="exam-tip">
+      <div class="label">Exam Tip</div>
+      <p>The state graph shows that the same starting state can branch into different paths depending on which rules &rho; are defined. The rules completely determine the agent's behaviour. Node by node, the robot systematically clears the room using <span class="kw">pure deductive logic</span>.</p>
+    </div>
+
+    <details>
+      <summary>Transcript (5:40 - 7:24)</summary>
+      <div class="transcript-text">
+        Let's move to Chapter 5. Cleaning up with logic. Executing the rules step by step. The absolutely crucial takeaway here is that the robot translates the visual world into logical predicates. So it's time to flip the switch, turn the machine on, and see this logic in motion. These are the specific deduction rules our vacuum agent follows. This is its strict programming. Notice that if this then do that logic we mapped out earlier. Look at this second rule for example. If I am in space 01, facing north, and there is no dirt at 01, my prescribed action is to go forward. It's actively reading its current state and immediately proving the next best move. Let's break down the exact starting rule for our robot. Translating this logic back into everyday English, it reads, if I am at coordinate 00, and I am facing north, and there is no dirt at 00, then my logically deduced action is to move forward. The robot evaluates its working memory against this rule. The left side of the equation is verified as true, and boom, it proves its theorem and physically moves to coordinate 01. Let's zoom out a bit, and see how this builds across the entire cleaning process. This complex state graph maps out what happens as those simple, individual rules compound over time. Every single oval here represents a unique state of the world. Starting on the far left, the robot makes a decision, and transitions to a new node, a totally new state of the environment. Then it immediately checks its rules again.
+      </div>
+    </details>
+  </div>
+
+  <!-- ==================== SECTION 7 ==================== -->
+  <div class="section" id="s7">
+    <div class="section-header">
+      <div class="section-number">7</div>
+      <div class="section-title">Limitations of Logical Agents</div>
+      <div class="section-time">Slides 15-16 | 7:24</div>
+    </div>
+
+    <div class="card">
+      <h3>Three Critical Flaws</h3>
+      <table class="comp-table">
+        <tr>
+          <th>#</th><th>Problem</th><th>Explanation</th>
+        </tr>
+        <tr>
+          <td><span class="kw-red">1</span></td>
+          <td><strong>Transduction Problem</strong></td>
+          <td>Incredibly difficult to convert complex sensory input (camera feed) into clean logical symbols like <code>Dirt(0,1)</code>. A perfect brain fed bad data is useless.</td>
+        </tr>
+        <tr>
+          <td><span class="kw-red">2</span></td>
+          <td><strong>Calculative Rationality</strong></td>
+          <td>The agent assumes the environment stays <span class="kw-red">perfectly static</span> while it calculates proofs. In the real world, things move.</td>
+        </tr>
+        <tr>
+          <td><span class="kw-red">3</span></td>
+          <td><strong>Undecidability</strong></td>
+          <td>Decision-making using first-order logic is <span class="kw-red">undecidable</span> &mdash; no guarantee the system will always find a solution in finite time.</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Typical Solutions</h3>
+      <ul class="notes">
+        <li><span class="kw-green">Weaken the logic</span> &mdash; use simpler, decidable fragments</li>
+        <li><span class="kw-green">Use symbolic, non-logical representations</span> &mdash; alternative formalisms</li>
+        <li><span class="kw-green">Shift reasoning from run time to design time</span> &mdash; pre-compute decisions</li>
+        <li>Move beyond deduction into <span class="kw-blue">probabilistic reasoning</span>, <span class="kw-blue">machine learning</span>, and <span class="kw-blue">neural networks</span></li>
+      </ul>
+    </div>
+
+    <div class="warning">
+      <div class="label">Critical Understanding</div>
+      <p>The vacuum world works perfectly in a clean, predictable 3&times;3 grid. But real engineering is messy. A real vacuum robot must process chaotic, blurry video and translate raw pixels into crisp mathematical symbols &mdash; if this translation is flawed, all subsequent logic leads to <span class="kw-red">completely wrong actions</span>.</p>
+    </div>
+
+    <details>
+      <summary>Transcript (7:24 - 9:25)</summary>
+      <div class="transcript-text">
+        And finally, Chapter 6, Limits of Logical Agents, When Pure Logic Meets a Messy Reality. So, our logic works perfectly in our tiny 3x3 grid. The dirt is gone, the math holds up. But, while the vacuum world is perfectly clean and predictable, actual engineering is incredibly messy. Relying purely on deduction has some pretty critical flaws when we leave the lab. First, it is incredibly difficult to reliably convert complex sensory input into simple logical symbols. Second, these agents rely on what's called Calculative Rationality, meaning they assume the environment will stay perfectly static and unchanging while they are busy calculating their proofs. But in the real world, things move. And third, from a purely mathematical standpoint, decision-making using first-order logic is ultimately undecidable. That means there's absolutely no guarantee the system will always find a solution in a finite amount of time. Let's highlight that first engineering hurdle, vision. In our simulation, we have the clean, perfectly formatted logical predicate dirt at zero one. But think about a real vacuum robot in your house. It has to take a chaotic, blurry, poorly lit video feed from a cheap little camera, process those raw pixels, and somehow confidently translate them into that crisp mathematical symbol. So what does this all mean? It leaves us with a massive challenge for engineers. They have to move beyond simple deduction. They have to lean into probabilistic reasoning, machine learning, and neural networks to handle all those messy gray areas.
+      </div>
+    </details>
+  </div>
+
+  <!-- ==================== SECTION 8 ==================== -->
+  <div class="section" id="s8">
+    <div class="section-header">
+      <div class="section-number">8</div>
+      <div class="section-title">Agent-Oriented Programming</div>
+      <div class="section-time">Slides 18-23</div>
+    </div>
+
+    <div class="concept">
+      <div class="label">Definition</div>
+      <p>Yoav Shoham (1990) introduced <span class="kw">agent-oriented programming</span> &mdash; "a new programming paradigm, based on a societal view of computation." The key idea: program agents directly in terms of <span class="kw-blue">intentional notions</span> (beliefs, desires, intentions).</p>
+    </div>
+
+    <div class="card">
+      <h3>AGENT0 Language</h3>
+      <p>Implemented as an extension to LISP. Each agent has 4 components:</p>
+      <ol class="steps">
+        <li>A set of <span class="kw-purple">capabilities</span> (things the agent can do)</li>
+        <li>A set of <span class="kw-purple">initial beliefs</span></li>
+        <li>A set of <span class="kw-purple">initial commitments</span> (things the agent will do)</li>
+        <li>A set of <span class="kw-purple">commitment rules</span></li>
+      </ol>
+      <p style="margin-top: 0.8rem;">A program = <span class="kw">initialisation</span> + <span class="kw">commitment rules</span>.</p>
+    </div>
+
+    <div class="card">
+      <h3>AGENT0 Decision Cycle</h3>
+      <p>A commitment rule fires when:</p>
+      <ul class="notes">
+        <li>The <span class="kw-blue">message condition</span> matches received messages</li>
+        <li>The <span class="kw-blue">mental condition</span> matches the agent's beliefs</li>
+        <li>If both match &rarr; agent becomes <span class="kw-green">committed to the action</span></li>
+      </ul>
+      <div style="margin-top: 1rem;">
+        <p><strong>Actions can be:</strong></p>
+        <ul class="notes">
+          <li><span class="kw">Private</span> &mdash; internally executed computation</li>
+          <li><span class="kw">Communicative</span> &mdash; sending messages</li>
+        </ul>
+      </div>
+      <div style="margin-top: 1rem;">
+        <p><strong>Messages are one of three types:</strong></p>
+        <ul class="notes">
+          <li><span class="kw-green">Requests</span> &mdash; commit to actions</li>
+          <li><span class="kw-red">Unrequests</span> &mdash; refrain from actions</li>
+          <li><span class="kw-blue">Informs</span> &mdash; pass on information</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Commitment Rule Example</h3>
+      <div class="pseudocode">
+        <span class="keyword">COMMIT</span>(<br>
+        &nbsp;&nbsp;( agent, REQUEST, DO(time, action) ), <span class="comment">;;; msg condition</span><br>
+        &nbsp;&nbsp;( B,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;[now, Friend agent] AND<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;CAN(self, action) AND<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;NOT [time, CMT(self, anyaction)]<br>
+        &nbsp;&nbsp;), <span class="comment">;;; mental condition</span><br>
+        &nbsp;&nbsp;self,<br>
+        &nbsp;&nbsp;<span class="highlight">DO(time, action)</span><br>
+        )
+      </div>
+      <p style="color: #94a3b8; margin-top: 0.5rem;"><strong>In English:</strong> If a <em>friend</em> requests me to do an action, and I <em>can</em> do it, and I'm <em>not already committed</em> to something else at that time &rarr; then commit to doing it.</p>
+    </div>
+
+    <div class="card">
+      <h3>PLACA (Planning Communicating Agents)</h3>
+      <ul class="notes">
+        <li>Developed by Sarah Rebecca Thomas (1993 doctoral thesis)</li>
+        <li>Addresses AGENT0's inability to <span class="kw-red">plan</span> and <span class="kw-red">communicate requests</span> via high-level goals</li>
+        <li>Agent mental states expanded to include <span class="kw-purple">plans</span> and <span class="kw-purple">intentions</span></li>
+        <li>Uses <span class="kw">mental-change rules</span> instead of just commitment rules</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ==================== SECTION 9 ==================== -->
+  <div class="section" id="s9">
+    <div class="section-header">
+      <div class="section-number">9</div>
+      <div class="section-title">Chapter Summary</div>
+      <div class="section-time">Slide 24</div>
+    </div>
+
+    <div class="card">
+      <h3>What We Covered</h3>
+      <ol class="steps">
+        <li><strong>Symbolic reasoning agents</strong> &mdash; decision-making via symbol manipulation (1956-present)</li>
+        <li><strong>Two key problems</strong> &mdash; the transduction problem and the representation/reasoning problem</li>
+        <li><strong>Deductive reasoning agents</strong> &mdash; action selection reduces to a problem of proof using &Delta; (database) and &rho; (rules)</li>
+        <li><strong>The action function</strong> &mdash; two-loop structure: explicitly prescribed &rarr; not excluded &rarr; null</li>
+        <li><strong>Vacuum World</strong> &mdash; practical example with 3&times;3 grid, domain predicates, and state transitions</li>
+        <li><strong>Limitations</strong> &mdash; transduction, calculative rationality, undecidability of first-order logic</li>
+        <li><strong>Agent-Oriented Programming</strong> &mdash; AGENT0 (Shoham) and PLACA (Thomas)</li>
+      </ol>
+    </div>
+
+    <div class="exam-tip">
+      <div class="label">Key Formulas to Remember</div>
+      <table class="comp-table">
+        <tr><th>Symbol</th><th>Meaning</th></tr>
+        <tr><td><code>&Delta;</code></td><td>Logical database (agent's working memory)</td></tr>
+        <tr><td><code>&rho;</code></td><td>Deduction rules (agent's theory/instincts)</td></tr>
+        <tr><td><code>&psi; &rarr; &phi;</code></td><td>If conditions &psi; hold, then do action &phi;</td></tr>
+        <tr><td><code>&Delta; &vdash;<sub>&rho;</sub> &phi;</code></td><td>&phi; can be proved from &Delta; using rules &rho;</td></tr>
+        <tr><td><code>see : E &rarr; Per</code></td><td>Perception function (environment to percepts)</td></tr>
+        <tr><td><code>next : &Delta; &times; Per &rarr; &Delta;</code></td><td>Next state function (updates database)</td></tr>
+        <tr><td><code>Ac = {turn, forward, suck}</code></td><td>Vacuum world action set</td></tr>
+      </table>
+    </div>
+
+    <div class="success">
+      <div class="label">Reading</div>
+      <p>"Agent Oriented Programming", Yoav Shoham. <em>Artificial Intelligence Journal</em> 60(1), March 1993, pp51-92.</p>
+      <p style="margin-top: 0.3rem; color: #94a3b8;">Next chapter: Practical Reasoning Agents.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  COMP310 Chapter 3 Study Guide | Generated from lecture slides + NotebookLM transcript
+</div>
+
+<script>
+  // Highlight active nav on scroll
+  const sections = document.querySelectorAll('.section');
+  const navLinks = document.querySelectorAll('.nav a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(link => link.classList.remove('active'));
+        const id = entry.target.getAttribute('id');
+        const activeLink = document.querySelector(`.nav a[href="#${id}"]`);
+        if (activeLink) activeLink.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-80px 0px -70% 0px' });
+
+  sections.forEach(section => observer.observe(section));
+</script>
+</body>
+</html>

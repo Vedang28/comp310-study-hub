@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COMP310 Multi-Agent Systems — Study Hub</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh;padding:2rem}
+
+.header{text-align:center;padding:3rem 1rem 2rem}
+.header h1{font-size:2.4rem;color:#f8fafc;margin-bottom:.5rem;letter-spacing:-.5px}
+.header .uni{color:#94a3b8;font-size:1rem;margin-bottom:.3rem}
+.header .lecturer{color:#64748b;font-size:.9rem}
+.header .count{display:inline-block;margin-top:1.2rem;background:rgba(14,165,233,.12);color:#0ea5e9;padding:.4rem 1.2rem;border-radius:999px;font-size:.85rem;font-weight:600}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.2rem;max-width:1100px;margin:2.5rem auto 4rem;padding:0 1rem}
+
+.card{background:#1e293b;border-radius:14px;padding:1.6rem 1.8rem;border-left:5px solid;text-decoration:none;color:inherit;transition:transform .15s,box-shadow .15s;display:flex;flex-direction:column;gap:.6rem;position:relative;overflow:hidden}
+.card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.35)}
+.card::after{content:'';position:absolute;top:0;right:0;width:80px;height:80px;border-radius:0 0 0 80px;opacity:.06;pointer-events:none}
+
+.card .ch-number{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;opacity:.7}
+.card .ch-title{font-size:1.3rem;font-weight:700;color:#f8fafc;line-height:1.3}
+.card .ch-subtitle{font-size:.88rem;color:#94a3b8;line-height:1.5}
+.card .ch-arrow{position:absolute;bottom:1.2rem;right:1.4rem;font-size:1.3rem;opacity:.3;transition:opacity .15s,transform .15s}
+.card:hover .ch-arrow{opacity:.8;transform:translateX(4px)}
+
+.c-blue{border-left-color:#3b82f6}.c-blue::after{background:#3b82f6}.c-blue .ch-number{color:#3b82f6}
+.c-indigo{border-left-color:#6366f1}.c-indigo::after{background:#6366f1}.c-indigo .ch-number{color:#6366f1}
+.c-orange{border-left-color:#f97316}.c-orange::after{background:#f97316}.c-orange .ch-number{color:#f97316}
+.c-crimson{border-left-color:#e11d48}.c-crimson::after{background:#e11d48}.c-crimson .ch-number{color:#e11d48}
+.c-purple{border-left-color:#a855f7}.c-purple::after{background:#a855f7}.c-purple .ch-number{color:#a855f7}
+.c-cyan{border-left-color:#06b6d4}.c-cyan::after{background:#06b6d4}.c-cyan .ch-number{color:#06b6d4}
+.c-emerald{border-left-color:#10b981}.c-emerald::after{background:#10b981}.c-emerald .ch-number{color:#10b981}
+.c-rose{border-left-color:#f43f5e}.c-rose::after{background:#f43f5e}.c-rose .ch-number{color:#f43f5e}
+.c-sky{border-left-color:#0ea5e9}.c-sky::after{background:#0ea5e9}.c-sky .ch-number{color:#0ea5e9}
+
+.footer{text-align:center;padding:1rem;color:#475569;font-size:.8rem;border-top:1px solid #1e293b;max-width:1100px;margin:0 auto}
+
+@media(max-width:700px){.header h1{font-size:1.6rem}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="header">
+<h1>COMP310 Study Hub</h1>
+<div class="uni">Multi-Agent Systems — University of Liverpool</div>
+<div class="lecturer">Dr Shufang Zhu</div>
+<div class="count">9 Chapters</div>
+</div>
+
+<div class="grid">
+
+<a class="card c-blue" href="COMP310_Chapter3_StudyGuide.html">
+<div class="ch-number">Chapter 3</div>
+<div class="ch-title">Deductive Reasoning Agents</div>
+<div class="ch-subtitle">Logical agents, agent-oriented programming, theorem proving, agent communication</div>
+<span class="ch-arrow">&rarr;</span>
+</a>
+
+<a class="card c-indigo" href="COMP310_Chapter4_StudyGuide.html">
+<div class="ch-number">Chapter 4</div>
+<div class="ch-title">Practical Reasoning Agents</div>
+<div class="ch-subtitle">BDI architecture, intentions, means-ends reasoning, commitment strategies</div>
+<span class="ch-arrow">&rarr;</span>
+</a>
+
+<a class="card c-orange" href="COMP310_Chapter5_StudyGuide.html">
+<div class="ch-number">Chapter 5</div>
+<div class="ch-title">Reactive &amp; Hybrid Agents</div>
+<div class="ch-subtitle">Brooks' subsumption, situated agents, layered architectures, InteRRaP, TouringMachines</div>
+<span class="ch-arrow">&rarr;</span>
+</a>
+
+<a class="card c-crimson" href="COMP310_Chapter11_StudyGuide.html">
+<div class="ch-number">Chapter 11</div>
+<div class="ch-title">Multi-Agent Interactions</div>
+<div class="ch-subtitle">Utility, preferences, game theory, Nash equilibrium, dominant strategies, Pareto optimality</div>
+<span class="ch-arrow">&rarr;</span>
+</a>
+
+<a class="card c-purple" href="COMP310_Chapter12_StudyGuide.html">
+<div class="ch-number">Chapter 12</div>
+<div class="ch-title">Making Group Decisions</div>
+<div class="ch-subtitle">Social choice, voting procedures, Arrow's theorem, manipulation, Gibbard-Satterthwaite</div>
+<span class="ch-arrow">&rarr;</span>
+</a>
+
+<a class="card c-cyan" href="COMP310_Chapter13_StudyGuide.html">
+<div class="ch-number">Chapter 13</div>
+<div class="ch-title">Forming Coalitions</div>
+<div class="ch-subtitle">Coalitional game theory, Shapley value, core, stability, characteristic functions</div>
+<span class="ch-arrow">&rarr;</span>
+</a>
+
+<a class="card c-emerald" href="COMP310_Chapter14_StudyGuide.html">
+<div class="ch-number">Chapter 14</div>
+<div class="ch-title">Allocating Scarce Resources</div>
+<div class="ch-subtitle">Auctions, Vickrey, truthful bidding, combinatorial auctions, XOR/OR bids, VCG mechanism</div>
+<span class="ch-arrow">&rarr;</span>
+</a>
+
+<a class="card c-rose" href="COMP310_Chapter15_StudyGuide.html">
+<div class="ch-number">Chapter 15</div>
+<div class="ch-title">Bargaining &amp; Negotiation</div>
+<div class="ch-subtitle">Rubinstein's protocol, discount factors, Boulware/Conceder, monotonic concession, Zeuthen strategy</div>
+<span class="ch-arrow">&rarr;</span>
+</a>
+
+<a class="card c-sky" href="COMP310_Chapter16_StudyGuide.html">
+<div class="ch-number">Chapter 16</div>
+<div class="ch-title">Argumentation</div>
+<div class="ch-subtitle">Dung's abstract argumentation, preferred/grounded extensions, Toulmin's model, rebut &amp; undercut, expected utility</div>
+<span class="ch-arrow">&rarr;</span>
+</a>
+
+</div>
+
+<div class="footer">
+Generated from lecture slides &amp; NotebookLM transcripts &bull; COMP310 Multi-Agent Systems 2025/26
+</div>
+
+</body>
+</html>

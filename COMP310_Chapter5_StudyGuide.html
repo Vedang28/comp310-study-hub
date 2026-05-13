@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COMP310 Chapter 5 — Reactive &amp; Hybrid Agents Study Guide</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f172a;color:#e2e8f0;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;line-height:1.7;display:flex}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:#1e293b}
+::-webkit-scrollbar-thumb{background:#f97316;border-radius:4px}
+
+/* Sidebar Nav */
+nav{position:fixed;top:0;left:0;width:260px;height:100vh;background:#1e293b;border-right:1px solid #334155;padding:20px 0;overflow-y:auto;z-index:100}
+nav h2{color:#f97316;font-size:14px;text-transform:uppercase;letter-spacing:2px;padding:0 20px 16px;border-bottom:1px solid #334155}
+nav a{display:block;padding:10px 20px;color:#94a3b8;text-decoration:none;font-size:13px;border-left:3px solid transparent;transition:all .2s}
+nav a:hover{color:#f97316;background:#0f172a}
+nav a.active{color:#f97316;border-left-color:#f97316;background:rgba(249,115,22,.08)}
+
+/* Main Content */
+main{margin-left:260px;max-width:900px;padding:40px 48px 80px}
+h1{font-size:32px;color:#f97316;margin-bottom:8px}
+.subtitle{color:#94a3b8;font-size:15px;margin-bottom:32px}
+
+/* Sections */
+.section{margin-bottom:48px;scroll-margin-top:24px}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.section-num{background:#f97316;color:#0f172a;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;flex-shrink:0}
+.section-title{font-size:22px;color:#f8fafc}
+.slide-ref{color:#94a3b8;font-size:12px;margin-left:auto;white-space:nowrap}
+
+/* Cards */
+.card{background:#1e293b;border-radius:12px;padding:24px;margin-bottom:16px;border:1px solid #334155}
+.card h3{color:#f97316;font-size:16px;margin-bottom:12px}
+.card p,.card li{font-size:14px;color:#cbd5e1}
+.card ul,.card ol{padding-left:20px}
+.card li{margin-bottom:6px}
+
+/* Concept highlight */
+.concept{border-left:4px solid #f97316;padding:16px 20px;background:rgba(249,115,22,.06);border-radius:0 8px 8px 0;margin-bottom:16px}
+.concept h4{color:#f97316;margin-bottom:6px;font-size:15px}
+.concept p{font-size:14px;color:#cbd5e1}
+
+/* Exam tip */
+.exam-tip{background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.25);border-radius:10px;padding:16px 20px;margin-bottom:16px}
+.exam-tip::before{content:'EXAM TIP';display:block;font-size:11px;font-weight:700;color:#a855f7;letter-spacing:1.5px;margin-bottom:6px}
+.exam-tip p{font-size:14px;color:#d8b4fe}
+
+/* Warning */
+.warning{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:10px;padding:16px 20px;margin-bottom:16px}
+.warning::before{content:'KEY LIMITATION';display:block;font-size:11px;font-weight:700;color:#ef4444;letter-spacing:1.5px;margin-bottom:6px}
+.warning p{font-size:14px;color:#fca5a5}
+
+/* Success */
+.success{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:10px;padding:16px 20px;margin-bottom:16px}
+.success::before{content:'KEY INSIGHT';display:block;font-size:11px;font-weight:700;color:#22c55e;letter-spacing:1.5px;margin-bottom:6px}
+.success p{font-size:14px;color:#86efac}
+
+/* Code blocks */
+pre{background:#0f172a;border:1px solid #334155;border-radius:8px;padding:16px;margin:12px 0;overflow-x:auto;font-family:'Fira Code','Cascadia Code',monospace;font-size:13px;color:#e2e8f0;line-height:1.6}
+.keyword{color:#f97316}
+.comment{color:#64748b}
+.string{color:#22c55e}
+.number{color:#a855f7}
+
+/* Comparison table */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}
+th{background:#f97316;color:#0f172a;padding:10px 14px;text-align:left;font-weight:700}
+td{padding:10px 14px;border-bottom:1px solid #334155;color:#cbd5e1}
+tr:hover td{background:rgba(249,115,22,.04)}
+
+/* Definition grid */
+.def-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+.def-item{background:#0f172a;border:1px solid #334155;border-radius:8px;padding:14px}
+.def-item .label{color:#f97316;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.def-item .value{color:#e2e8f0;font-size:14px}
+
+/* Diagram boxes */
+.diagram{background:#0f172a;border:1px solid #334155;border-radius:8px;padding:20px;margin:12px 0;text-align:center;font-family:monospace;font-size:13px;line-height:1.8;color:#cbd5e1;overflow-x:auto;white-space:pre}
+
+/* Priority stack */
+.priority-stack{display:flex;flex-direction:column;gap:0;margin:12px 0}
+.priority-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border:1px solid #334155;color:#e2e8f0;font-size:14px}
+.priority-item:first-child{border-radius:8px 8px 0 0}
+.priority-item:last-child{border-radius:0 0 8px 8px}
+.priority-num{background:#f97316;color:#0f172a;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0}
+.priority-label{font-weight:600;color:#f97316;min-width:120px}
+
+/* Layer stack visual */
+.layer-stack{display:flex;flex-direction:column;gap:4px;margin:12px auto;max-width:400px}
+.layer-block{padding:10px 16px;text-align:center;border-radius:6px;font-size:13px;font-weight:600;color:#0f172a}
+
+/* Collapsible */
+details{margin:12px 0}
+summary{cursor:pointer;color:#f97316;font-weight:600;font-size:14px;padding:8px 0}
+summary:hover{color:#fb923c}
+details[open] summary{margin-bottom:8px}
+
+/* Responsive */
+@media(max-width:768px){
+  nav{display:none}
+  main{margin-left:0;padding:24px 16px}
+  .def-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<nav id="sidebar">
+  <h2>Ch5 — Reactive &amp; Hybrid</h2>
+  <a href="#s1">1. The Reactive Challenge</a>
+  <a href="#s2">2. Brooks' 3 Theses</a>
+  <a href="#s3">3. Subsumption Architecture</a>
+  <a href="#s4">4. Mars Explorer / Foraging</a>
+  <a href="#s5">5. Emergence &amp; Flocking</a>
+  <a href="#s6">6. Limits of Reactive Systems</a>
+  <a href="#s7">7. Hybrid Architectures</a>
+  <a href="#s8">8. TouringMachines</a>
+  <a href="#s9">9. InteRRaP</a>
+  <a href="#s10">10. Real-World: Stanley</a>
+  <a href="#s11">11. Formula Reference</a>
+  <a href="#transcript">Full Transcript</a>
+</nav>
+
+<main>
+<h1>Chapter 5: Reactive &amp; Hybrid Agents</h1>
+<p class="subtitle">COMP310 Multi-Agent Systems — University of Liverpool — Dr Shufang Zhu<br>Slides 1–31 &bull; Video: Evolution of AI Agents (~7:55)</p>
+
+<!-- ===== SECTION 1 ===== -->
+<div class="section" id="s1">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <div class="section-title">The Reactive AI Challenge</div>
+    <span class="slide-ref">Slides 2–5 &bull; 🎬 0:28</span>
+  </div>
+
+  <div class="card">
+    <h3>Why Deliberation Fails in Dynamic Worlds</h3>
+    <p>Traditional symbolic/deliberative agents suffer from a fundamental bottleneck: <strong>thinking takes time</strong>. While an agent computes the perfect plan, the environment may have already changed — making the plan obsolete.</p>
+    <ul>
+      <li><strong>Calculative rationality</strong> assumes the world stays still during computation — rarely true in practice</li>
+      <li>Decision-making using first-order logic is <strong>undecidable</strong> in general</li>
+      <li>The <strong>transduction problem</strong>: converting raw sensor data into clean logical symbols is extremely hard</li>
+    </ul>
+  </div>
+
+  <div class="concept">
+    <h4>Reactivity Defined</h4>
+    <p>A <strong>reactive system</strong> maintains an ongoing interaction with its environment and responds to changes that occur in it fast enough for the response to be useful. No internal world model, no complex reasoning — just immediate stimulus → response.</p>
+  </div>
+
+  <div class="card">
+    <h3>Problems with Symbolic AI (Recap)</h3>
+    <ul>
+      <li><strong>Transduction problem</strong> — translating real-world sensor data into accurate symbolic representations</li>
+      <li><strong>Representation/reasoning problem</strong> — symbolically representing complex, dynamic environments and reasoning with that information in time to act</li>
+      <li>Symbolic AI has not delivered on the promise of general-purpose intelligent control for real-world agents</li>
+    </ul>
+  </div>
+
+  <div class="exam-tip">
+    <p>A common exam question asks you to explain why purely deliberative agents struggle in dynamic environments. Hit these three points: (1) calculative rationality assumption, (2) transduction problem, (3) undecidability of first-order logic.</p>
+  </div>
+</div>
+
+<!-- ===== SECTION 2 ===== -->
+<div class="section" id="s2">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <div class="section-title">Brooks' Three Theses</div>
+    <span class="slide-ref">Slides 6–9 &bull; 🎬 1:12</span>
+  </div>
+
+  <div class="card">
+    <h3>Rodney Brooks' Radical Propositions</h3>
+    <p>Brooks argued that intelligent behaviour could arise <strong>without</strong> explicit symbolic representations or abstract reasoning. His three key theses:</p>
+  </div>
+
+  <div class="concept">
+    <h4>Thesis 1: Intelligent behaviour can be generated without explicit representations</h4>
+    <p>No need for symbolic knowledge representation. Behaviour emerges from the agent's direct coupling with the environment — no world model required.</p>
+  </div>
+
+  <div class="concept">
+    <h4>Thesis 2: Intelligent behaviour can be generated without explicit abstract reasoning</h4>
+    <p>Planning and logical deduction are unnecessary for producing intelligent-looking behaviour. Simple situation-action rules suffice.</p>
+  </div>
+
+  <div class="concept">
+    <h4>Thesis 3: Intelligence is an emergent property of complex systems</h4>
+    <p>Complex behaviour need not be explicitly programmed — it <strong>emerges</strong> from the interaction of simpler components with the environment and each other.</p>
+  </div>
+
+  <div class="exam-tip">
+    <p>Brooks' three theses are frequently tested. Memorise them and be ready to both <strong>explain</strong> each thesis and <strong>critique</strong> it (e.g., thesis 3 makes validation nearly impossible since emergent behaviour is hard to predict).</p>
+  </div>
+</div>
+
+<!-- ===== SECTION 3 ===== -->
+<div class="section" id="s3">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <div class="section-title">Subsumption Architecture</div>
+    <span class="slide-ref">Slides 10–13 &bull; 🎬 1:50</span>
+  </div>
+
+  <div class="card">
+    <h3>How Subsumption Works</h3>
+    <p>The subsumption architecture organises behaviours into a strict <strong>hierarchy of layers</strong>. Each layer is an independent behaviour module that maps sensor input directly to actuator output.</p>
+    <ul>
+      <li>Lower layers = more primitive, higher priority (e.g., obstacle avoidance)</li>
+      <li>Higher layers = more abstract, lower priority (e.g., exploration)</li>
+      <li>Lower layers can <strong>inhibit</strong> (subsume) the outputs of higher layers</li>
+      <li>Each layer is independently testable</li>
+    </ul>
+  </div>
+
+  <div class="diagram">┌─────────────────────────────────┐
+│  Layer n (explore)              │  ← lowest priority
+├─────────────────────────────────┤
+│  ...                            │
+├─────────────────────────────────┤
+│  Layer 2 (wander)               │
+├─────────────────────────────────┤
+│  Layer 1 (avoid obstacles)      │  ← highest priority
+└─────────────────────────────────┘
+    ↑ sensors          ↓ actuators
+
+  Lower layers SUBSUME (override) higher layers
+  </div>
+
+  <div class="card">
+    <h3>Key Design Principles</h3>
+    <ul>
+      <li><strong>No central world model</strong> — each behaviour reads sensors directly</li>
+      <li><strong>Parallel execution</strong> — all layers run simultaneously</li>
+      <li><strong>Priority via inhibition</strong> — lower layers suppress higher layer outputs when active</li>
+      <li><strong>Incremental construction</strong> — build and test layer by layer</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Genghis: Brooks' Six-Legged Robot</h3>
+    <p>Genghis demonstrated remarkably complex walking and navigation using subsumption — <strong>no world model, no planning</strong>. It could traverse rough terrain, follow humans, and avoid obstacles using just layered reflexive behaviours. This was considered groundbreaking evidence for Brooks' theses.</p>
+  </div>
+
+  <div class="success">
+    <p>The beauty of subsumption is its <strong>modularity</strong>: each layer can be coded, tested, and debugged independently, then "snapped together" — complexity emerges from simplicity.</p>
+  </div>
+</div>
+
+<!-- ===== SECTION 4 ===== -->
+<div class="section" id="s4">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <div class="section-title">Mars Explorer / Foraging Robot</div>
+    <span class="slide-ref">Slides 14–17 &bull; 🎬 2:24</span>
+  </div>
+
+  <div class="card">
+    <h3>Steels' Mars Explorer Scenario</h3>
+    <p>A classic exam scenario: design an autonomous robot to explore a planet, collect rock samples, and return them to a base station — using <strong>only</strong> subsumption (no central planner).</p>
+  </div>
+
+  <div class="priority-stack">
+    <div class="priority-item" style="background:rgba(239,68,68,.12)">
+      <div class="priority-num">1</div>
+      <div class="priority-label">Avoid obstacles</div>
+      <div>If obstacle detected → change direction</div>
+    </div>
+    <div class="priority-item" style="background:rgba(249,115,22,.12)">
+      <div class="priority-num">2</div>
+      <div class="priority-label">Drop sample</div>
+      <div>If carrying sample AND at base → drop it</div>
+    </div>
+    <div class="priority-item" style="background:rgba(234,179,8,.1)">
+      <div class="priority-num">3</div>
+      <div class="priority-label">Return home</div>
+      <div>If carrying sample AND not at base → follow gradient to base</div>
+    </div>
+    <div class="priority-item" style="background:rgba(34,197,94,.1)">
+      <div class="priority-num">4</div>
+      <div class="priority-label">Pick up sample</div>
+      <div>If sample detected → pick it up</div>
+    </div>
+    <div class="priority-item" style="background:rgba(59,130,246,.1)">
+      <div class="priority-num">5</div>
+      <div class="priority-label">Wander</div>
+      <div>Default: move randomly to explore</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Ant-Inspired Cooperation</h3>
+    <p>When multiple robots are deployed, Steels added <strong>ant-like pheromone trails</strong>: robots drop "crumbs" when carrying samples. Other robots follow these crumb gradients to find sample-rich areas. This creates <strong>cooperative foraging without explicit communication</strong> — a classic example of stigmergy (indirect coordination through environment modification).</p>
+  </div>
+
+  <div class="exam-tip">
+    <p>Be ready to list these 5 behaviours in the correct priority order (1 = highest) and explain <strong>why</strong> obstacle avoidance must be highest (safety/survival is non-negotiable). Also know the ant-cooperation extension.</p>
+  </div>
+</div>
+
+<!-- ===== SECTION 5 ===== -->
+<div class="section" id="s5">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <div class="section-title">Emergence &amp; Flocking</div>
+    <span class="slide-ref">Slides 18–20 &bull; 🎬 3:42</span>
+  </div>
+
+  <div class="card">
+    <h3>What Is Emergence?</h3>
+    <p>Emergence occurs when the <strong>observed behaviour</strong> of a system exceeds the <strong>coded behaviour</strong> — complex patterns arise from simple rules interacting with each other and the environment.</p>
+  </div>
+
+  <div class="def-grid">
+    <div class="def-item">
+      <div class="label">Coded Behaviour</div>
+      <div class="value">The explicit rules programmed into each individual agent. What exists in the code.</div>
+    </div>
+    <div class="def-item">
+      <div class="label">Observed Behaviour</div>
+      <div class="value">The collective pattern seen by an external observer. "In the eye of the beholder."</div>
+    </div>
+  </div>
+
+  <div class="concept">
+    <h4>Emergence = Observed > Coded</h4>
+    <p>When observed behaviour exceeds coded behaviour, we have emergence. There is <strong>no one-to-one mapping</strong> between the simple code and the complex reality that plays out — the interactions link the rules in ways we cannot fully anticipate.</p>
+  </div>
+
+  <div class="card">
+    <h3>Flocking: Reynolds' Boids &amp; Mataric's Nerd Herd</h3>
+    <p>Three simple rules produce complex, perfectly synchronised group movement:</p>
+    <table>
+      <tr><th>#</th><th>Rule</th><th>Purpose</th></tr>
+      <tr><td>1</td><td><strong>Separation</strong> — don't run into other robots</td><td>Collision avoidance</td></tr>
+      <tr><td>2</td><td><strong>Cohesion</strong> — don't get too far from others</td><td>Group unity</td></tr>
+      <tr><td>3</td><td><strong>Alignment</strong> — keep moving if you can</td><td>Forward progress</td></tr>
+    </table>
+    <p style="margin-top:8px">When run in parallel across many agents, realistic flocking emerges naturally — no central coordinator needed.</p>
+  </div>
+
+  <div class="success">
+    <p>The magic of emergence: three trivial rules → complex flocking. This demonstrates Brooks' Thesis 3 — intelligence as an emergent property of interacting simple systems.</p>
+  </div>
+</div>
+
+<!-- ===== SECTION 6 ===== -->
+<div class="section" id="s6">
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <div class="section-title">Limits of Reactive Systems</div>
+    <span class="slide-ref">Slides 18–20 &bull; 🎬 5:14</span>
+  </div>
+
+  <div class="warning">
+    <p>Reactive agents have fundamental limitations that prevent them from being a complete solution to the agent design problem.</p>
+  </div>
+
+  <div class="card">
+    <h3>Four Critical Limitations</h3>
+    <ol>
+      <li><strong>No world model → short-term view only</strong><br>Agents rely purely on local, current sensor information. They cannot reason about the past or plan for the future.</li>
+      <li><strong>Sufficient local information required</strong><br>If the agent cannot perceive enough of the environment to determine the correct action, it will fail. The right action must be determinable from current percepts alone.</li>
+      <li><strong>Emergent behaviour is hard to engineer</strong><br>You cannot predict or guarantee what behaviour will emerge. Validation requires extensive trial and error — not formal verification.</li>
+      <li><strong>Scalability problem</strong><br>A few layers work well; many layers create an inherently complex, untestable system. The interactions between layers become unpredictable.</li>
+    </ol>
+  </div>
+
+  <div class="exam-tip">
+    <p>These limitations are the key motivation for hybrid architectures. An exam question may ask: "Why are purely reactive agents insufficient? How do hybrid architectures address this?" Connect each limitation to how deliberation/planning compensates for it.</p>
+  </div>
+</div>
+
+<!-- ===== SECTION 7 ===== -->
+<div class="section" id="s7">
+  <div class="section-header">
+    <div class="section-num">7</div>
+    <div class="section-title">Hybrid Architectures</div>
+    <span class="slide-ref">Slides 21–23 &bull; 🎬 5:58</span>
+  </div>
+
+  <div class="card">
+    <h3>The Hybrid Motivation</h3>
+    <p>Neither purely deliberative nor purely reactive agents are sufficient. <strong>Hybrid systems</strong> marry both approaches:</p>
+    <ul>
+      <li>A <strong>deliberative</strong> subsystem with a symbolic world model for planning</li>
+      <li>A <strong>reactive</strong> subsystem for fast, reflex-based responses</li>
+      <li>The reactive component typically gets <strong>precedence</strong> over the deliberative one</li>
+    </ul>
+  </div>
+
+  <div class="concept">
+    <h4>Layered Architecture</h4>
+    <p>Hybrid agents naturally organise into a <strong>hierarchy of interacting layers</strong>, with higher layers dealing with information at increasing levels of abstraction. The key design problem: what control framework manages the interactions between layers?</p>
+  </div>
+
+  <div class="card">
+    <h3>Two Layering Strategies</h3>
+    <table>
+      <tr><th>Feature</th><th>Horizontal Layering</th><th>Vertical Layering</th></tr>
+      <tr><td><strong>Sensor connection</strong></td><td>Every layer connects to sensors AND actuators</td><td>Only one layer handles sensors; only one handles actuators</td></tr>
+      <tr><td><strong>Layer behaviour</strong></td><td>Each layer acts like an independent agent</td><td>Layers pass information sequentially</td></tr>
+      <tr><td><strong>Control problem</strong></td><td>Which layer "wins"? Need a mediator</td><td>Rigid sequential flow</td></tr>
+      <tr><td><strong>Variants</strong></td><td>—</td><td>One-pass (up only) / Two-pass (up then down)</td></tr>
+      <tr><td><strong>Example</strong></td><td>TouringMachines</td><td>InteRRaP</td></tr>
+    </table>
+  </div>
+
+  <div class="diagram">HORIZONTAL LAYERING         VERTICAL (1-pass)      VERTICAL (2-pass)
+
+ sensors → ┌──────┐        ┌──────┐ → action     ┌──────┐
+         → │Layer n│        │Layer n│              │Layer n│
+         → │ ...   │        │ ...   │              │ ...   │
+         → │Layer 2│        │Layer 2│              │Layer 2│
+         → │Layer 1│        │Layer 1│              │Layer 1│
+           └──────┘  →act  └──────┘ ← sensor   ↗sensor  ↘action
+  Each layer sees ALL       Info flows UP only   Info goes UP then
+  inputs & outputs          (bottom to top)      decision comes DOWN</div>
+
+  <div class="exam-tip">
+    <p>Know the difference between horizontal and vertical layering. Horizontal = all layers see everything (like TouringMachines). Vertical = sequential pass through layers (like InteRRaP's two-pass model). Be able to draw both diagrams.</p>
+  </div>
+</div>
+
+<!-- ===== SECTION 8 ===== -->
+<div class="section" id="s8">
+  <div class="section-header">
+    <div class="section-num">8</div>
+    <div class="section-title">Ferguson's TouringMachines</div>
+    <span class="slide-ref">Slides 24–27 &bull; 🎬 7:08</span>
+  </div>
+
+  <div class="card">
+    <h3>Architecture Overview</h3>
+    <p>TouringMachines is a <strong>horizontal layering</strong> hybrid architecture with:</p>
+    <ul>
+      <li><strong>Perception subsystem</strong> — interfaces with the environment (sensor input)</li>
+      <li><strong>Action subsystem</strong> — interfaces with the environment (action output)</li>
+      <li><strong>Three control layers</strong> embedded in a <strong>control framework</strong> that mediates between them</li>
+    </ul>
+  </div>
+
+  <div class="def-grid">
+    <div class="def-item">
+      <div class="label">Reactive Layer</div>
+      <div class="value">Situation-action rules (like Brooks' subsumption). Rules reference only the agent's current state — <strong>no explicit reasoning</strong>. Handles immediate reflexes.</div>
+    </div>
+    <div class="def-item">
+      <div class="label">Planning Layer</div>
+      <div class="value">Achieves the agent's <strong>proactive behaviour</strong>. Responsible for "day-to-day" operation. Uses a <strong>library of plans</strong> (does NOT generate plans from scratch).</div>
+    </div>
+    <div class="def-item">
+      <div class="label">Modelling Layer</div>
+      <div class="value">Contains <strong>symbolic representations</strong> of the cognitive state of other entities in the environment. Handles social reasoning about other agents.</div>
+    </div>
+    <div class="def-item">
+      <div class="label">Control Framework</div>
+      <div class="value">Mediates between the three layers using <strong>control rules</strong> (censor rules). Can suppress/modify information flowing between layers.</div>
+    </div>
+  </div>
+
+  <div class="diagram">           sensor input
+                ↓
+      ┌─────────────────┐
+      │  perceptual      │
+      │  subsystem       │
+      └────┬───┬───┬────┘
+           │   │   │
+     ┌─────↓─┐│┌──↓─────┐
+     │modelling│││reactive│
+     │ layer  │││ layer  │
+     └────┬──┘│└──┬─────┘
+          │ ┌─↓──┐│
+          │ │plan-││
+          │ │ning ││
+          │ │layer││
+          │ └──┬─┘│
+      ┌───↓────↓──↓──────┐
+      │  control subsystem│  ← mediates via
+      └────────┬──────────┘    censor rules
+               ↓
+         action output</div>
+
+  <div class="card">
+    <h3>Control Rules (Censor Rules)</h3>
+    <p>The control framework uses <strong>censor rules</strong> to manage layer interactions. These can suppress sensory data from reaching certain layers:</p>
+    <pre><span class="keyword">rule-1:</span> kerb-avoidance
+    <span class="keyword">if</span>
+        is-in-front(Kerb, Observer) <span class="keyword">and</span>
+        speed(Observer) > 0 <span class="keyword">and</span>
+        separation(Kerb, Observer) < KerbThreshHold
+    <span class="keyword">then</span>
+        change-orientation(KerbAvoidanceAngle)</pre>
+    <pre><span class="keyword">censor-rule-1:</span>
+    <span class="keyword">if</span>
+        entity(obstacle-6) in perception-buffer
+    <span class="keyword">then</span>
+        remove-sensory-record(layer-R, entity(obstacle-6))</pre>
+    <p style="margin-top:8px">The censor rule prevents the reactive layer from seeing obstacle-6, allowing the planning layer to handle it instead.</p>
+  </div>
+
+  <div class="exam-tip">
+    <p>TouringMachines uses <strong>horizontal</strong> layering (all layers see sensor data) with a <strong>control framework</strong> to mediate. Know the three layers (reactive, planning, modelling) and how censor rules work. Common exam question: give an example of a censor rule and explain its purpose.</p>
+  </div>
+</div>
+
+<!-- ===== SECTION 9 ===== -->
+<div class="section" id="s9">
+  <div class="section-header">
+    <div class="section-num">9</div>
+    <div class="section-title">InteRRaP</div>
+    <span class="slide-ref">Slides 28–29 &bull; 🎬 (lecture only)</span>
+  </div>
+
+  <div class="card">
+    <h3>Architecture Overview</h3>
+    <p>InteRRaP is a <strong>vertically layered, two-pass</strong> agent architecture. It contains three control layers, each with its own <strong>knowledge base</strong>:</p>
+  </div>
+
+  <div class="def-grid">
+    <div class="def-item">
+      <div class="label">Behaviour Layer</div>
+      <div class="value">Reactive behaviours + <strong>world model</strong> (representation of the physical environment)</div>
+    </div>
+    <div class="def-item">
+      <div class="label">Plan Layer</div>
+      <div class="value">Local planning + <strong>planning knowledge</strong> (plan library and planning strategies)</div>
+    </div>
+    <div class="def-item">
+      <div class="label">Cooperation Layer</div>
+      <div class="value">Multi-agent coordination + <strong>social knowledge</strong> (models of other agents)</div>
+    </div>
+    <div class="def-item">
+      <div class="label">World Interface</div>
+      <div class="value">Handles sensor input and action output — the agent's connection to its environment</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Layer Interaction Mechanisms</h3>
+    <table>
+      <tr><th>Mechanism</th><th>Direction</th><th>Description</th></tr>
+      <tr><td><strong>Bottom-up activation</strong></td><td>Lower → Higher</td><td>A lower layer passes control to a higher layer because it <strong>cannot handle</strong> the current situation</td></tr>
+      <tr><td><strong>Top-down execution</strong></td><td>Higher → Lower</td><td>A higher layer uses the <strong>facilities</strong> provided by a lower layer to achieve its goals</td></tr>
+    </table>
+  </div>
+
+  <div class="diagram">┌──────────────┐    ┌──────────────┐
+│ cooperation  │←──→│    social     │
+│   layer      │    │  knowledge   │
+├──────────────┤    ├──────────────┤
+│    plan      │←──→│   planning   │
+│   layer      │    │  knowledge   │
+├──────────────┤    ├──────────────┤
+│  behaviour   │←──→│    world     │
+│   layer      │    │    model     │
+├──────────────┤    └──────────────┘
+│    world     │
+│  interface   │
+└──────┬───────┘
+  ↗         ↘
+sensor     action
+input      output
+
+  ↑ bottom-up activation (can't handle → escalate)
+  ↓ top-down execution  (use lower layer's facilities)</div>
+
+  <div class="exam-tip">
+    <p>InteRRaP vs TouringMachines is a likely comparison question. Key differences: InteRRaP = <strong>vertical two-pass</strong>, each layer has its own knowledge base. TouringMachines = <strong>horizontal</strong>, mediated by a central control framework with censor rules. Know both directions of interaction: bottom-up activation and top-down execution.</p>
+  </div>
+</div>
+
+<!-- ===== SECTION 10 ===== -->
+<div class="section" id="s10">
+  <div class="section-header">
+    <div class="section-num">10</div>
+    <div class="section-title">Real-World Example: Stanley</div>
+    <span class="slide-ref">Slide 30</span>
+  </div>
+
+  <div class="card">
+    <h3>Stanley — DARPA Grand Challenge Winner (2005)</h3>
+    <ul>
+      <li>Won the 2005 <strong>DARPA Grand Challenge</strong> — autonomous vehicle race across 132 miles of desert</li>
+      <li>Used a <strong>combination</strong> of subsumption architecture with deliberative planning — a true hybrid</li>
+      <li>Consisted of <strong>30 different independently operating modules</strong> across <strong>6 layers</strong></li>
+    </ul>
+  </div>
+
+  <div class="layer-stack">
+    <div class="layer-block" style="background:#6366f1">Global Services Layer</div>
+    <div class="layer-block" style="background:#8b5cf6">User Interface Layer</div>
+    <div class="layer-block" style="background:#a855f7">Vehicle Interface Layer</div>
+    <div class="layer-block" style="background:#f97316">Planning and Control Layer</div>
+    <div class="layer-block" style="background:#eab308">Perception Layer</div>
+    <div class="layer-block" style="background:#ef4444">Sensor Interface Layer</div>
+  </div>
+
+  <div class="success">
+    <p>"The key challenge... was not one of action, but one of <strong>perception</strong>." — Stanley demonstrated that hybrid architectures work in the real world, and that the hardest part is sensing, not acting.</p>
+  </div>
+</div>
+
+<!-- ===== SECTION 11 ===== -->
+<div class="section" id="s11">
+  <div class="section-header">
+    <div class="section-num">11</div>
+    <div class="section-title">Key Concepts Reference</div>
+    <span class="slide-ref">All slides</span>
+  </div>
+
+  <table>
+    <tr><th>Concept</th><th>Definition / Key Points</th></tr>
+    <tr><td><strong>Reactivity</strong></td><td>Ongoing interaction with environment; responds fast enough to be useful</td></tr>
+    <tr><td><strong>Subsumption</strong></td><td>Layered behaviour hierarchy; lower layers inhibit higher; no world model</td></tr>
+    <tr><td><strong>Brooks' Thesis 1</strong></td><td>Intelligent behaviour without explicit representations</td></tr>
+    <tr><td><strong>Brooks' Thesis 2</strong></td><td>Intelligent behaviour without explicit abstract reasoning</td></tr>
+    <tr><td><strong>Brooks' Thesis 3</strong></td><td>Intelligence is an emergent property of complex systems</td></tr>
+    <tr><td><strong>Emergence</strong></td><td>Observed behaviour > Coded behaviour; no 1:1 mapping between code and outcome</td></tr>
+    <tr><td><strong>Flocking rules</strong></td><td>(1) Separation, (2) Cohesion, (3) Alignment → emergent group behaviour</td></tr>
+    <tr><td><strong>Stigmergy</strong></td><td>Indirect coordination through environment modification (e.g., pheromone trails)</td></tr>
+    <tr><td><strong>Horizontal layering</strong></td><td>All layers connect to sensors + actuators; mediated by control framework</td></tr>
+    <tr><td><strong>Vertical layering</strong></td><td>Sequential pass through layers; one-pass or two-pass variants</td></tr>
+    <tr><td><strong>TouringMachines</strong></td><td>Horizontal hybrid: reactive + planning + modelling layers; censor rules mediate</td></tr>
+    <tr><td><strong>InteRRaP</strong></td><td>Vertical two-pass hybrid: behaviour + plan + cooperation layers; each has own KB</td></tr>
+    <tr><td><strong>Bottom-up activation</strong></td><td>Lower layer escalates to higher when it can't handle the situation</td></tr>
+    <tr><td><strong>Top-down execution</strong></td><td>Higher layer uses lower layer's facilities to achieve its goals</td></tr>
+    <tr><td><strong>Foraging priorities</strong></td><td>1. Avoid obstacle → 2. Drop sample → 3. Return home → 4. Pick up → 5. Wander</td></tr>
+  </table>
+
+  <div class="card" style="margin-top:20px">
+    <h3>Comparison: Deliberative vs Reactive vs Hybrid</h3>
+    <table>
+      <tr><th>Feature</th><th>Deliberative</th><th>Reactive</th><th>Hybrid</th></tr>
+      <tr><td>World model</td><td>Yes (symbolic)</td><td>No</td><td>Yes (in deliberative layer)</td></tr>
+      <tr><td>Planning</td><td>Yes (search-based)</td><td>No</td><td>Yes (in planning layer)</td></tr>
+      <tr><td>Response speed</td><td>Slow (compute first)</td><td>Fast (immediate reflex)</td><td>Fast for urgent, thoughtful for complex</td></tr>
+      <tr><td>Scalability</td><td>Poor (combinatorial explosion)</td><td>Poor (too many layers)</td><td>Better (layers at different abstractions)</td></tr>
+      <tr><td>Dynamic environments</td><td>Struggles</td><td>Excels</td><td>Handles both</td></tr>
+      <tr><td>Long-term goals</td><td>Yes</td><td>No</td><td>Yes</td></tr>
+      <tr><td>Example</td><td>STRIPS planner</td><td>Genghis, Boids</td><td>TouringMachines, InteRRaP, Stanley</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ===== TRANSCRIPT ===== -->
+<div class="section" id="transcript">
+  <div class="section-header">
+    <div class="section-num">T</div>
+    <div class="section-title">Full Video Transcript</div>
+  </div>
+
+  <details>
+    <summary>Click to expand full timestamped transcript (~7:55)</summary>
+
+    <div class="card">
+      <p><strong>[0:00]</strong> Welcome back to The Explainer. Today we're diving into the really fascinating evolutionary tale of how we build intelligent agents, tracing the journey all the way from simple, basic reflexes up to highly complex hybrid brains. Here's our roadmap for today. We're going to hit the Reactive AI Challenge, Brooks' subsumption architecture, build a foraging robot, check out the magic of emergence, touch on the limits of reactive systems, and wrap up with hybrid agents and touring machines. Let's get right into it.</p>
+
+      <p><strong>[0:28]</strong> All right, section one, the Reactive AI Challenge, Surviving Dynamic Domains. Look, we're starting off with a massive hurdle in computer science. The real world is messy, it's completely dynamic, and it is incredibly hard to build software for it. Traditional programs often have to pause to calculate and ask themselves if an action is worth executing. But in a constantly changing environment, that hesitation can mean total failure. So instead of a program constantly pausing to think, we need what we call reactivity. Basically, a reactive system maintains an ongoing interaction with its environment and responds to changes fast enough for that response to actually matter. Intelligent agents have to perceive their environment and react immediately rather than getting stuck trying to compute some flawless master plan.</p>
+
+      <p><strong>[1:12]</strong> Which brings us to section two, Brooks' subsumption architecture, the Reflexive Robot. To solve this critical need for speed, Rodney Brooks introduced a truly radical concept, and this brilliantly illustrates it. Meet our hero, Genghis. This is a physical robot originally developed using Brooks' subsumption architecture. And what's literally mind-blowing about Genghis is that it pulls off these super impressive tasks, tasks that look like they'd require a massive heavy symbolic AI brain using just a computationally simple system of primitive behaviors. There is no complex world modeling happening here at all. It's just pure reflex-driven action.</p>
+
+      <p><strong>[1:50]</strong> Under the hood, this architecture is kind of like stacking blocks. Behaviors are arranged into a strict hierarchy of layers. Sensor data shoots straight through these distinct layers directly to the actuators. The golden rule here is that the lower layers, representing more primitive reflexes like avoiding obstacles, actually inhibit or subsume the higher layers. Because every single layer is independent, you can code them, test them, and debug them totally separately, and then snap them together to create remarkably complex behavior from incredibly simple computational parts.</p>
+
+      <p><strong>[2:24]</strong> Moving right along to section three, building a foraging robot and exam scenario. Let's look at a practical example taken straight from a university computer science exam. Because hey, who doesn't love a little phantom exam stress, right? Imagine you've got to program an autonomous robotic agent to explore an alien planet and gather samples. But here's the catch, you can't give it a central thinking brain. How do we prioritize its basic reflexes to get the job done using just subsumption?</p>
+
+      <p><strong>[2:54]</strong> The solution is beautifully elegant. By simply stacking these five prioritized rules, we get a fully functional agent. At the very bottom, our absolute highest priority. If you detect an obstacle, change direction. In other words, whatever you do, don't crash. Moving up the priority chain, if you're carrying a sample and you're at the base, drop it. Simple. Above that, if you're carrying a sample but not at base, travel up the gradient toward home. Higher still, if you detect a sample, pick it up. And finally, sitting at the very top is our lowest priority behavior, which acts kind of like a default. Just wander randomly to explore. By layering these specific reflexes, the robot autonomously navigates, collects, and returns samples without ever actually thinking about what it's doing.</p>
+
+      <p><strong>[3:42]</strong> Next up, section four. The magic of emergence, when the sum is greater than the parts. So we've seen one robot in action. But what happens if you drop a whole group of these simple reflex-driven bots into the exact same environment? Well, you get emergence. A perfect example is the classic flocking phenomenon, like what we see with Mataric's famously named Nerd Herd or Reynolds Boids. By just interacting with the environment and each other, a highly complex, perfectly synchronized group dynamic just takes shape out of nowhere.</p>
+
+      <p><strong>[4:14]</strong> And get this, it only takes three basic rules to generate that entire intricate flocking behavior. Rule one, don't run into any other robot. Rule two, don't get too far from other robots. And rule three, keep moving if you can. That's it. When you run those in parallel across a bunch of agents, that incredible flocking synergy just emerges naturally.</p>
+
+      <p><strong>[4:38]</strong> The massive takeaway here is the fundamental difference between coded behavior and observed behavior. Coded behavior is exactly what exists in the programming scheme, literally just those three basic rules we just looked at. But observed behavior? That is in the eye of the observer. It's the magnificent flocking we're actually watching. Whenever the observed behavior exceeds the coded behavior, boom, we have emergence. There is absolutely no one-to-one mapping between the simple code we write and the complex reality that plays out. The interactions link the rules in ways we literally couldn't fully anticipate.</p>
+
+      <p><strong>[5:14]</strong> Okay, section five, limits of reactive systems, the hero's weakness. Now, as awesome as pure reactivity is, every brilliant system has its limitations. Because these agents don't build a model of the world and rely purely on local environment info, they inherently take a strictly short-term view. They require sufficient local information just to figure out what to do right this second. And that magical emergent behavior we were just praising? Actually, it's notoriously hard to engineer or validate. It usually just boils down to a lot of frustrating trial and error. Plus, while an agent with a couple of layers is super easy to build, if you try stacking too many layers, the whole thing devolves into an inherently complex, untestable mess.</p>
+
+      <p><strong>[5:58]</strong> Which leads us nicely into section six, hybrid agents and Turing machines, where the brain meets the reflex. To overcome these biologically like limits and build truly robust systems, we had to introduce hybrid architectures. Think systems like InteRRaP or Ferguson's Turing machines. But before we got there, we started with designs like horizontal layering. In this setup, every single layer connects directly to both the sensory input and the action output. Basically, each layer acts like its own independent agent, constantly competing to produce an action directly from the sensors. It works, sure, but it can get pretty chaotic trying to figure out which layer actually gets to pull the lever.</p>
+
+      <p><strong>[6:34]</strong> So we explored vertical layering, specifically the one-pass control model. Here, the sensory input and action output are each dealt with by at most one layer. The sensory input filters upward through the layers sequentially, layer one to layer two and so on. It definitely adds order, but it forces a really rigid sequence. That evolved further into a two-pass vertical system. The input goes all the way up through the layers and then the final decision filters all the way back down to generate the action output. This adds even more structural control, but again, it remains way too rigid when you need lightning-fast reflexes.</p>
+
+      <p><strong>[7:08]</strong> And finally, we hit the pinnacle of this evolution. Ferguson's Turing machines. This is a highly sophisticated hybrid architecture. It splits perception and action into distinct subsystems that interface directly with the environment. But the real magic is the central control framework. It seamlessly mediates between three distinct layers, a reactive layer for quick, immediate reflexes, a planning layer, and a high-level modeling layer. So you get the absolute best of both worlds, the immediate survival instinct of a reactive system perfectly paired with the intelligent foresight of a planning brain.</p>
+
+      <p><strong>[7:42]</strong> As we wrap up this explainer, I want to leave you with something to really chew on. If highly complex robotic behaviors, things like flawless autonomous navigation or perfectly synchronized flocking, can simply emerge from a basic stack of prioritized reflexes, could human intelligence itself just be an incredibly complex subsumption architecture? Are our own minds really just billions of basic layered reflexes interacting with the world, or is there something more to the ghost in the machine? It is definitely something to ponder. Thanks for joining me on this explainer and keep questioning the world around you.</p>
+    </div>
+  </details>
+</div>
+
+<p style="text-align:center;color:#64748b;font-size:12px;margin-top:40px">COMP310 Chapter 5 Study Guide &bull; Generated from lecture slides + NotebookLM transcript &bull; Good luck on the exam! 🍊</p>
+
+</main>
+
+<script>
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('nav a');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const id = entry.target.id;
+      const link = document.querySelector(`nav a[href="#${id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
